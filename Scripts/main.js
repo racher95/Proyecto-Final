@@ -103,6 +103,9 @@ function checkSessionStatus() {
   if (sessionData && sessionData.isLoggedIn) {
     // Usuario logueado - actualizar interfaz
     updateUIForLoggedInUser(sessionData);
+  } else {
+    // Usuario NO logueado - mostrar prompt elegante
+    showLoginPrompt();
   }
 }
 
