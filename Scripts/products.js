@@ -145,21 +145,6 @@ function displayProducts(products) {
     .join("");
 
   productsContainer.innerHTML = productsHTML;
-
-  // Actualizar contador
-  updateProductCount(products.length);
-}
-
-/**
- * Actualiza el contador de productos mostrados
- */
-function updateProductCount(count) {
-  const countElement = document.getElementById("productCount");
-  if (countElement) {
-    countElement.innerHTML = `<p>Mostrando ${count} producto${
-      count !== 1 ? "s" : ""
-    }</p>`;
-  }
 }
 
 /**
@@ -274,22 +259,6 @@ document.addEventListener("DOMContentLoaded", function () {
         displayProducts(allProducts);
       } else {
         filterProducts(searchTerm);
-      }
-    });
-  }
-
-  // Event listener para el botón de búsqueda
-  const searchBtn = document.getElementById("searchBtn");
-  if (searchBtn) {
-    searchBtn.addEventListener("click", function () {
-      const searchInput = document.getElementById("searchInput");
-      if (searchInput) {
-        const searchTerm = searchInput.value.trim();
-        if (searchTerm === "") {
-          displayProducts(allProducts);
-        } else {
-          filterProducts(searchTerm);
-        }
       }
     });
   }

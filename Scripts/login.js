@@ -170,35 +170,3 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 3000);
   }
 });
-
-/**
- * Verifica si el usuario tiene una sesión activa
- * @returns {object|null} datos de la sesión si está activa, null si no
- */
-function checkSession() {
-  const sessionData = getSessionData();
-
-  if (sessionData) {
-    try {
-      const session = JSON.parse(sessionData);
-      const loginTime = new Date(session.loginTime);
-      const now = new Date();
-      const hoursDiff = (now - loginTime) / (1000 * 60 * 60); // Calculo horas transcurridas
-
-      // La sesión es válida por 24 horas
-      if (session.isLoggedIn && hoursDiff < 24) {
-        return session;
-      } else {
-        // La sesión expiró, la elimino
-        localStorage.removeItem("craftivitySession");
-        return null;
-      }
-    } catch (e) {
-      // Si hay error al leer los datos, limpio la sesión corrupta
-      localStorage.removeItem("craftivitySession");
-      return null;
-    }
-  }
-
-  return null;
-}

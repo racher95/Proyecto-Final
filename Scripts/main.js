@@ -159,8 +159,6 @@ function showUserMenu() {
     });
   }
 
-  document.body.appendChild(menu);
-
   // Configuro para que se cierre al hacer click fuera del menú
   setTimeout(() => {
     document.addEventListener("click", function closeMenu(e) {
