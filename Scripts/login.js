@@ -202,18 +202,3 @@ function checkSession() {
 
   return null;
 }
-
-/**
- * Función para proteger páginas - redirige al login si no hay sesión
- * Se puede llamar desde cualquier página que requiera autenticación
- */
-function redirectIfNotLoggedIn() {
-  const session = checkSession();
-  if (!session) {
-    // Si estamos en una subcarpeta (pages/), ajusto la ruta
-    const isInSubfolder = window.location.pathname.includes("/pages/");
-    const loginPath = isInSubfolder ? "login.html" : "pages/login.html";
-    window.location.href = loginPath;
-  }
-  return session;
-}

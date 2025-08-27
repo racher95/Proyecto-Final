@@ -77,21 +77,6 @@ function checkSession() {
 }
 
 /**
- * Función para proteger páginas - redirige al login si no hay sesión
- * Se puede llamar desde cualquier página que requiera autenticación
- */
-function redirectIfNotLoggedIn() {
-  const session = checkSession();
-  if (!session) {
-    // Si estamos en una subcarpeta (pages/), ajusto la ruta
-    const isInSubfolder = window.location.pathname.includes("/pages/");
-    const loginPath = isInSubfolder ? "login.html" : "pages/login.html";
-    window.location.href = loginPath;
-  }
-  return session;
-}
-
-/**
  * DESAFÍO IMPLEMENTADO: Verificación automática de sesión
  * Muestra un aviso elegante para invitar a usuarios no logueados a iniciar sesión
  * Solo aplica redirección forzada para páginas verdaderamente privadas
@@ -631,7 +616,7 @@ function initGlobalNavigation() {
  */
 function initResponsiveMenu() {
   const menuToggle = document.querySelector(".menu-toggle");
-  const navMenu = document.querySelector(".craftivity-nav, .nav-menu");
+  const navMenu = document.querySelector(".craftivity-nav");
 
   if (menuToggle && navMenu) {
     menuToggle.addEventListener("click", function () {
