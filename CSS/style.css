@@ -105,11 +105,6 @@ header {
   position: relative;
 }
 
-/* Ocultar botones móviles en desktop */
-.mobile-nav-actions {
-  display: none;
-}
-
 .craftivity-nav a {
   text-decoration: none;
   color: var(--secondary-color);
@@ -225,64 +220,6 @@ header {
 .btn-secondary:hover {
   background-color: var(--secondary-color);
   color: var(--white);
-}
-
-/* Header actions and buttons */
-.user-actions {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
-
-.cart-btn {
-  position: relative;
-  background-color: var(--primary-color);
-  color: var(--white);
-  border: none;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 1.2rem;
-}
-
-.cart-btn:hover {
-  background-color: #d35400;
-  transform: scale(1.1);
-}
-
-.cart-counter {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background-color: var(--danger-color);
-  color: var(--white);
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.8rem;
-  font-weight: bold;
-}
-
-.menu-toggle {
-  display: none;
-  flex-direction: column;
-  cursor: pointer;
-  gap: 3px;
-}
-
-.menu-toggle span {
-  width: 25px;
-  height: 3px;
-  background-color: var(--secondary-color);
-  transition: 0.3s;
 }
 
 /* Main content */
@@ -812,6 +749,23 @@ footer {
 }
 
 /* Responsive design */
+@media (min-width: 769px) {
+  /* Desktop: navegación horizontal completa */
+  .craftivity-nav {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .menu-toggle {
+    display: none;
+  }
+
+  .header-actions {
+    display: flex;
+  }
+}
+
 @media (max-width: 768px) {
   .header-container {
     flex-wrap: wrap;
@@ -835,15 +789,64 @@ footer {
     z-index: 1000;
   }
 
-  .craftivity-nav.active {
-    display: flex;
+  .craftivity-nav.show {
+    display: flex !important;
   }
 
+  .craftivity-nav.show li,
   .craftivity-nav li {
     width: 100%;
+    margin: 0.5rem 0;
+    display: flex !important; /* Forzar flex para que funcione order */
+    flex-direction: column !important;
   }
 
-  .craftivity-nav a {
+  .craftivity-nav.show li:nth-child(2),
+  .craftivity-nav li:nth-child(2) {
+    /* nav-search - ponerla primera */
+    order: 1 !important;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--light-gray);
+    padding-bottom: 1rem;
+  }
+
+  .craftivity-nav.show li:nth-child(1),
+  .craftivity-nav li:nth-child(1) {
+    /* nav-links - ponerla segunda */
+    order: 2 !important;
+  }
+
+  .craftivity-nav.show li:nth-child(3),
+  .craftivity-nav li:nth-child(3) {
+    /* nav-actions - ponerla tercera */
+    order: 3 !important;
+    margin-top: 1rem;
+    border-top: 1px solid var(--light-gray);
+    padding-top: 1rem;
+  }
+
+  /* Configurar los contenidos internos */
+  .nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .nav-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  /* Ajustar el search-bar para móvil */
+  .nav-search .search-bar {
+    min-width: auto;
+    width: 100%;
+    margin: 0;
+  }
+
+  /* Ajustar los enlaces en móvil */
+  .nav-links a {
     display: block;
     padding: 1rem;
     border-radius: 8px;
@@ -852,31 +855,19 @@ footer {
     width: 100%;
   }
 
-  .craftivity-nav a:hover {
+  .nav-links a:hover {
     background-color: var(--light-gray);
     transform: none;
   }
 
-  /* Agregar botones móviles al menú */
-  .mobile-nav-actions {
-    display: flex !important;
-    flex-direction: column;
-    gap: 0.5rem;
-    width: 100%;
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--light-gray);
-  }
-
-  .mobile-nav-actions .btn {
-    margin: 0;
-    width: 100%;
-    text-align: center;
-    border: none;
+  /* Ajustar los botones en móvil */
+  .nav-actions .btn {
     display: block;
+    margin: 0.5rem 0;
+    text-align: center;
   }
 
-  /* Header actions en móvil - ocultar para evitar overflow */
+  /* Header actions en móvil - ocultar para evitar duplicación */
   .header-actions {
     display: none;
   }
@@ -887,6 +878,7 @@ footer {
     margin-left: auto;
   }
 
+  /* Animación del menú hamburguesa */
   .menu-toggle.active span:nth-child(1) {
     transform: rotate(-45deg) translate(-6px, 6px);
   }
@@ -897,15 +889,6 @@ footer {
 
   .menu-toggle.active span:nth-child(3) {
     transform: rotate(45deg) translate(-6px, -6px);
-  }
-
-  .header-actions {
-    gap: 0.5rem;
-    order: 2;
-  }
-
-  .search-bar {
-    min-width: 200px;
   }
 
   .logo {
@@ -1018,7 +1001,6 @@ footer {
 
 /* ===== RESPONSIVE DESIGN ===== */
 
-/* Estilos adicionales para mejorar la UX */
 .features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));

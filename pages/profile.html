@@ -9,41 +9,42 @@
     <link rel="icon" type="image/x-icon" href="../img/favicon.ico"/>
   </head>
   <body>
-    <header>
-      <div class="header-container">
-        <a href="../index.html" class="logo">Craftivity</a>
+      <header>
+  <div class="header-container">
+    <!-- Logo -->
+    <a href="../index.html" class="logo">Craftivity</a>
 
-        <nav>
-          <ul class="craftivity-nav">
-            <li><a href="products.html">Catálogo</a></li>
-            <li><a href="sobre-nosotros.html">Sobre Nosotros</a></li>
-            <li class="mobile-nav-actions">
-              <a href="login.html" class="btn btn-secondary">Iniciar Sesión</a>
-              <a href="cart.html" class="btn btn-primary">🛒 Carrito</a>
-            </li>
-          </ul>
-        </nav>
+    <!-- Navegación unificada -->
+    <nav>
+      <ul class="craftivity-nav">
+        <!-- Enlaces de navegación -->
+        <li><a href="./products.html">Catálogo</a></li>
+        <li><a href="./sobre-nosotros.html">Sobre Nosotros</a></li>
 
-        <div class="header-actions">
+        <!-- Búsqueda dentro del nav -->
+        <li class="nav-search">
           <div class="search-bar">
-            <input
-              type="text"
-              placeholder="Buscar productos..."
-              id="searchInput"
-            />
+            <input type="text" placeholder="Buscar productos..." id="searchInput" />
             <button type="button">🔍</button>
           </div>
-          <a href="login.html" class="btn btn-secondary">Iniciar Sesión</a>
-          <a href="cart.html" class="btn btn-primary">🛒 Carrito</a>
-        </div>
+        </li>
 
-        <div class="menu-toggle">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-      </div>
-    </header>
+        <!-- Acciones de usuario -->
+        <li class="nav-actions">
+          <a href="./login.html" class="btn btn-secondary">Iniciar Sesión</a>
+          <a href="./cart.html" class="btn btn-primary">🛒 Carrito</a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Solo el botón hamburger fuera del nav -->
+    <div class="menu-toggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+</header>
 
     <main>
       <section class="container" style="padding: 4rem 1rem; text-align: center">

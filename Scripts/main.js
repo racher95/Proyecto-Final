@@ -621,8 +621,8 @@ function initResponsiveMenu() {
       // Toggle clase active en menú toggle (animación hamburguesa)
       this.classList.toggle("active");
 
-      // Toggle clase active en navegación (mostrar/ocultar menú)
-      navMenu.classList.toggle("active");
+      // Toggle clase show en navegación (mostrar/ocultar menú)
+      navMenu.classList.toggle("show");
     });
 
     // Cerrar menú al hacer clic en un enlace (mobile)
@@ -630,7 +630,7 @@ function initResponsiveMenu() {
     navLinks.forEach((link) => {
       link.addEventListener("click", () => {
         menuToggle.classList.remove("active");
-        navMenu.classList.remove("active");
+        navMenu.classList.remove("show");
       });
     });
 
@@ -638,7 +638,7 @@ function initResponsiveMenu() {
     window.addEventListener("resize", () => {
       if (window.innerWidth > 768) {
         menuToggle.classList.remove("active");
-        navMenu.classList.remove("active");
+        navMenu.classList.remove("show");
       }
     });
 
@@ -646,7 +646,7 @@ function initResponsiveMenu() {
     document.addEventListener("click", (e) => {
       if (!menuToggle.contains(e.target) && !navMenu.contains(e.target)) {
         menuToggle.classList.remove("active");
-        navMenu.classList.remove("active");
+        navMenu.classList.remove("show");
       }
     });
   }
