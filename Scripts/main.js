@@ -9,9 +9,6 @@ document.addEventListener("DOMContentLoaded", function () {
   // Actualizo el contador del carrito en el header
   updateCartCounter();
 
-  // Verifico si el usuario está logueado (implementado para el desafío extra)
-  checkSessionStatus();
-
   // Configuro el formulario de newsletter del footer
   initNewsletterForm();
 
@@ -20,6 +17,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Configuro la navegación programática
   initGlobalNavigation();
+
+  // configurar menu responsive
+  initResponsiveMenu();
 });
 
 /**
@@ -80,7 +80,7 @@ function checkSession() {
  * DESAFÍO IMPLEMENTADO: Verificación automática de sesión
  * Muestra un aviso elegante para invitar a usuarios no logueados a iniciar sesión
  * Solo aplica redirección forzada para páginas verdaderamente privadas
- */
+
 function checkSessionStatus() {
   // Obtengo datos de sesión usando función utilitaria
   const sessionData = getSessionData();
@@ -92,7 +92,7 @@ function checkSessionStatus() {
     // Usuario NO logueado - mostrar prompt elegante
     showLoginPrompt();
   }
-}
+} */
 
 /**
  * Actualiza la interfaz cuando hay un usuario logueado
@@ -173,7 +173,7 @@ function showUserMenu() {
 /**
  * Muestra un aviso centrado para invitar al usuario a iniciar sesión.
  * Este aviso aparece en páginas públicas cuando el usuario no está logueado.
- */
+
 function showLoginPrompt() {
   // Evito mostrar el prompt si ya existe uno
   if (document.getElementById("loginPrompt")) return;
@@ -249,7 +249,7 @@ function showLoginPrompt() {
 
 /**
  * Cierra el aviso de inicio de sesión
- */
+
 function closeLoginPrompt() {
   const overlay = document.getElementById("loginPromptOverlay");
   if (overlay) {
@@ -260,7 +260,8 @@ function closeLoginPrompt() {
       }
     }, 300);
   }
-}
+} */
+
 
 /**
  * Cierra la sesión del usuario y recarga la página
@@ -574,44 +575,10 @@ function initGlobalSearch() {
   }
 }
 
-// ===== FUNCIONALIDADES DE NAVEGACIÓN =====
 
-/**
- * Navega a la página de productos
- */
-function navigateToProducts() {
-  const currentPath = window.location.pathname;
-  const isInSubfolder = currentPath.includes("/pages/");
-  const productsPath = isInSubfolder ? "products.html" : "pages/products.html";
-  window.location.href = productsPath;
-}
+// ===== FUNCIONALIDADES DE MENU RESPONSIVE =====
 
-/**
- * Configura la navegación programática
- */
-function initGlobalNavigation() {
-  // Event delegation para elementos con data-navigate
-  document.addEventListener("click", function (e) {
-    if (e.target.hasAttribute("data-navigate")) {
-      e.preventDefault();
-      const destination = e.target.getAttribute("data-navigate");
 
-      switch (destination) {
-        case "products":
-          navigateToProducts();
-          break;
-      }
-    }
-  });
-
-  // Inicializar menú responsive
-  initResponsiveMenu();
-}
-
-/**
- * Inicializa la funcionalidad del menú responsive
- * Maneja el toggle del menú móvil y la animación de hamburguesa
- */
 function initResponsiveMenu() {
   const menuToggle = document.querySelector(".menu-toggle");
   const navMenu = document.querySelector(".craftivity-nav");
@@ -650,4 +617,36 @@ function initResponsiveMenu() {
       }
     });
   }
+}
+
+
+// ===== FUNCIONALIDADES DE NAVEGACIÓN =====
+
+/**
+ * Navega a la página de productos
+ */
+function navigateToProducts() {
+  const currentPath = window.location.pathname;
+  const isInSubfolder = currentPath.includes("/pages/");
+  const productsPath = isInSubfolder ? "products.html" : "pages/products.html";
+  window.location.href = productsPath;
+}
+
+/**
+ * Configura la navegación programática
+ */
+function initGlobalNavigation() {
+  // Event delegation para elementos con data-navigate
+  document.addEventListener("click", function (e) {
+    if (e.target.hasAttribute("data-navigate")) {
+      e.preventDefault();
+      const destination = e.target.getAttribute("data-navigate");
+
+      switch (destination) {
+        case "products":
+          navigateToProducts();
+          break;
+      }
+    }
+  });
 }
