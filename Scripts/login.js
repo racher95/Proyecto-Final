@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const isValid = validateForm();
 
     if (isValid) {
-      // Como es un proyecto académico, acepto cualquier credencial válida
+      // Como es un proyecto educativo, acepta cualquier credencial válida
       const usuario = usuarioInput.value.trim();
       const contraseña = contraseñaInput.value.trim();
 

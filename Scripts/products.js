@@ -13,7 +13,8 @@ let filteredProducts = []; // Productos filtrados por búsqueda
 
 // URL de la API - uso categoría 101 (autos)
 const PRODUCTS_API_URL =
-  "https://japceibal.github.io/emercado-api/cats_products/101.json";
+"https://racher95.github.io/diy-emercado-api/cats_products/202.json";
+//  "https://japceibal.github.io/emercado-api/cats_products/101.json";
 
 /**
  * Carga los productos desde la API externa

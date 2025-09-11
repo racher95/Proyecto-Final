@@ -1,7 +1,9 @@
-const CATEGORIES_URL = "https://japceibal.github.io/emercado-api/cats/cat.json";
+const CATEGORIES_URL =
+  "https://racher95.github.io/diy-emercado-api/cats/cat.json";
 const PUBLISH_PRODUCT_URL =
   "https://japceibal.github.io/emercado-api/sell/publish.json";
-const PRODUCTS_URL = "https://japceibal.github.io/emercado-api/cats_products/";
+const PRODUCTS_URL =
+  "https://racher95.github.io/diy-emercado-api/cats_products/";
 const PRODUCT_INFO_URL = "https://japceibal.github.io/emercado-api/products/";
 const PRODUCT_INFO_COMMENTS_URL =
   "https://japceibal.github.io/emercado-api/products_comments/";
