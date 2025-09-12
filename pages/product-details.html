@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Detalles del Producto - Craftivity: Información completa y comentarios"
+    />
+    <title>Detalles del Producto - Craftivity</title>
+    <link rel="stylesheet" href="../CSS/style.css" />
+    <link rel="icon" type="image/x-icon" href="../img/favicon.ico" />
+  </head>
+  <body>
+    <header>
+      <div class="header-container">
+        <!-- Logo -->
+        <a href="../index.html" class="logo">Craftivity</a>
+
+        <!-- Navegación unificada -->
+        <nav>
+          <ul class="craftivity-nav">
+            <!-- Enlaces de navegación -->
+            <li class="nav-links">
+              <a href="./products.html">Catálogo</a>
+              <a href="./sobre-nosotros.html">Sobre Nosotros</a>
+            </li>
+
+            <!-- Búsqueda dentro del nav -->
+            <li class="nav-search">
+              <div class="search-bar">
+                <input
+                  type="text"
+                  placeholder="Buscar productos..."
+                  id="searchInput"
+                />
+                <button type="button">🔍</button>
+              </div>
+            </li>
+
+            <!-- Acciones de usuario -->
+            <li class="nav-actions">
+              <a href="./login.html" class="btn btn-secondary"
+                >Iniciar Sesión</a
+              >
+              <a href="./cart.html" class="btn btn-primary">🛒 Carrito</a>
+            </li>
+          </ul>
+        </nav>
+
+        <!-- Solo el botón hamburger fuera del nav -->
+        <div class="menu-toggle">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- Breadcrumbs -->
+      <section class="breadcrumbs">
+        <div class="container">
+          <nav class="breadcrumb-nav">
+            <a href="../index.html">Inicio</a>
+            <span>›</span>
+            <a href="products.html" id="categoryBreadcrumb">Catálogo</a>
+            <span>›</span>
+            <span id="productBreadcrumb">Producto</span>
+          </nav>
+        </div>
+      </section>
+
+      <!-- Loading Message -->
+      <div id="loadingMessage" class="loading-message">
+        <div class="spinner"></div>
+        <p>Cargando detalles del producto...</p>
+      </div>
+
+      <!-- Error Message -->
+      <div id="errorMessage" class="error-message">
+        <h3>⚠️ Error al cargar el producto</h3>
+        <p>
+          No se pudieron cargar los detalles del producto. Por favor, verifica
+          la URL e inténtalo de nuevo.
+        </p>
+        <button id="backBtn" class="btn btn-secondary">
+          Volver al Catálogo
+        </button>
+      </div>
+
+      <!-- Product Detail Content -->
+      <section
+        id="productDetailSection"
+        class="product-detail"
+        style="display: none"
+      >
+        <div class="container">
+          <div class="product-detail-grid">
+            <!-- Galería de Imágenes -->
+            <div class="product-gallery">
+              <div class="main-image-container">
+                <img id="mainImage" src="" alt="" class="main-image" />
+                <div class="gallery-nav">
+                  <button id="prevImageBtn" class="gallery-nav-btn">‹</button>
+                  <button id="nextImageBtn" class="gallery-nav-btn">›</button>
+                </div>
+              </div>
+              <div id="thumbnailsContainer" class="thumbnails">
+                <!-- Thumbnails se cargarán dinámicamente -->
+              </div>
+            </div>
+
+            <!-- Información del Producto -->
+            <div class="product-info-detail">
+              <h1 id="productTitle">Título del Producto</h1>
+              <div class="product-price-section">
+                <span id="productPrice" class="product-price-large">$0</span>
+                <span id="productCurrency" class="product-currency"></span>
+              </div>
+
+              <div class="product-metadata-detail">
+                <div class="metadata-item">
+                  <span class="metadata-label">Vendidos:</span>
+                  <span id="productSold">0</span>
+                </div>
+                <div class="metadata-item">
+                  <span class="metadata-label">ID del Producto:</span>
+                  <span id="productId" class="product-id-detail">#000</span>
+                </div>
+                <div class="metadata-item">
+                  <span class="metadata-label">Categoría:</span>
+                  <span id="productCategory">-</span>
+                </div>
+              </div>
+
+              <div class="product-description-full">
+                <h3>Descripción</h3>
+                <p id="productDescription">Descripción del producto...</p>
+              </div>
+
+              <div class="product-actions-detail">
+                <button id="addToCartBtn" class="btn btn-primary btn-large">
+                  🛒 Agregar al Carrito
+                </button>
+                <button id="backToCatalogBtn" class="btn btn-secondary">
+                  ← Volver al Catálogo
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Comentarios del Producto -->
+      <section
+        id="commentsSection"
+        class="product-comments"
+        style="display: none"
+      >
+        <div class="container">
+          <h2>Comentarios y Reseñas</h2>
+          <div id="commentsContainer" class="comments-container">
+            <!-- Comentarios se cargarán dinámicamente -->
+          </div>
+          <div id="noComments" class="no-comments" style="display: none">
+            <p>
+              Aún no hay comentarios para este producto. ¡Sé el primero en
+              comentar!
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer-container">
+        <div class="footer-section footer-logo-section">
+          <img src="../img/japlogo.png" alt="JAP Logo" class="jap-logo" />
+          <p>
+            Proyecto desarrollado por el curso de Jóvenes a Programar 2025. Una
+            iniciativa educativa que forma desarrolladores.
+          </p>
+        </div>
+
+        <div class="footer-section">
+          <h3>Craftivity</h3>
+          <p>
+            Tu tienda online de kits DIY para manualidades y proyectos
+            creativos. Liberamos tu creatividad con los mejores materiales.
+          </p>
+        </div>
+
+        <div class="footer-section">
+          <h3>Contacto</h3>
+          <p>📧 info@craftivity.com</p>
+          <p>📞 +598 123 456 789</p>
+          <p>📍 Uruguay</p>
+        </div>
+
+        <div class="footer-section">
+          <h3>Newsletter</h3>
+          <p>Suscríbete y recibe las últimas novedades y ofertas especiales.</p>
+          <form class="newsletter-form">
+            <input type="email" placeholder="Tu email" required />
+            <button type="submit" class="btn btn-primary">Suscribirme</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2025 Craftivity • Desarrollado por el Grupo 7 JAP</p>
+      </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../Scripts/utils.js"></script>
+    <script src="../Scripts/init.js"></script>
+    <script src="../Scripts/main.js"></script>
+    <script src="../Scripts/product-details.js"></script>
+    <script src="../Scripts/session-handler.js"></script>
+  </body>
+</html>
