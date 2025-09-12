@@ -35,8 +35,11 @@ document.addEventListener("DOMContentLoaded", function () {
         isLoggedIn: true,
       };
 
+      // Migrar carrito temporal al usuario antes de guardar sesión
+      migrateCartToUser(usuario);
+
       // Guardo la sesión en el navegador para que persista
-      localStorage.setItem("craftivitySession", JSON.stringify(sessionData));
+      saveSessionData(sessionData);
 
       // Muestro un mensaje de éxito al usuario
       showSuccessMessage("¡Inicio de sesión exitoso! Redirigiendo...");

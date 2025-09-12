@@ -44,18 +44,20 @@ document.addEventListener("DOMContentLoaded", function () {
 function loadCart() {
   // Obtengo el carrito usando función utilitaria
   const cart = getCart();
+  console.log("🛒 Carrito cargado:", cart);
+
   const emptyCart = document.getElementById("emptyCart");
   const cartContent = document.getElementById("cartContent");
   const cartItems = document.getElementById("cartItems");
 
   if (cart.length === 0) {
     // Si no hay productos, muestro el mensaje de carrito vacío
-    emptyCart.classList.add("show");
-    cartContent.classList.remove("show");
+    if (emptyCart) emptyCart.classList.add("show");
+    if (cartContent) cartContent.classList.remove("show");
   } else {
     // Si hay productos, muestro el contenido del carrito
-    emptyCart.classList.remove("show");
-    cartContent.classList.add("show");
+    if (emptyCart) emptyCart.classList.remove("show");
+    if (cartContent) cartContent.classList.add("show");
     displayCartItems(cart);
     updateCartSummary(cart);
   }
@@ -79,8 +81,8 @@ function displayCartItems(cart) {
             <div class="cart-item-details">
                 <h4>${item.name}</h4>
                 <p class="cart-item-price">${formatCurrency(
-                  item.cost,
-                  item.currency
+                  item.cost || 0,
+                  item.currency || "UYU"
                 )}</p>
             </div>
             <div class="cart-item-controls">
@@ -93,7 +95,10 @@ function displayCartItems(cart) {
                 }" data-quantity="${item.quantity + 1}">+</button>
             </div>
             <div class="cart-item-total">
-                ${formatCurrency(item.cost * item.quantity, item.currency)}
+                ${formatCurrency(
+                  (item.cost || 0) * item.quantity,
+                  item.currency || "UYU"
+                )}
             </div>
             <button class="remove-btn" data-item-id="${
               item.id
@@ -154,20 +159,54 @@ function removeFromCart(productId) {
 
 /**
  * Calcula y muestra el resumen de precios del carrito
+ * Incluye subtotal, IVA, envío y total final
  * @param {Array} cart - productos del carrito
  */
 function updateCartSummary(cart) {
-  // Calculo el subtotal sumando precio × cantidad de cada producto
-  const subtotal = cart.reduce(
-    (sum, item) => sum + item.cost * item.quantity,
-    0
-  );
-  const shipping = 0; // En este proyecto el envío es gratis
-  const total = subtotal + shipping;
+  console.log("📊 Calculando resumen del carrito:", cart);
 
-  // Actualizo los elementos del DOM con los valores calculados
-  document.getElementById("subtotal").textContent = formatCurrency(subtotal);
-  document.getElementById("total").textContent = formatCurrency(total);
+  // Calculo el subtotal sumando precio × cantidad de cada producto
+  const subtotal = cart.reduce((sum, item) => {
+    const itemCost = item.cost || 0;
+    const itemQuantity = item.quantity || 0;
+    const itemTotal = itemCost * itemQuantity;
+    console.log(
+      `   Producto: ${item.name}, Costo: ${itemCost}, Cantidad: ${itemQuantity}, Total: ${itemTotal}`
+    );
+    return sum + itemTotal;
+  }, 0);
+
+  // Configurar costos adicionales
+  const shippingCost = 350; // Costo de envío fijo
+  const ivaRate = 0.22; // IVA del 22%
+  const iva = subtotal * ivaRate;
+  const total = subtotal + iva + shippingCost;
+
+  console.log(
+    `💰 Subtotal: ${subtotal}, IVA: ${iva}, Envío: ${shippingCost}, Total: ${total}`
+  );
+
+  // Actualizar los elementos del DOM con los valores calculados
+  const subtotalElement = document.getElementById("subtotal");
+  const ivaElement = document.getElementById("iva");
+  const shippingElement = document.getElementById("shipping");
+  const totalElement = document.getElementById("total");
+
+  if (subtotalElement) {
+    subtotalElement.textContent = formatCurrency(subtotal, "UYU");
+  }
+
+  if (ivaElement) {
+    ivaElement.textContent = formatCurrency(iva, "UYU");
+  }
+
+  if (shippingElement) {
+    shippingElement.textContent = formatCurrency(shippingCost, "UYU");
+  }
+
+  if (totalElement) {
+    totalElement.textContent = formatCurrency(total, "UYU");
+  }
 }
 
 /**

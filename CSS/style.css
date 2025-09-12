@@ -1859,28 +1859,6 @@ footer {
   background-color: var(--danger-color);
 }
 
-@keyframes slideIn {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideOut {
-  from {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-}
-
 /* ===== ESTILOS ESPECÍFICOS PARA SOBRE NOSOTROS ===== */
 .our-story {
   padding: 4rem 0;
@@ -2213,7 +2191,7 @@ footer {
   font-weight: 700;
 }
 
-.features-grid {
+.why-choose-features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 2.5rem;

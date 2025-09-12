@@ -6,18 +6,171 @@
 
 /**
  * Obtiene el carrito del localStorage
+ * Maneja carritos por usuario y carrito temporal
  * @returns {Array} Array de productos en el carrito
  */
 function getCart() {
-  return JSON.parse(localStorage.getItem("craftivityCart")) || [];
+  const session = getSessionData();
+
+  if (session && session.isLoggedIn) {
+    // Usuario logueado: usar carrito personalizado
+    const userCartKey = `craftivityCart_${session.usuario}`;
+    return JSON.parse(localStorage.getItem(userCartKey)) || [];
+  } else {
+    // Usuario no logueado: usar carrito temporal
+    return JSON.parse(localStorage.getItem("craftivityCart")) || [];
+  }
 }
 
 /**
  * Guarda el carrito en localStorage
+ * Maneja carritos por usuario y carrito temporal
  * @param {Array} cart - Array de productos del carrito
  */
 function saveCart(cart) {
-  localStorage.setItem("craftivityCart", JSON.stringify(cart));
+  const session = getSessionData();
+
+  if (session && session.isLoggedIn) {
+    // Usuario logueado: guardar en carrito personalizado
+    const userCartKey = `craftivityCart_${session.usuario}`;
+    localStorage.setItem(userCartKey, JSON.stringify(cart));
+  } else {
+    // Usuario no logueado: guardar en carrito temporal
+    localStorage.setItem("craftivityCart", JSON.stringify(cart));
+  }
+}
+
+/**
+ * Migra el carrito temporal al carrito del usuario
+ * Se ejecuta cuando un usuario hace login
+ * @param {string} username - Nombre del usuario
+ */
+function migrateCartToUser(username) {
+  // Obtener carrito temporal
+  const tempCart = JSON.parse(localStorage.getItem("craftivityCart")) || [];
+
+  if (tempCart.length > 0) {
+    // Obtener carrito existente del usuario (si tiene)
+    const userCartKey = `craftivityCart_${username}`;
+    const userCart = JSON.parse(localStorage.getItem(userCartKey)) || [];
+
+    // Combinar carritos (evitar duplicados por ID)
+    const combinedCart = [...userCart];
+
+    tempCart.forEach((tempItem) => {
+      const existingIndex = combinedCart.findIndex(
+        (item) => item.id === tempItem.id
+      );
+      if (existingIndex >= 0) {
+        // Si ya existe, sumar cantidades
+        combinedCart[existingIndex].quantity += tempItem.quantity;
+      } else {
+        // Si no existe, agregar nuevo
+        combinedCart.push(tempItem);
+      }
+    });
+
+    // Guardar carrito combinado
+    localStorage.setItem(userCartKey, JSON.stringify(combinedCart));
+
+    // Limpiar carrito temporal
+    localStorage.removeItem("craftivityCart");
+
+    console.log(`✅ Carrito migrado para usuario: ${username}`, combinedCart);
+  }
+}
+
+/**
+ * Limpia el carrito temporal al hacer logout
+ * Mantiene el carrito del usuario para futuras sesiones
+ */
+function clearTempCart() {
+  localStorage.removeItem("craftivityCart");
+  console.log("🧹 Carrito temporal limpiado");
+}
+
+/**
+ * Agrega un producto al carrito
+ * @param {Object} product - Producto a agregar
+ * @param {number} quantity - Cantidad a agregar (default: 1)
+ */
+function addToCart(product, quantity = 1) {
+  const cart = getCart();
+
+  // Buscar si el producto ya existe en el carrito
+  const existingIndex = cart.findIndex((item) => item.id === product.id);
+
+  if (existingIndex >= 0) {
+    // Si existe, aumentar cantidad
+    cart[existingIndex].quantity += quantity;
+  } else {
+    // Si no existe, agregar nuevo item
+    cart.push({
+      id: product.id,
+      name: product.name,
+      cost: product.cost, // Usar 'cost' para mantener consistencia
+      currency: product.currency || "UYU",
+      image:
+        product.images && product.images[0] ? product.images[0] : product.image,
+      quantity: quantity,
+      category: product.categoryId || product.category,
+    });
+  }
+
+  saveCart(cart);
+
+  // Actualizar contador del carrito en la UI
+  if (typeof updateCartCounter === "function") {
+    updateCartCounter();
+  }
+
+  console.log(`✅ Producto agregado al carrito:`, product.name, `x${quantity}`);
+  return cart;
+}
+
+/**
+ * Remueve un producto del carrito
+ * @param {number} productId - ID del producto a remover
+ */
+function removeFromCart(productId) {
+  const cart = getCart();
+  const filteredCart = cart.filter((item) => item.id !== productId);
+  saveCart(filteredCart);
+
+  // Actualizar contador del carrito en la UI
+  if (typeof updateCartCounter === "function") {
+    updateCartCounter();
+  }
+
+  console.log(`🗑️ Producto removido del carrito:`, productId);
+  return filteredCart;
+}
+
+/**
+ * Actualiza la cantidad de un producto en el carrito
+ * @param {number} productId - ID del producto
+ * @param {number} newQuantity - Nueva cantidad
+ */
+function updateCartQuantity(productId, newQuantity) {
+  const cart = getCart();
+  const itemIndex = cart.findIndex((item) => item.id === productId);
+
+  if (itemIndex >= 0) {
+    if (newQuantity <= 0) {
+      // Si la cantidad es 0 o menor, remover del carrito
+      return removeFromCart(productId);
+    } else {
+      cart[itemIndex].quantity = newQuantity;
+      saveCart(cart);
+    }
+  }
+
+  // Actualizar contador del carrito en la UI
+  if (typeof updateCartCounter === "function") {
+    updateCartCounter();
+  }
+
+  return cart;
 }
 
 /**
@@ -42,15 +195,6 @@ function saveSessionData(sessionData) {
  */
 function clearSessionData() {
   localStorage.removeItem("craftivitySession");
-}
-
-/**
- * Formatea un precio con el símbolo de pesos uruguayos
- * @param {number} price - Precio a formatear
- * @returns {string} Precio formateado
- */
-function formatPrice(price) {
-  return `$U ${price.toLocaleString()}`;
 }
 
 /**
@@ -94,40 +238,4 @@ function showNotification(message, type = "info") {
       }
     }, 300);
   }, 3000);
-}
-
-/**
- * Valida si una cadena es un email válido
- * @param {string} email - Email a validar
- * @returns {boolean} True si es válido
- */
-function isValidEmail(email) {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-}
-
-/**
- * Genera un ID único simple
- * @returns {string} ID único
- */
-function generateId() {
-  return Date.now().toString(36) + Math.random().toString(36).substr(2);
-}
-
-/**
- * Debounce function para optimizar búsquedas
- * @param {Function} func - Función a ejecutar
- * @param {number} wait - Tiempo de espera en ms
- * @returns {Function} Función con debounce
- */
-function debounce(func, wait) {
-  let timeout;
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
 }

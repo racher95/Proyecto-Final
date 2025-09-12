@@ -77,24 +77,6 @@ function checkSession() {
 }
 
 /**
- * DESAFÍO IMPLEMENTADO: Verificación automática de sesión
- * Muestra un aviso elegante para invitar a usuarios no logueados a iniciar sesión
- * Solo aplica redirección forzada para páginas verdaderamente privadas
-
-function checkSessionStatus() {
-  // Obtengo datos de sesión usando función utilitaria
-  const sessionData = getSessionData();
-
-  if (sessionData && sessionData.isLoggedIn) {
-    // Usuario logueado - actualizar interfaz
-    updateUIForLoggedInUser(sessionData);
-  } else {
-    // Usuario NO logueado - mostrar prompt elegante
-    showLoginPrompt();
-  }
-} */
-
-/**
  * Actualiza la interfaz cuando hay un usuario logueado
  * Cambia el botón "Iniciar Sesión" por el nombre del usuario
  * @param {object} session - datos de la sesión del usuario
@@ -171,104 +153,11 @@ function showUserMenu() {
 }
 
 /**
- * Muestra un aviso centrado para invitar al usuario a iniciar sesión.
- * Este aviso aparece en páginas públicas cuando el usuario no está logueado.
-
-function showLoginPrompt() {
-  // Evito mostrar el prompt si ya existe uno
-  if (document.getElementById("loginPrompt")) return;
-
-  // Crear overlay de fondo
-  const overlay = document.createElement("div");
-  overlay.id = "loginPromptOverlay";
-  overlay.className = "modal-overlay";
-
-  // Crear el modal principal
-  const prompt = document.createElement("div");
-  prompt.id = "loginPrompt";
-  prompt.className = "login-prompt";
-
-  const isInSubfolder = window.location.pathname.includes("/pages/");
-  const loginPath = isInSubfolder ? "login.html" : "pages/login.html";
-
-  prompt.innerHTML = `
-    <div>
-      <div class="emoji-icon">🎨</div>
-      <h3>¡Desbloquea tu Experiencia Craftivity!</h3>
-      <p>Inicia sesión para guardar tu carrito, ver tu historial de compras y obtener recomendaciones personalizadas.</p>
-    </div>
-
-    <div class="button-group">
-      <a href="${loginPath}" class="btn btn-primary">
-        ✨ Iniciar Sesión
-      </a>
-      <button class="btn btn-secondary" id="closePromptBtn">
-        Ahora No
-      </button>
-    </div>
-
-    <button class="close-button" id="closePromptX" title="Cerrar">
-      ✖
-    </button>
-  `;
-
-  // Agregar el prompt al overlay
-  overlay.appendChild(prompt);
-
-  // Configurar event listeners para cerrar
-  const closePromptBtn = prompt.querySelector("#closePromptBtn");
-  const closePromptX = prompt.querySelector("#closePromptX");
-
-  if (closePromptBtn) {
-    closePromptBtn.addEventListener("click", closeLoginPrompt);
-  }
-
-  if (closePromptX) {
-    closePromptX.addEventListener("click", closeLoginPrompt);
-  }
-
-  // Agregar todo al body
-  document.body.appendChild(overlay);
-
-  // Cerrar con ESC
-  const handleEscape = (e) => {
-    if (e.key === "Escape") {
-      closeLoginPrompt();
-      document.removeEventListener("keydown", handleEscape);
-    }
-  };
-  document.addEventListener("keydown", handleEscape);
-
-  // Cerrar al hacer clic en el overlay (fondo)
-  overlay.addEventListener("click", (e) => {
-    if (e.target === overlay) {
-      closeLoginPrompt();
-    }
-  });
-}
-
-/**
- * Cierra el aviso de inicio de sesión
-
-function closeLoginPrompt() {
-  const overlay = document.getElementById("loginPromptOverlay");
-  if (overlay) {
-    overlay.style.animation = "fadeOut 0.3s ease";
-    setTimeout(() => {
-      if (overlay.parentNode) {
-        overlay.parentNode.removeChild(overlay);
-      }
-    }, 300);
-  }
-} */
-
-
-/**
  * Cierra la sesión del usuario y recarga la página
  */
 function logout() {
-  localStorage.removeItem("craftivitySession");
-  localStorage.removeItem("craftivityCart"); // Opcional: también limpio el carrito
+  clearSessionData();
+  clearTempCart(); // Limpiar carrito temporal para próximo usuario
   window.location.reload(); // Recargo para actualizar la interfaz
 }
 
@@ -311,27 +200,7 @@ function isValidEmail(email) {
   return emailRegex.test(email);
 }
 
-/**
- * Muestra notificaciones temporales en la esquina de la pantalla
- * @param {string} message - mensaje a mostrar
- * @param {string} type - tipo de notificación ('success' o 'error')
- */
-function showNotification(message, type = "success") {
-  const notification = document.createElement("div");
-  notification.className = `notification ${type}`;
-  notification.textContent = message;
-  document.body.appendChild(notification);
-
-  // Lo elimino automáticamente después de 3 segundos
-  setTimeout(() => {
-    notification.style.animation = "slideOut 0.3s ease";
-    setTimeout(() => {
-      if (document.body.contains(notification)) {
-        document.body.removeChild(notification);
-      }
-    }, 300);
-  }, 3000);
-}
+// Agrego los estilos de animación necesarios para las notificaciones
 
 /**
  * Funciones de utilidad para formatear precios
@@ -364,154 +233,7 @@ function debounce(func, wait) {
   };
 }
 
-// Agrego los estilos de animación necesarios para las notificaciones
-const animationStyles = document.createElement("style");
-animationStyles.textContent = `
-    @keyframes slideIn {
-        from {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-
-    @keyframes slideOut {
-        from {
-            transform: translateX(0);
-            opacity: 1;
-        }
-        to {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-    }
-
-    @keyframes slideInUp {
-        from {
-            transform: translateY(100%);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    }
-
-    @keyframes slideOutDown {
-        from {
-            transform: translateY(0);
-            opacity: 1;
-        }
-        to {
-            transform: translateY(100%);
-            opacity: 0;
-        }
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
-    }
-
-    @keyframes fadeOut {
-        from {
-            opacity: 1;
-        }
-        to {
-            opacity: 0;
-        }
-    }
-
-    @keyframes slideInScale {
-        from {
-            transform: translateY(-20px) scale(0.9);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(0) scale(1);
-            opacity: 1;
-        }
-    }
-
-    /* Estilos adicionales para mejorar la UX */
-    .features-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 2rem;
-        margin-top: 2rem;
-    }
-
-    .feature {
-        background: white;
-        padding: 2rem;
-        border-radius: 15px;
-        box-shadow: 0 5px 20px var(--shadow);
-        text-align: center;
-    }
-
-    .feature h3 {
-        color: var(--primary-color);
-        margin-bottom: 1rem;
-        font-size: 1.5rem;
-    }
-
-    .about-section {
-        margin: 4rem 0;
-    }
-
-    .about-section h2 {
-        text-align: center;
-        color: var(--secondary-color);
-        margin-bottom: 2rem;
-        font-size: 2.5rem;
-    }
-
-    .newsletter-form {
-        display: flex;
-        gap: 0.5rem;
-        margin-top: 1rem;
-    }
-
-    .newsletter-form input {
-        flex: 1;
-        padding: 0.75rem;
-        border: 2px solid var(--light-gray);
-        border-radius: 8px;
-        font-size: 1rem;
-    }
-
-    .newsletter-form input:focus {
-        outline: none;
-        border-color: var(--primary-color);
-    }
-
-    .newsletter-form button {
-        padding: 0.75rem 1.5rem;
-        white-space: nowrap;
-    }
-
-    @media (max-width: 768px) {
-        .newsletter-form {
-            flex-direction: column;
-        }
-
-        .features-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .about-section h2 {
-            font-size: 2rem;
-        }
-    }
-`;
-document.head.appendChild(animationStyles);
+// ===== FUNCIONALIDADES DE BÚSQUEDA GLOBAL =====
 
 // ===== FUNCIONALIDADES DE BÚSQUEDA GLOBAL =====
 
@@ -526,15 +248,7 @@ function performGlobalSearch() {
   const searchTerm = searchInput.value.trim();
 
   if (searchTerm) {
-    // Si estamos en la página de productos, usar la función específica
-    if (window.location.pathname.includes("products.html")) {
-      if (typeof performProductSearch === "function") {
-        performProductSearch();
-        return;
-      }
-    }
-
-    // Si estamos en otra página, redirigir a productos con búsqueda
+    // Si estamos en otra página que no sea productos, redirigir a productos con búsqueda
     const currentPath = window.location.pathname;
     const isInSubfolder = currentPath.includes("/pages/");
     const productsPath = isInSubfolder
@@ -575,9 +289,7 @@ function initGlobalSearch() {
   }
 }
 
-
 // ===== FUNCIONALIDADES DE MENU RESPONSIVE =====
-
 
 function initResponsiveMenu() {
   const menuToggle = document.querySelector(".menu-toggle");
@@ -618,7 +330,6 @@ function initResponsiveMenu() {
     });
   }
 }
-
 
 // ===== FUNCIONALIDADES DE NAVEGACIÓN =====
 

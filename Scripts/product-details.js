@@ -286,8 +286,12 @@ function setupEventListeners() {
 
   // Botones de acción
   document.getElementById("addToCartBtn").addEventListener("click", () => {
-    // TODO: Implementar agregar al carrito
-    showNotification("Producto agregado al carrito", "success");
+    if (currentProduct) {
+      addToCart(currentProduct, 1);
+      showNotification(`${currentProduct.name} agregado al carrito`, "success");
+    } else {
+      showNotification("Error: No se pudo agregar el producto", "error");
+    }
   });
 
   document.getElementById("backToCatalogBtn").addEventListener("click", () => {

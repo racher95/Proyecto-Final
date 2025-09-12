@@ -8,9 +8,9 @@
  */
 
 // Variables globales para manejar los productos
-let allProducts = []; // Todos los productos cargados desde la API
-let filteredProducts = []; // Productos filtrados por búsqueda
+let allProducts = []; // Todos los productos cargados desde la API (categoría actual)
 let allCategories = []; // Todas las categorías disponibles
+let allProductsUniversal = []; // Todos los productos de todas las categorías (para búsqueda universal)
 let currentCategory = null; // Categoría actualmente seleccionada
 
 /**
@@ -73,6 +73,81 @@ function getDefaultCategory() {
 }
 
 /**
+ * Carga todos los productos de todas las categorías para búsqueda universal
+ */
+async function loadAllProductsUniversal() {
+  console.log("🌍 Cargando todos los productos para búsqueda universal...");
+
+  if (allCategories.length === 0) {
+    console.warn(
+      "⚠️ No hay categorías disponibles para cargar productos universales"
+    );
+    return;
+  }
+
+  try {
+    const productsBaseUrl =
+      typeof PRODUCTS_BASE_URL !== "undefined"
+        ? PRODUCTS_BASE_URL
+        : "https://racher95.github.io/diy-emercado-api/cats_products/";
+
+    // Crear promesas para todas las categorías
+    const categoryPromises = allCategories.map(async (category) => {
+      try {
+        const response = await fetch(`${productsBaseUrl}${category.id}.json`);
+        if (response.ok) {
+          const data = await response.json();
+          const products = data.products || [];
+          // Agregar información de categoría a cada producto
+          return products.map((product) => ({
+            ...product,
+            categoryId: category.id,
+            categoryName: category.name,
+          }));
+        }
+      } catch (error) {
+        console.log(
+          `No se pudieron cargar productos de categoría ${category.id}`
+        );
+      }
+      return [];
+    });
+
+    // Obtener todos los productos
+    const categoryProducts = await Promise.all(categoryPromises);
+
+    // Combinar todos los productos en un solo array
+    allProductsUniversal = categoryProducts.flat();
+
+    console.log(
+      `✅ Cargados ${allProductsUniversal.length} productos universales de ${allCategories.length} categorías`
+    );
+
+    // Re-ejecutar búsqueda desde URL si existe y no se había ejecutado correctamente
+    await retrySearchFromURL();
+  } catch (error) {
+    console.error("❌ Error cargando productos universales:", error);
+    allProductsUniversal = [];
+  }
+}
+
+/**
+ * Re-ejecuta la búsqueda desde URL si existe y no se había ejecutado con búsqueda universal
+ */
+async function retrySearchFromURL() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const searchTerm = urlParams.get("search");
+
+  if (searchTerm && allProductsUniversal.length > 0) {
+    console.log(
+      "🔄 Re-ejecutando búsqueda universal para término de URL:",
+      searchTerm
+    );
+    await filterProducts(searchTerm);
+  }
+}
+
+/**
  * Llena el selector de categorías con las opciones disponibles
  */
 function populateCategorySelect() {
@@ -89,7 +164,7 @@ function populateCategorySelect() {
   allCategories.forEach((category) => {
     const option = document.createElement("option");
     option.value = category.id;
-    option.textContent = category.name;
+    option.textContent = `${category.name} [ID: ${category.id}]`;
 
     // Marcar como seleccionada si es la categoría actual
     if (category.id == currentCategory) {
@@ -167,18 +242,34 @@ async function loadProducts(categoryId = null) {
 
     let productsToShow = allProducts;
     if (searchTerm) {
+      console.log("🔍 Búsqueda desde URL detectada:", searchTerm);
       const searchInput = document.getElementById("searchInput");
       if (searchInput) searchInput.value = searchTerm;
 
-      productsToShow = allProducts.filter(
-        (product) =>
-          product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.description.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      // Usar búsqueda universal si está disponible, sino buscar solo en categoría actual
+      if (allProductsUniversal.length > 0) {
+        console.log("🌍 Usando búsqueda universal desde URL");
+        productsToShow = allProductsUniversal.filter(
+          (product) =>
+            product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            product.description.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        // Actualizar selector para mostrar búsqueda
+        updateCategorySelectorForSearch(searchTerm, productsToShow.length);
+      } else {
+        console.log(
+          "⚠️ Búsqueda universal no disponible, buscando en categoría actual"
+        );
+        productsToShow = allProducts.filter(
+          (product) =>
+            product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            product.description.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
+    } else {
+      // Actualizar selector de categorías para mostrar la selección actual (sin búsqueda)
+      updateCategorySelector();
     }
-
-    // Actualizar selector de categorías para mostrar la selección actual
-    updateCategorySelector();
 
     // Renderizar productos
     await displayProducts(productsToShow);
@@ -456,51 +547,98 @@ function viewProductDetails(productId) {
   // Asegurar que productId sea un número
   const id = typeof productId === "string" ? parseInt(productId) : productId;
 
-  // Buscar el producto en el array de productos
-  const product = allProducts.find((p) => p.id === id);
+  // Buscar el producto primero en allProducts, luego en allProductsUniversal
+  let product = allProducts.find((p) => p.id === id);
+  let productCategory = currentCategory;
+
+  // Si no se encuentra en allProducts, buscar en allProductsUniversal
+  if (!product && allProductsUniversal.length > 0) {
+    product = allProductsUniversal.find((p) => p.id === id);
+    if (product) {
+      // Si se encuentra en allProductsUniversal, necesitamos obtener su categoría real
+      productCategory =
+        product.categoryId || product.category || currentCategory;
+    }
+  }
 
   if (product) {
-    // Redirigir a la página de detalles con el ID del producto
-    window.location.href = `product-details.html?id=${id}&category=${currentCategory}`;
+    // Redirigir a la página de detalles con el ID del producto y su categoría
+    window.location.href = `product-details.html?id=${id}&category=${productCategory}`;
   } else {
     alert("❌ Producto no encontrado");
     console.log("ID buscado:", id, "Tipo:", typeof id);
     console.log(
-      "IDs disponibles:",
+      "IDs en allProducts:",
       allProducts.map((p) => ({ id: p.id, tipo: typeof p.id }))
+    );
+    console.log(
+      "IDs en allProductsUniversal:",
+      allProductsUniversal.map((p) => ({
+        id: p.id,
+        tipo: typeof p.id,
+        categoria: p.categoryId,
+      }))
     );
   }
 }
 
 /**
  * Filtra los productos según el término de búsqueda
- * Esta función es llamada desde main.js
+ * Busca de forma universal en todas las categorías
  */
 async function filterProducts(searchTerm) {
   if (!searchTerm) {
+    // Si no hay término de búsqueda, mostrar productos de la categoría actual
     await displayProducts(allProducts);
     return;
   }
 
-  const filtered = allProducts.filter(
+  console.log(
+    "🔍 Realizando búsqueda universal en",
+    allProductsUniversal.length,
+    "productos"
+  );
+
+  // Buscar en todos los productos de todas las categorías
+  const filtered = allProductsUniversal.filter(
     (product) =>
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  console.log(
+    `📊 Encontrados ${filtered.length} resultados para "${searchTerm}"`
+  );
+
+  // Actualizar el selector de categorías para mostrar "Resultados de búsqueda"
+  updateCategorySelectorForSearch(searchTerm, filtered.length);
+
   await displayProducts(filtered);
 }
 
 /**
- * Búsqueda específica para la página de productos
- * Conecta con la función global de main.js
+ * Actualiza el selector de categorías para mostrar información de búsqueda
  */
-function performProductSearch() {
-  const searchInput = document.getElementById("searchInput");
-  if (!searchInput) return;
+function updateCategorySelectorForSearch(searchTerm, resultCount) {
+  const categorySelect = document.getElementById("categorySelect");
+  if (categorySelect) {
+    // Guardar el valor actual para poder restaurarlo
+    const originalValue = categorySelect.value;
 
-  const searchTerm = searchInput.value.trim();
-  filterProducts(searchTerm);
+    // Crear una opción temporal para mostrar resultados de búsqueda
+    categorySelect.innerHTML = `
+      <option value="search" selected>🔍 "${searchTerm}" (${resultCount} resultados)</option>
+      <option value="">Todas las categorías</option>
+    `;
+
+    // Agregar categorías normales
+    allCategories.forEach((category) => {
+      const option = document.createElement("option");
+      option.value = category.id;
+      option.textContent = category.name;
+      categorySelect.appendChild(option);
+    });
+  }
 }
 
 /**
@@ -561,7 +699,13 @@ document.addEventListener("DOMContentLoaded", async function () {
   const categoriesLoaded = await loadCategories();
   console.log("📋 Resultado carga categorías:", categoriesLoaded);
 
-  // Luego cargar productos
+  // Cargar todos los productos para búsqueda universal
+  if (categoriesLoaded) {
+    console.log("🌍 Cargando productos universales...");
+    await loadAllProductsUniversal();
+  }
+
+  // Luego cargar productos de la categoría actual
   console.log("📦 Cargando productos...");
   await loadProducts();
   console.log("📦 Productos cargados");
@@ -579,15 +723,23 @@ document.addEventListener("DOMContentLoaded", async function () {
   if (categorySelect) {
     categorySelect.addEventListener("change", function () {
       const selectedCategory = this.value;
-      if (selectedCategory) {
+
+      // Limpiar campo de búsqueda si se cambia de categoría
+      const searchInput = document.getElementById("searchInput");
+      if (searchInput) {
+        searchInput.value = "";
+      }
+
+      if (selectedCategory && selectedCategory !== "search") {
         loadProducts(selectedCategory);
-      } else {
+      } else if (selectedCategory === "") {
         // Si se selecciona "Todas las categorías", mostrar la primera disponible
         const defaultCategory = getDefaultCategory();
         if (defaultCategory) {
           loadProducts(defaultCategory);
         }
       }
+      // Si selectedCategory === "search", no hacer nada (mantener resultados de búsqueda)
     });
   }
 
@@ -597,6 +749,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     searchInput.addEventListener("input", async function () {
       const searchTerm = this.value.trim();
       if (searchTerm === "") {
+        // Restaurar selector de categorías normal
+        populateCategorySelect();
+        // Mostrar productos de la categoría actual
         await displayProducts(allProducts);
       } else {
         await filterProducts(searchTerm);
@@ -616,9 +771,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       gridViewBtn.classList.add("active");
       listViewBtn.classList.remove("active");
       // Volver a renderizar los productos con el nuevo layout
-      await displayProducts(
-        filteredProducts.length > 0 ? filteredProducts : allProducts
-      );
+      await displayProducts(allProducts);
     });
 
     listViewBtn.addEventListener("click", async function () {
@@ -627,9 +780,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       listViewBtn.classList.add("active");
       gridViewBtn.classList.remove("active");
       // Volver a renderizar los productos con el nuevo layout
-      await displayProducts(
-        filteredProducts.length > 0 ? filteredProducts : allProducts
-      );
+      await displayProducts(allProducts);
     });
   }
 
