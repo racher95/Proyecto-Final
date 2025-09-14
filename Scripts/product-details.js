@@ -66,6 +66,25 @@ async function loadProductDetails(productId) {
     }
 
     const productData = await response.json();
+
+    // Cargar datos de promoción
+    try {
+      const promotionData = await getProductPromotionData(productId);
+      productData.flashSale = promotionData.flashSale;
+      productData.featured = promotionData.featured;
+      productData.flashPrice = promotionData.flashPrice;
+      productData.originalPrice =
+        promotionData.originalPrice || productData.cost;
+    } catch (error) {
+      console.log(
+        `ℹ️ No se pudieron cargar datos de promoción para producto ${productId}`
+      );
+      productData.flashSale = { active: false };
+      productData.featured = false;
+      productData.flashPrice = null;
+      productData.originalPrice = productData.cost;
+    }
+
     currentProduct = productData;
 
     // Procesar imágenes
@@ -101,12 +120,43 @@ function displayProductDetails() {
   // Título
   document.getElementById("productTitle").textContent = product.name;
 
+  // Verificar si es flash sale activo
+  const isFlashSale =
+    product.flashSale &&
+    product.flashSale.active &&
+    new Date(product.flashSale.endsAt) > new Date();
+
   // Precio
-  const formattedPrice = new Intl.NumberFormat("es-UY", {
-    style: "currency",
-    currency: product.currency || "UYU",
-  }).format(product.cost);
-  document.getElementById("productPrice").textContent = formattedPrice;
+  if (isFlashSale && product.flashPrice) {
+    // Mostrar precio con descuento
+    const formattedFlashPrice = new Intl.NumberFormat("es-UY", {
+      style: "currency",
+      currency: product.currency || "UYU",
+    }).format(product.flashPrice);
+
+    const formattedOriginalPrice = new Intl.NumberFormat("es-UY", {
+      style: "currency",
+      currency: product.currency || "UYU",
+    }).format(product.originalPrice);
+
+    document.getElementById("productPrice").innerHTML = `
+      <span class="flash-price">${formattedFlashPrice}</span>
+      <span class="original-price">${formattedOriginalPrice}</span>
+    `;
+
+    // Mostrar contador de flash sale
+    showFlashSaleCountdown(product.flashSale.endsAt);
+  } else {
+    // Precio normal
+    const formattedPrice = new Intl.NumberFormat("es-UY", {
+      style: "currency",
+      currency: product.currency || "UYU",
+    }).format(product.cost);
+    document.getElementById("productPrice").textContent = formattedPrice;
+
+    // Ocultar contador si existe
+    hideFlashSaleCountdown();
+  }
 
   // Metadata
   document.getElementById(
@@ -347,4 +397,78 @@ function showError(message) {
   if (errorText) {
     errorText.textContent = message;
   }
+}
+
+/**
+ * Muestra el contador de flash sale
+ * @param {string} endTime - Fecha de fin de la promoción
+ */
+function showFlashSaleCountdown(endTime) {
+  const countdownContainer = document.getElementById("flashSaleCountdown");
+  if (!countdownContainer) return;
+
+  countdownContainer.style.display = "block";
+
+  // Iniciar contador
+  updateCountdown(endTime);
+
+  // Actualizar cada segundo
+  const countdownInterval = setInterval(() => {
+    const timeLeft = updateCountdown(endTime);
+    if (timeLeft <= 0) {
+      clearInterval(countdownInterval);
+      hideFlashSaleCountdown();
+    }
+  }, 1000);
+}
+
+/**
+ * Oculta el contador de flash sale
+ */
+function hideFlashSaleCountdown() {
+  const countdownContainer = document.getElementById("flashSaleCountdown");
+  if (countdownContainer) {
+    countdownContainer.style.display = "none";
+  }
+}
+
+/**
+ * Actualiza los valores del contador
+ * @param {string} endTime - Fecha de fin de la promoción
+ * @returns {number} Tiempo restante en milisegundos
+ */
+function updateCountdown(endTime) {
+  const now = new Date().getTime();
+  const end = new Date(endTime).getTime();
+  const timeLeft = end - now;
+
+  if (timeLeft <= 0) {
+    document.getElementById("countdownDays").textContent = "00";
+    document.getElementById("countdownHours").textContent = "00";
+    document.getElementById("countdownMinutes").textContent = "00";
+    document.getElementById("countdownSeconds").textContent = "00";
+    return 0;
+  }
+
+  const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+  const hours = Math.floor(
+    (timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+  );
+  const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+  document.getElementById("countdownDays").textContent = days
+    .toString()
+    .padStart(2, "0");
+  document.getElementById("countdownHours").textContent = hours
+    .toString()
+    .padStart(2, "0");
+  document.getElementById("countdownMinutes").textContent = minutes
+    .toString()
+    .padStart(2, "0");
+  document.getElementById("countdownSeconds").textContent = seconds
+    .toString()
+    .padStart(2, "0");
+
+  return timeLeft;
 }

@@ -380,6 +380,11 @@ async function displayProducts(products) {
 
   // Inicializar carruseles de imágenes
   initializeImageCarousels();
+
+  // Inicializar contadores de flash sales
+  if (typeof initializeCountdowns === "function") {
+    initializeCountdowns();
+  }
 }
 
 /**
