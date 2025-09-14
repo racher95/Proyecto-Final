@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
 function loadCart() {
   // Obtengo el carrito usando función utilitaria
   const cart = getCart();
-  console.log("🛒 Carrito cargado:", cart);
+  console.log("Carrito cargado:", cart);
 
   const emptyCart = document.getElementById("emptyCart");
   const cartContent = document.getElementById("cartContent");
@@ -163,7 +163,7 @@ function removeFromCart(productId) {
  * @param {Array} cart - productos del carrito
  */
 function updateCartSummary(cart) {
-  console.log("📊 Calculando resumen del carrito:", cart);
+  console.log("Calculando resumen del carrito:", cart);
 
   // Calculo el subtotal sumando precio × cantidad de cada producto
   const subtotal = cart.reduce((sum, item) => {

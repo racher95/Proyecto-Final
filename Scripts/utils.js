@@ -76,7 +76,7 @@ function migrateCartToUser(username) {
     // Limpiar carrito temporal
     localStorage.removeItem("craftivityCart");
 
-    console.log(`✅ Carrito migrado para usuario: ${username}`, combinedCart);
+    console.log(`Carrito migrado para usuario: ${username}`, combinedCart);
   }
 }
 
@@ -86,7 +86,7 @@ function migrateCartToUser(username) {
  */
 function clearTempCart() {
   localStorage.removeItem("craftivityCart");
-  console.log("🧹 Carrito temporal limpiado");
+  console.log("Carrito temporal limpiado");
 }
 
 /**
@@ -124,7 +124,7 @@ function addToCart(product, quantity = 1) {
     updateCartCounter();
   }
 
-  console.log(`✅ Producto agregado al carrito:`, product.name, `x${quantity}`);
+  console.log(`Producto agregado al carrito:`, product.name, `x${quantity}`);
   return cart;
 }
 
@@ -142,7 +142,7 @@ function removeFromCart(productId) {
     updateCartCounter();
   }
 
-  console.log(`🗑️ Producto removido del carrito:`, productId);
+  console.log(`Producto removido del carrito:`, productId);
   return filteredCart;
 }
 
@@ -238,4 +238,200 @@ function showNotification(message, type = "info") {
       }
     }, 300);
   }, 3000);
+}
+
+// ==========================================
+// CONFIGURACIÓN FLASH SALES Y DESTACADOS
+// ==========================================
+
+/**
+ * URLs de configuración para API de promociones
+ */
+const FLASH_SALES_URL =
+  "https://racher95.github.io/diy-emercado-api/cats/hot_sales.json";
+const FEATURED_URL =
+  "https://racher95.github.io/diy-emercado-api/cats/featured.json";
+
+/**
+ * Cache para datos de promociones (evita múltiples llamadas)
+ */
+let flashSalesCache = null;
+let featuredCache = null;
+let cacheTimestamp = null;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+
+/**
+ * Verifica si un producto tiene flash sale activo
+ * @param {number} productId - ID del producto
+ * @returns {Promise<boolean>} true si tiene flash sale activo
+ */
+async function isProductFlashSale(productId) {
+  try {
+    const flashData = await getFlashSaleData(productId);
+    return flashData && flashData.flashSale && flashData.flashSale.active;
+  } catch (error) {
+    console.log("No se pudo verificar flash sale para producto:", productId);
+    return false;
+  }
+}
+
+/**
+ * Obtiene los datos de flash sale de un producto específico
+ * @param {number} productId - ID del producto
+ * @returns {Promise<Object|null>} Datos del flash sale o null
+ */
+async function getFlashSaleData(productId) {
+  try {
+    await loadFlashSalesCache();
+    if (!flashSalesCache || !flashSalesCache.products) return null;
+
+    const flashProduct = flashSalesCache.products.find(
+      (p) => p.id === parseInt(productId)
+    );
+
+    // Verificar que la oferta esté activa y no haya expirado
+    if (
+      flashProduct &&
+      flashProduct.flashSale &&
+      flashProduct.flashSale.active
+    ) {
+      const now = new Date();
+      const endDate = new Date(flashProduct.flashSale.endsAt);
+
+      if (endDate > now) {
+        return flashProduct;
+      }
+    }
+
+    return null;
+  } catch (error) {
+    console.log("Error obteniendo datos de flash sale:", error.message);
+    return null;
+  }
+}
+
+/**
+ * Verifica si un producto está marcado como destacado
+ * @param {number} productId - ID del producto
+ * @returns {Promise<boolean>} true si está destacado
+ */
+async function isProductFeatured(productId) {
+  try {
+    const featuredData = await getFeaturedData(productId);
+    return featuredData && featuredData.featured === true;
+  } catch (error) {
+    console.log("No se pudo verificar featured para producto:", productId);
+    return false;
+  }
+}
+
+/**
+ * Obtiene los datos de producto destacado
+ * @param {number} productId - ID del producto
+ * @returns {Promise<Object|null>} Datos del producto destacado o null
+ */
+async function getFeaturedData(productId) {
+  try {
+    await loadFeaturedCache();
+    if (!featuredCache || !featuredCache.products) return null;
+
+    return (
+      featuredCache.products.find((p) => p.id === parseInt(productId)) || null
+    );
+  } catch (error) {
+    console.log(
+      "ℹ️ Error obteniendo datos de producto destacado:",
+      error.message
+    );
+    return null;
+  }
+}
+
+/**
+ * Carga el cache de flash sales
+ * @private
+ */
+async function loadFlashSalesCache() {
+  const now = Date.now();
+
+  // Verificar si el cache es válido
+  if (
+    flashSalesCache &&
+    cacheTimestamp &&
+    now - cacheTimestamp < CACHE_DURATION
+  ) {
+    return;
+  }
+
+  try {
+    const response = await fetch(FLASH_SALES_URL);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+    flashSalesCache = await response.json();
+    cacheTimestamp = now;
+
+    console.log("Cache de flash sales actualizado");
+  } catch (error) {
+    console.error("❌ Error cargando flash sales:", error);
+    flashSalesCache = { products: [] };
+  }
+}
+
+/**
+ * Carga el cache de productos destacados
+ * @private
+ */
+async function loadFeaturedCache() {
+  const now = Date.now();
+
+  // Verificar si el cache es válido
+  if (
+    featuredCache &&
+    cacheTimestamp &&
+    now - cacheTimestamp < CACHE_DURATION
+  ) {
+    return;
+  }
+
+  try {
+    const response = await fetch(FEATURED_URL);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+    featuredCache = await response.json();
+    if (!cacheTimestamp) cacheTimestamp = now; // Solo actualizar si no se ha hecho antes
+
+    console.log("Cache de productos destacados actualizado");
+  } catch (error) {
+    console.error("❌ Error cargando productos destacados:", error);
+    featuredCache = { products: [] };
+  }
+}
+
+/**
+ * Limpia el cache de promociones (forzar recarga)
+ */
+function clearPromotionsCache() {
+  flashSalesCache = null;
+  featuredCache = null;
+  cacheTimestamp = null;
+  console.log("Cache de promociones limpiado");
+}
+
+/**
+ * Obtiene datos completos de promoción para un producto
+ * @param {number} productId - ID del producto
+ * @returns {Promise<Object>} Objeto con datos de flash sale y featured
+ */
+async function getProductPromotionData(productId) {
+  const [flashData, featuredData] = await Promise.all([
+    getFlashSaleData(productId),
+    getFeaturedData(productId),
+  ]);
+
+  return {
+    flashSale: flashData?.flashSale || { active: false },
+    featured: featuredData?.featured || flashData?.featured || false,
+    flashPrice: flashData?.flashSale?.price || null,
+    originalPrice: flashData?.cost || featuredData?.cost || null,
+  };
 }

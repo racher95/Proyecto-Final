@@ -20,6 +20,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // configurar menu responsive
   initResponsiveMenu();
+
+  // Inicializar carruseles si estamos en index.html
+  if (
+    window.location.pathname.includes("index.html") ||
+    window.location.pathname === "/"
+  ) {
+    initializeCarousels();
+  }
 });
 
 /**
@@ -360,4 +368,187 @@ function initGlobalNavigation() {
       }
     }
   });
+}
+
+// ===== SISTEMA DE CARRUSELES =====
+
+/**
+ * Inicializa los carruseles de la página principal
+ */
+async function initializeCarousels() {
+  try {
+    console.log("Cargando carruseles...");
+
+    // Cargar datos de APIs con fetch simple
+    const [flashSalesResponse, featuredResponse] = await Promise.all([
+      fetch("https://racher95.github.io/diy-emercado-api/cats/hot_sales.json"),
+      fetch("https://racher95.github.io/diy-emercado-api/cats/featured.json"),
+    ]);
+
+    const flashSalesData = await flashSalesResponse.json();
+    const featuredData = await featuredResponse.json();
+
+    // Renderizar carruseles
+    renderCarousel("flashGrid", flashSalesData.products, "flash-sale");
+    renderCarousel("featuredGrid", featuredData.products, "featured");
+
+    // Inicializar navegación
+    initCarouselNavigation(
+      "flash",
+      "flashGrid",
+      "flashPrevBtn",
+      "flashNextBtn"
+    );
+    initCarouselNavigation(
+      "featured",
+      "featuredGrid",
+      "featuredPrevBtn",
+      "featuredNextBtn"
+    );
+
+    // Inicializar countdowns
+    initializeCountdowns();
+
+    console.log("Carruseles cargados correctamente");
+  } catch (error) {
+    console.error("❌ Error al cargar carruseles:", error);
+  }
+}
+
+/**
+ * Renderiza un carrusel con productos
+ */
+function renderCarousel(containerId, products, context) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  products.forEach((product) => {
+    const card = createUniversalProductCard(product, context);
+    container.appendChild(card);
+  });
+}
+
+/**
+ * Inicializa navegación de carrusel
+ */
+function initCarouselNavigation(name, trackId, prevBtnId, nextBtnId) {
+  const track = document.getElementById(trackId);
+  const prevBtn = document.getElementById(prevBtnId);
+  const nextBtn = document.getElementById(nextBtnId);
+
+  if (!track || !prevBtn || !nextBtn) return;
+
+  let currentIndex = 0;
+
+  function updateCarousel() {
+    const itemsToShow = getItemsToShow();
+    const totalItems = track.children.length;
+    const maxIndex = Math.max(0, totalItems - itemsToShow);
+
+    // Asegurar que el índice esté dentro del rango válido
+    currentIndex = Math.max(0, Math.min(currentIndex, maxIndex));
+
+    // Calcular el porcentaje de movimiento
+    const movePercentage =
+      totalItems > 0 ? (currentIndex / totalItems) * 100 : 0;
+
+    track.style.transform = `translateX(-${movePercentage}%)`;
+
+    // Actualizar estado de botones
+    prevBtn.disabled = currentIndex === 0;
+    nextBtn.disabled = currentIndex >= maxIndex || totalItems <= itemsToShow;
+
+    // Añadir/remover clases para styling
+    prevBtn.classList.toggle("disabled", currentIndex === 0);
+    nextBtn.classList.toggle(
+      "disabled",
+      currentIndex >= maxIndex || totalItems <= itemsToShow
+    );
+  }
+
+  prevBtn.addEventListener("click", () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      updateCarousel();
+    }
+  });
+
+  nextBtn.addEventListener("click", () => {
+    const itemsToShow = getItemsToShow();
+    const maxIndex = Math.max(0, track.children.length - itemsToShow);
+    if (currentIndex < maxIndex) {
+      currentIndex++;
+      updateCarousel();
+    }
+  });
+
+  // Auto-update en resize con debounce
+  let resizeTimeout;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      updateCarousel();
+    }, 100);
+  });
+
+  // Inicializar
+  updateCarousel();
+}
+
+/**
+ * Determina cuántos items mostrar según el ancho de pantalla
+ */
+function getItemsToShow() {
+  const width = window.innerWidth;
+  if (width >= 1200) return 4;
+  if (width >= 768) return 3;
+  if (width >= 640) return 2;
+  return 1;
+}
+
+/**
+ * Inicializa todos los countdowns
+ */
+function initializeCountdowns() {
+  document.querySelectorAll(".countdown-timer[data-end]").forEach((timer) => {
+    const endDate = timer.dataset.end;
+    const productId = timer.dataset.productId;
+    startCountdown(timer, endDate, productId);
+  });
+}
+
+/**
+ * Inicia un countdown individual
+ */
+function startCountdown(element, endDate, productId) {
+  const updateTimer = () => {
+    const now = new Date().getTime();
+    const end = new Date(endDate).getTime();
+    const distance = end - now;
+
+    if (distance < 0) {
+      element.textContent = "¡Expirada!";
+      const card = element.closest(".product-card");
+      if (card) card.style.opacity = "0.6";
+      return;
+    }
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor(
+      (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+    );
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    if (days > 0) {
+      element.textContent = `${days}d ${hours}h ${minutes}m`;
+    } else {
+      element.textContent = `${hours}h ${minutes}m ${seconds}s`;
+    }
+  };
+
+  updateTimer();
+  setInterval(updateTimer, 1000);
 }
