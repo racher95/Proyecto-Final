@@ -10,6 +10,10 @@ let currentImages = [];
 let currentImageIndex = 0;
 let productComments = [];
 
+// Variables para el modal de imágenes
+let imageModal = null;
+let modalImageIndex = 0;
+
 // URLs de la API para detalles y comentarios
 const PRODUCT_DETAIL_BASE_URL =
   "https://racher95.github.io/diy-emercado-api/products/";
@@ -96,7 +100,7 @@ async function loadProductDetails(productId) {
         : [productData.image];
 
     // Mostrar información del producto
-    displayProductDetails();
+    await displayProductDetails();
 
     // Inicializar galería de imágenes
     initializeImageGallery();
@@ -114,47 +118,26 @@ async function loadProductDetails(productId) {
 /**
  * Muestra los detalles del producto en la interfaz
  */
-function displayProductDetails() {
+async function displayProductDetails() {
   const product = currentProduct;
 
   // Título
   document.getElementById("productTitle").textContent = product.name;
 
-  // Verificar si es flash sale activo
-  const isFlashSale =
-    product.flashSale &&
-    product.flashSale.active &&
-    new Date(product.flashSale.endsAt) > new Date();
+  // Verificar si es flash sale y si es producto destacado
+  const flashSaleData = await checkFlashSaleStatus(product.id);
+  const featuredData = await checkFeaturedStatus(product.id);
 
-  // Precio
-  if (isFlashSale && product.flashPrice) {
-    // Mostrar precio con descuento
-    const formattedFlashPrice = new Intl.NumberFormat("es-UY", {
-      style: "currency",
-      currency: product.currency || "UYU",
-    }).format(product.flashPrice);
+  // Mostrar badges
+  displayProductBadges(flashSaleData, featuredData);
 
-    const formattedOriginalPrice = new Intl.NumberFormat("es-UY", {
-      style: "currency",
-      currency: product.currency || "UYU",
-    }).format(product.originalPrice);
+  // Mostrar precios
+  displayProductPricing(product, flashSaleData);
 
-    document.getElementById("productPrice").innerHTML = `
-      <span class="flash-price">${formattedFlashPrice}</span>
-      <span class="original-price">${formattedOriginalPrice}</span>
-    `;
-
-    // Mostrar contador de flash sale
-    showFlashSaleCountdown(product.flashSale.endsAt);
+  // Mostrar contador si es flash sale activo
+  if (flashSaleData && flashSaleData.isActive) {
+    showFlashSaleCountdown(flashSaleData.endsAt);
   } else {
-    // Precio normal
-    const formattedPrice = new Intl.NumberFormat("es-UY", {
-      style: "currency",
-      currency: product.currency || "UYU",
-    }).format(product.cost);
-    document.getElementById("productPrice").textContent = formattedPrice;
-
-    // Ocultar contador si existe
     hideFlashSaleCountdown();
   }
 
@@ -170,6 +153,120 @@ function displayProductDetails() {
 
   // Actualizar breadcrumb
   document.getElementById("productBreadcrumb").textContent = product.name;
+}
+
+/**
+ * Verifica el estado de flash sale de un producto
+ */
+async function checkFlashSaleStatus(productId) {
+  try {
+    const response = await fetch(
+      "https://racher95.github.io/diy-emercado-api/cats/hot_sales.json"
+    );
+    const flashSalesData = await response.json();
+
+    const flashProduct = flashSalesData.products.find(
+      (p) => p.id === productId
+    );
+    if (!flashProduct) return null;
+
+    const now = new Date();
+    const endsAt = new Date(flashProduct.flashSale.endsAt);
+    const startsAt = new Date(flashProduct.flashSale.startsAt);
+
+    return {
+      isActive: now >= startsAt && now <= endsAt,
+      flashPrice: flashProduct.flashPrice,
+      originalPrice: flashProduct.cost,
+      discount: flashProduct.discount,
+      endsAt: flashProduct.flashSale.endsAt,
+      startsAt: flashProduct.flashSale.startsAt,
+    };
+  } catch (error) {
+    console.log("No hay datos de flash sale para este producto");
+    return null;
+  }
+}
+
+/**
+ * Verifica si un producto es destacado
+ */
+async function checkFeaturedStatus(productId) {
+  try {
+    const response = await fetch(
+      "https://racher95.github.io/diy-emercado-api/cats/featured.json"
+    );
+    const featuredData = await response.json();
+
+    const featuredProduct = featuredData.products.find(
+      (p) => p.id === productId
+    );
+    return featuredProduct ? { isFeatured: true } : null;
+  } catch (error) {
+    console.log("No hay datos de productos destacados");
+    return null;
+  }
+}
+
+/**
+ * Muestra los badges del producto (destacado, oferta, etc.)
+ */
+function displayProductBadges(flashSaleData, featuredData) {
+  const badgesContainer = document.getElementById("productBadges");
+  let badgesHTML = "";
+
+  if (featuredData && featuredData.isFeatured) {
+    badgesHTML += `<div class="badge-featured-detail">⭐ Producto Destacado</div>`;
+  }
+
+  if (flashSaleData && flashSaleData.isActive) {
+    badgesHTML += `<div class="badge-flash-detail">🔥 Oferta Flash -${flashSaleData.discount}%</div>`;
+  }
+
+  badgesContainer.innerHTML = badgesHTML;
+}
+
+/**
+ * Muestra los precios del producto (normal o con oferta)
+ */
+function displayProductPricing(product, flashSaleData) {
+  const normalPricing = document.getElementById("normalPricing");
+  const flashPricing = document.getElementById("flashPricing");
+
+  if (flashSaleData && flashSaleData.isActive) {
+    // Mostrar precios con oferta
+    normalPricing.style.display = "none";
+    flashPricing.style.display = "block";
+
+    // Precio original tachado
+    document.getElementById("originalPrice").textContent = formatCurrency(
+      flashSaleData.originalPrice,
+      product.currency
+    );
+    document.getElementById("originalCurrency").textContent = "";
+
+    // Precio con descuento
+    document.getElementById("flashPrice").textContent = formatCurrency(
+      flashSaleData.flashPrice,
+      product.currency
+    );
+    document.getElementById("flashCurrency").textContent = "";
+
+    // Badge de descuento
+    document.getElementById(
+      "discountBadge"
+    ).textContent = `-${flashSaleData.discount}%`;
+  } else {
+    // Mostrar precio normal
+    normalPricing.style.display = "block";
+    flashPricing.style.display = "none";
+
+    document.getElementById("productPrice").textContent = formatCurrency(
+      product.cost,
+      product.currency
+    );
+    document.getElementById("productCurrency").textContent = "";
+  }
 }
 
 /**
@@ -195,6 +292,14 @@ function initializeImageGallery() {
     prevBtn.style.display = "block";
     nextBtn.style.display = "block";
   }
+
+  // Configurar event listeners para el modal DESPUÉS de crear las imágenes
+  setupImageModalListeners();
+
+  // Intentar inicializar el modal cuando la galería esté lista
+  setTimeout(() => {
+    initializeImageModal();
+  }, 500);
 }
 
 /**
@@ -321,18 +426,23 @@ function displayComments() {
  * Configura los event listeners
  */
 function setupEventListeners() {
-  // Navegación de imágenes
-  document.getElementById("prevImageBtn").addEventListener("click", () => {
-    const newIndex =
-      currentImageIndex > 0 ? currentImageIndex - 1 : currentImages.length - 1;
-    updateMainImage(newIndex);
-  });
+  // Navegación de imágenes - Asegurar que no haya duplicados
+  const prevBtn = document.getElementById("prevImageBtn");
+  const nextBtn = document.getElementById("nextImageBtn");
 
-  document.getElementById("nextImageBtn").addEventListener("click", () => {
-    const newIndex =
-      currentImageIndex < currentImages.length - 1 ? currentImageIndex + 1 : 0;
-    updateMainImage(newIndex);
-  });
+  if (prevBtn) {
+    // Remover listeners anteriores
+    prevBtn.removeEventListener("click", prevImageHandler);
+    // Agregar nuevo listener
+    prevBtn.addEventListener("click", prevImageHandler);
+  }
+
+  if (nextBtn) {
+    // Remover listeners anteriores
+    nextBtn.removeEventListener("click", nextImageHandler);
+    // Agregar nuevo listener
+    nextBtn.addEventListener("click", nextImageHandler);
+  }
 
   // Botones de acción
   document.getElementById("addToCartBtn").addEventListener("click", () => {
@@ -471,4 +581,188 @@ function updateCountdown(endTime) {
     .padStart(2, "0");
 
   return timeLeft;
+}
+
+/**
+ * Inicializa el modal de imágenes
+ */
+function initializeImageModal() {
+  // Verificar que Bootstrap esté disponible
+  if (typeof bootstrap === "undefined") {
+    console.log("Bootstrap aún no está disponible, esperando...");
+    return false;
+  }
+
+  // Inicializar modal de Bootstrap
+  const modalElement = document.getElementById("imageModal");
+  if (modalElement) {
+    try {
+      imageModal = new bootstrap.Modal(modalElement, {
+        backdrop: true,
+        keyboard: true,
+        focus: true,
+      });
+
+      // Event listeners para navegación del modal
+      const modalPrevBtn = document.getElementById("modalPrevBtn");
+      const modalNextBtn = document.getElementById("modalNextBtn");
+
+      if (modalPrevBtn) {
+        modalPrevBtn.addEventListener("click", () => {
+          navigateModalImage(-1);
+        });
+      }
+
+      if (modalNextBtn) {
+        modalNextBtn.addEventListener("click", () => {
+          navigateModalImage(1);
+        });
+      }
+
+      // Event listener para cuando el modal se cierra
+      modalElement.addEventListener("hidden.bs.modal", () => {
+        console.log("Modal cerrado");
+      });
+
+      console.log("Modal inicializado correctamente");
+      return true;
+    } catch (error) {
+      console.error("Error inicializando modal:", error);
+      return false;
+    }
+  } else {
+    console.error("Elemento modal no encontrado");
+    return false;
+  }
+}
+
+/**
+ * Abre el modal con una imagen específica
+ * @param {number} imageIndex - Índice de la imagen a mostrar
+ */
+function openImageModal(imageIndex) {
+  console.log("Intentando abrir modal con imagen:", imageIndex);
+
+  if (!imageModal) {
+    console.log("Modal no inicializado, intentando inicializar...");
+    if (!initializeImageModal()) {
+      console.log("No se pudo inicializar el modal");
+      return;
+    }
+  }
+
+  if (!currentImages || currentImages.length === 0) {
+    console.error("No hay imágenes disponibles");
+    return;
+  }
+
+  modalImageIndex = imageIndex;
+  updateModalImage();
+
+  try {
+    imageModal.show();
+    console.log("Modal abierto exitosamente");
+  } catch (error) {
+    console.error("Error abriendo modal:", error);
+  }
+}
+
+/**
+ * Actualiza la imagen mostrada en el modal
+ */
+function updateModalImage() {
+  const modalImage = document.getElementById("modalImage");
+  const currentImageNumber = document.getElementById("currentImageNumber");
+  const totalImages = document.getElementById("totalImages");
+  const modalTitle = document.getElementById("imageModalLabel");
+
+  if (modalImage && currentImages.length > 0) {
+    const imageUrl = currentImages[modalImageIndex].startsWith("http")
+      ? currentImages[modalImageIndex]
+      : `../${currentImages[modalImageIndex]}`;
+
+    modalImage.src = imageUrl;
+    modalImage.alt = `${currentProduct.name} - Imagen ${modalImageIndex + 1}`;
+
+    // Actualizar contador
+    currentImageNumber.textContent = modalImageIndex + 1;
+    totalImages.textContent = currentImages.length;
+
+    // Actualizar título del modal
+    modalTitle.textContent = `${currentProduct.name} - Imagen ${
+      modalImageIndex + 1
+    }`;
+  }
+
+  // Mostrar/ocultar botones de navegación
+  const prevBtn = document.getElementById("modalPrevBtn");
+  const nextBtn = document.getElementById("modalNextBtn");
+
+  if (currentImages.length <= 1) {
+    prevBtn.style.display = "none";
+    nextBtn.style.display = "none";
+  } else {
+    prevBtn.style.display = "block";
+    nextBtn.style.display = "block";
+  }
+}
+
+/**
+ * Navega a la siguiente o anterior imagen en el modal
+ * @param {number} direction - 1 para siguiente, -1 para anterior
+ */
+function navigateModalImage(direction) {
+  const newIndex = modalImageIndex + direction;
+
+  if (newIndex >= 0 && newIndex < currentImages.length) {
+    modalImageIndex = newIndex;
+  } else if (newIndex < 0) {
+    modalImageIndex = currentImages.length - 1; // Ir al final
+  } else {
+    modalImageIndex = 0; // Ir al inicio
+  }
+
+  updateModalImage();
+}
+
+/**
+ * Agrega event listeners para abrir el modal al hacer click en las imágenes
+ */
+function setupImageModalListeners() {
+  // Click en imagen principal
+  const mainImage = document.getElementById("mainImage");
+  if (mainImage) {
+    mainImage.style.cursor = "pointer";
+    mainImage.title = "Click para ver en grande";
+
+    // Remover event listener anterior si existe
+    mainImage.removeEventListener("click", openImageModalHandler);
+    // Agregar nuevo event listener
+    mainImage.addEventListener("click", openImageModalHandler);
+  }
+}
+
+/**
+ * Handler para abrir el modal con la imagen actual
+ */
+function openImageModalHandler() {
+  openImageModal(currentImageIndex);
+}
+
+/**
+ * Handler para imagen anterior
+ */
+function prevImageHandler() {
+  const newIndex =
+    currentImageIndex > 0 ? currentImageIndex - 1 : currentImages.length - 1;
+  updateMainImage(newIndex);
+}
+
+/**
+ * Handler para imagen siguiente
+ */
+function nextImageHandler() {
+  const newIndex =
+    currentImageIndex < currentImages.length - 1 ? currentImageIndex + 1 : 0;
+  updateMainImage(newIndex);
 }

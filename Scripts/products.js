@@ -493,7 +493,7 @@ function viewProductDetails(id) {
 async function filterProducts(searchTerm) {
   if (!searchTerm) {
     // Si no hay término de búsqueda, mostrar productos de la categoría actual
-    await displayProducts(allProducts);
+    await applyAllFilters();
     return;
   }
 
@@ -517,7 +517,86 @@ async function filterProducts(searchTerm) {
   // Actualizar el selector de categorías para mostrar "Resultados de búsqueda"
   updateCategorySelectorForSearch(searchTerm, filtered.length);
 
-  await displayProducts(filtered);
+  // Aplicar filtro de precio a los resultados de búsqueda
+  const finalFiltered = applyPriceFilter(filtered);
+  await displayProducts(finalFiltered);
+}
+
+/**
+ * Aplica filtro de precio a una lista de productos
+ * @param {Array} products - Lista de productos a filtrar
+ * @returns {Array} Productos filtrados por precio
+ */
+function applyPriceFilter(products) {
+  const minPrice = document.getElementById("minPrice")?.value;
+  const maxPrice = document.getElementById("maxPrice")?.value;
+
+  if (!minPrice && !maxPrice) {
+    return products;
+  }
+
+  return products.filter((product) => {
+    const price = product.cost || 0;
+    const min = minPrice ? parseFloat(minPrice) : 0;
+    const max = maxPrice ? parseFloat(maxPrice) : Infinity;
+
+    return price >= min && price <= max;
+  });
+}
+
+/**
+ * Aplica todos los filtros activos (búsqueda, precio, orden)
+ */
+async function applyAllFilters() {
+  const searchInput = document.getElementById("searchInput");
+  const searchTerm = searchInput?.value.trim();
+
+  let productsToFilter = searchTerm
+    ? allProductsUniversal.filter(
+        (product) =>
+          product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          product.description.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : allProducts;
+
+  // Aplicar filtro de precio
+  const filteredByPrice = applyPriceFilter(productsToFilter);
+
+  // Aplicar ordenamiento
+  const sortSelect = document.getElementById("sortSelect");
+  const sortCriteria = sortSelect?.value || "default";
+
+  const sortedProducts = applySorting(filteredByPrice, sortCriteria);
+
+  await displayProducts(sortedProducts);
+}
+
+/**
+ * Aplica ordenamiento a una lista de productos
+ * @param {Array} products - Lista de productos a ordenar
+ * @param {string} criteria - Criterio de ordenamiento
+ * @returns {Array} Productos ordenados
+ */
+function applySorting(products, criteria) {
+  const productsToSort = [...products];
+
+  switch (criteria) {
+    case "price-asc":
+      return productsToSort.sort((a, b) => a.cost - b.cost);
+    case "price-desc":
+      return productsToSort.sort((a, b) => b.cost - a.cost);
+    case "relevance-desc":
+      return productsToSort.sort(
+        (a, b) => (b.soldCount || 0) - (a.soldCount || 0)
+      );
+    case "name-asc":
+      return productsToSort.sort((a, b) => a.name.localeCompare(b.name));
+    case "name-desc":
+      return productsToSort.sort((a, b) => b.name.localeCompare(a.name));
+    case "default":
+    default:
+      return productsToSort;
+  }
 }
 
 /**
@@ -549,29 +628,7 @@ function updateCategorySelectorForSearch(searchTerm, resultCount) {
  * Ordena los productos según el criterio seleccionado
  */
 async function sortProducts(criteria) {
-  let productsToSort = [...allProducts];
-
-  switch (criteria) {
-    case "price-asc":
-      productsToSort.sort((a, b) => a.cost - b.cost);
-      break;
-    case "price-desc":
-      productsToSort.sort((a, b) => b.cost - a.cost);
-      break;
-    case "name-asc":
-      productsToSort.sort((a, b) => a.name.localeCompare(b.name));
-      break;
-    case "name-desc":
-      productsToSort.sort((a, b) => b.name.localeCompare(a.name));
-      break;
-    case "default":
-    default:
-      // Mantener orden original de la API
-      productsToSort = [...allProducts];
-      break;
-  }
-
-  await displayProducts(productsToSort);
+  await applyAllFilters();
 }
 
 // Event listeners
@@ -656,10 +713,35 @@ document.addEventListener("DOMContentLoaded", async function () {
         // Restaurar selector de categorías normal
         populateCategorySelect();
         // Mostrar productos de la categoría actual
-        await displayProducts(allProducts);
+        await applyAllFilters();
       } else {
         await filterProducts(searchTerm);
       }
+    });
+  }
+
+  // Event listeners para el filtro de precio
+  const minPriceInput = document.getElementById("minPrice");
+  const maxPriceInput = document.getElementById("maxPrice");
+  const clearPriceBtn = document.getElementById("clearPriceFilter");
+
+  if (minPriceInput) {
+    minPriceInput.addEventListener("input", async function () {
+      await applyAllFilters();
+    });
+  }
+
+  if (maxPriceInput) {
+    maxPriceInput.addEventListener("input", async function () {
+      await applyAllFilters();
+    });
+  }
+
+  if (clearPriceBtn) {
+    clearPriceBtn.addEventListener("click", async function () {
+      if (minPriceInput) minPriceInput.value = "";
+      if (maxPriceInput) maxPriceInput.value = "";
+      await applyAllFilters();
     });
   }
 

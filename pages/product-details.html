@@ -8,6 +8,13 @@
       content="Detalles del Producto - Craftivity: Información completa y comentarios"
     />
     <title>Detalles del Producto - Craftivity</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
     <link rel="stylesheet" href="../CSS/style.css" />
     <link rel="icon" type="image/x-icon" href="../img/favicon.ico" />
   </head>
@@ -60,7 +67,7 @@
     <main>
       <!-- Breadcrumbs -->
       <section class="breadcrumbs">
-        <div class="container">
+        <div class="container-fluid">
           <nav class="breadcrumb-nav">
             <a href="../index.html">Inicio</a>
             <span>›</span>
@@ -95,72 +102,143 @@
         class="product-detail"
         style="display: none"
       >
-        <div class="container">
-          <div class="product-detail-grid">
+        <div class="container-fluid">
+          <div class="row g-4">
             <!-- Galería de Imágenes -->
-            <div class="product-gallery">
-              <div class="main-image-container">
-                <img id="mainImage" src="" alt="" class="main-image" />
-                <div class="gallery-nav">
-                  <button id="prevImageBtn" class="gallery-nav-btn">‹</button>
-                  <button id="nextImageBtn" class="gallery-nav-btn">›</button>
+            <div class="col-12 col-lg-6">
+              <div class="product-gallery">
+                <div class="main-image-container">
+                  <img id="mainImage" src="" alt="" class="main-image" />
+                  <div class="gallery-nav">
+                    <button id="prevImageBtn" class="gallery-nav-btn">‹</button>
+                    <button id="nextImageBtn" class="gallery-nav-btn">›</button>
+                  </div>
                 </div>
-              </div>
-              <div id="thumbnailsContainer" class="thumbnails">
-                <!-- Thumbnails se cargarán dinámicamente -->
+                <div id="thumbnailsContainer" class="thumbnails">
+                  <!-- Thumbnails se cargarán dinámicamente -->
+                </div>
               </div>
             </div>
 
             <!-- Información del Producto -->
-            <div class="product-info-detail">
-              <h1 id="productTitle">Título del Producto</h1>
-              <div class="product-price-section">
-                <span id="productPrice" class="product-price-large">$0</span>
-                <span id="productCurrency" class="product-currency"></span>
-              </div>
+            <div class="col-12 col-lg-6 d-flex align-items-start">
+              <div class="product-info-detail w-100">
+                <!-- Badges de producto -->
+                <div id="productBadges" class="product-badges-detail mb-3">
+                  <!-- Badges se cargarán dinámicamente -->
+                </div>
 
-              <!-- Contador de Flash Sale -->
-              <div
-                id="flashSaleCountdown"
-                class="flash-sale-countdown"
-                style="display: none"
-              >
-                <div class="countdown-label">🔥 ¡Oferta termina en:</div>
-                <div class="countdown-timer">
-                  <span id="countdownDays">00</span>d
-                  <span id="countdownHours">00</span>h
-                  <span id="countdownMinutes">00</span>m
-                  <span id="countdownSeconds">00</span>s
+                <h1
+                  id="productTitle"
+                  class="h2 mb-3 fw-semibold text-start lh-sm"
+                >
+                  Título del Producto
+                </h1>
+
+                <!-- Sección de precios -->
+                <div
+                  id="productPricingSection"
+                  class="product-pricing-detail mb-4"
+                >
+                  <!-- Precios normales -->
+                  <div id="normalPricing" class="normal-pricing-detail">
+                    <span id="productPrice" class="product-price-large"
+                      >$0</span
+                    >
+                    <span id="productCurrency" class="product-currency"></span>
+                  </div>
+
+                  <!-- Precios con oferta -->
+                  <div
+                    id="flashPricing"
+                    class="flash-pricing-detail"
+                    style="display: none"
+                  >
+                    <div class="original-price-detail">
+                      <span id="originalPrice">$0</span>
+                      <span id="originalCurrency"></span>
+                    </div>
+                    <div class="flash-price-section">
+                      <span id="flashPrice" class="flash-price-large">$0</span>
+                      <span id="flashCurrency" class="product-currency"></span>
+                      <span id="discountBadge" class="discount-badge">-0%</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Contador de Flash Sale -->
+                <div
+                  id="flashSaleCountdown"
+                  class="flash-sale-countdown-detail mb-4"
+                  style="display: none"
+                >
+                  <div class="countdown-header">
+                    <span class="fire-icon">🔥</span>
+                    <span class="countdown-label">¡Oferta termina en:</span>
+                  </div>
+                  <div class="countdown-timer-detail">
+                    <div class="time-unit">
+                      <span id="countdownDays" class="time-number">00</span>
+                      <span class="time-label">días</span>
+                    </div>
+                    <div class="time-separator">:</div>
+                    <div class="time-unit">
+                      <span id="countdownHours" class="time-number">00</span>
+                      <span class="time-label">horas</span>
+                    </div>
+                    <div class="time-separator">:</div>
+                    <div class="time-unit">
+                      <span id="countdownMinutes" class="time-number">00</span>
+                      <span class="time-label">min</span>
+                    </div>
+                    <div class="time-separator">:</div>
+                    <div class="time-unit">
+                      <span id="countdownSeconds" class="time-number">00</span>
+                      <span class="time-label">seg</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="product-metadata-detail mb-4">
+                  <div class="metadata-item">
+                    <span class="metadata-label">Vendidos:</span>
+                    <span id="productSold">0</span>
+                  </div>
+                  <div class="metadata-item">
+                    <span class="metadata-label">ID del Producto:</span>
+                    <span id="productId" class="product-id-detail">#000</span>
+                  </div>
+                  <div class="metadata-item">
+                    <span class="metadata-label">Categoría:</span>
+                    <span id="productCategory">-</span>
+                  </div>
+                </div>
+
+                <div class="product-actions-detail d-grid gap-2">
+                  <button id="addToCartBtn" class="btn btn-primary btn-lg">
+                    🛒 Agregar al Carrito
+                  </button>
+                  <button
+                    id="backToCatalogBtn"
+                    class="btn btn-outline-secondary"
+                  >
+                    ← Volver al Catálogo
+                  </button>
                 </div>
               </div>
+            </div>
+          </div>
 
-              <div class="product-metadata-detail">
-                <div class="metadata-item">
-                  <span class="metadata-label">Vendidos:</span>
-                  <span id="productSold">0</span>
+          <!-- Descripción del Producto - Movida aquí -->
+          <div class="row mt-3">
+            <div class="col-12">
+              <div class="product-description-section">
+                <div class="product-description-full">
+                  <h3 class="h5 mb-2">Descripción</h3>
+                  <p id="productDescription" class="mb-0">
+                    Descripción del producto...
+                  </p>
                 </div>
-                <div class="metadata-item">
-                  <span class="metadata-label">ID del Producto:</span>
-                  <span id="productId" class="product-id-detail">#000</span>
-                </div>
-                <div class="metadata-item">
-                  <span class="metadata-label">Categoría:</span>
-                  <span id="productCategory">-</span>
-                </div>
-              </div>
-
-              <div class="product-description-full">
-                <h3>Descripción</h3>
-                <p id="productDescription">Descripción del producto...</p>
-              </div>
-
-              <div class="product-actions-detail">
-                <button id="addToCartBtn" class="btn btn-primary btn-large">
-                  🛒 Agregar al Carrito
-                </button>
-                <button id="backToCatalogBtn" class="btn btn-secondary">
-                  ← Volver al Catálogo
-                </button>
               </div>
             </div>
           </div>
@@ -173,20 +251,77 @@
         class="product-comments"
         style="display: none"
       >
-        <div class="container">
-          <h2>Comentarios y Reseñas</h2>
-          <div id="commentsContainer" class="comments-container">
-            <!-- Comentarios se cargarán dinámicamente -->
-          </div>
-          <div id="noComments" class="no-comments" style="display: none">
-            <p>
-              Aún no hay comentarios para este producto. ¡Sé el primero en
-              comentar!
-            </p>
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-12">
+              <h2 class="mb-4">Comentarios y Reseñas</h2>
+              <div id="commentsContainer" class="comments-container">
+                <!-- Comentarios se cargarán dinámicamente -->
+              </div>
+              <div id="noComments" class="no-comments" style="display: none">
+                <p>
+                  Aún no hay comentarios para este producto. ¡Sé el primero en
+                  comentar!
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
     </main>
+
+    <!-- Modal para galería de imágenes -->
+    <div
+      class="modal fade"
+      id="imageModal"
+      tabindex="-1"
+      aria-labelledby="imageModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="imageModalLabel">
+              Galería de Imágenes
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body p-0">
+            <div class="position-relative">
+              <img id="modalImage" src="" alt="" class="img-fluid w-100" />
+              <!-- Navegación dentro del modal -->
+              <button
+                type="button"
+                class="btn btn-outline-light position-absolute top-50 start-0 translate-middle-y ms-3"
+                id="modalPrevBtn"
+                style="z-index: 1060"
+              >
+                <i class="fas fa-chevron-left"></i> ‹
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-light position-absolute top-50 end-0 translate-middle-y me-3"
+                id="modalNextBtn"
+                style="z-index: 1060"
+              >
+                › <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <div id="modalImageCounter" class="text-muted">
+              <span id="currentImageNumber">1</span> de
+              <span id="totalImages">1</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <footer>
       <div class="footer-container">
@@ -229,6 +364,12 @@
     </footer>
 
     <!-- Scripts -->
+    <!-- Bootstrap JS Bundle -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
     <script src="../Scripts/utils.js"></script>
     <script src="../Scripts/init.js"></script>
     <script src="../Scripts/main.js"></script>

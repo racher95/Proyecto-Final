@@ -77,6 +77,34 @@
               </select>
             </div>
 
+            <div class="price-filter-container">
+              <label>Filtrar por precio:</label>
+              <div class="price-inputs">
+                <input
+                  type="number"
+                  id="minPrice"
+                  placeholder="Min"
+                  min="0"
+                  step="100"
+                />
+                <span class="price-separator">-</span>
+                <input
+                  type="number"
+                  id="maxPrice"
+                  placeholder="Max"
+                  min="0"
+                  step="100"
+                />
+                <button
+                  id="clearPriceFilter"
+                  class="clear-price-btn"
+                  title="Limpiar filtro"
+                >
+                  ✖
+                </button>
+              </div>
+            </div>
+
             <div class="sort-container">
               <label for="sortSelect">Ordenar por:</label>
               <select id="sortSelect">
@@ -85,6 +113,7 @@
                 <option value="name-desc">Nombre Z-A</option>
                 <option value="price-asc">Precio menor a mayor</option>
                 <option value="price-desc">Precio mayor a menor</option>
+                <option value="relevance-desc">Más relevantes</option>
               </select>
             </div>
 
