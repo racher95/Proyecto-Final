@@ -128,11 +128,16 @@ function showUserMenu() {
   menu.style.top = "70px";
   menu.style.right = "20px";
 
-  // Agrego las opciones del menú
+  // Determinar rutas según ubicación actual
+  const isInSubfolder = window.location.pathname.includes("/pages/");
+  const profileUrl = isInSubfolder ? "profile.html" : "pages/profile.html";
+  const ordersUrl = isInSubfolder ? "orders.html" : "pages/orders.html";
+
+  // Agrego las opciones del menú con rutas dinámicas
   menu.innerHTML = `
     <div class="user-menu-content">
-      <a href="pages/profile.html" class="user-menu-item">Mi Perfil</a>
-      <a href="pages/orders.html" class="user-menu-item">Mis Pedidos</a>
+      <a href="${profileUrl}" class="user-menu-item">Mi Perfil</a>
+      <a href="${ordersUrl}" class="user-menu-item">Mis Pedidos</a>
       <hr class="user-menu-separator">
       <a href="#" class="user-menu-item logout" id="logoutBtn">Cerrar Sesión</a>
     </div>
@@ -381,8 +386,8 @@ async function initializeCarousels() {
 
     // Cargar datos de APIs con fetch simple
     const [flashSalesResponse, featuredResponse] = await Promise.all([
-      fetch("https://racher95.github.io/diy-emercado-api/cats/hot_sales.json"),
-      fetch("https://racher95.github.io/diy-emercado-api/cats/featured.json"),
+      fetch(API_CONFIG.HOT_SALES),
+      fetch(API_CONFIG.FEATURED),
     ]);
 
     const flashSalesData = await flashSalesResponse.json();

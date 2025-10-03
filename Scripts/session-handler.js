@@ -4,11 +4,11 @@
  * Maneja la verificación de sesión y muestra el prompt de login
  */
 
-document.addEventListener("DOMContentLoaded", function () {
+// Esperar a que los componentes (header/footer) se carguen antes de verificar sesión
+document.addEventListener("componentsLoaded", function () {
   // Verifico si el usuario está logueado y actualizo la UI
   checkSessionStatus();
 });
-
 
 /**
  * DESAFÍO IMPLEMENTADO: Verificación automática de sesión
@@ -16,8 +16,8 @@ document.addEventListener("DOMContentLoaded", function () {
  * Solo aplica redirección forzada para páginas verdaderamente privadas
  */
 function checkSessionStatus() {
-  // Obtengo datos de sesión usando función utilitaria
-  const sessionData = getSessionData();
+  // Obtengo datos de sesión validando expiración (24 horas)
+  const sessionData = checkSession();
 
   if (sessionData && sessionData.isLoggedIn) {
     // Usuario logueado - actualizar interfaz
@@ -27,7 +27,6 @@ function checkSessionStatus() {
     showLoginPrompt();
   }
 }
-
 
 /**
  * Muestra un aviso centrado para invitar al usuario a iniciar sesión.

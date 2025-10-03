@@ -176,9 +176,9 @@ function updateCartSummary(cart) {
     return sum + itemTotal;
   }, 0);
 
-  // Configurar costos adicionales
-  const shippingCost = 350; // Costo de envío fijo
-  const ivaRate = 0.22; // IVA del 22%
+  // Configurar costos adicionales desde configuración centralizada
+  const shippingCost = CART_CONFIG.SHIPPING_COST;
+  const ivaRate = CART_CONFIG.TAX_RATE;
   const iva = subtotal * ivaRate;
   const total = subtotal + iva + shippingCost;
 

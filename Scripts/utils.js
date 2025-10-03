@@ -245,14 +245,6 @@ function showNotification(message, type = "info") {
 // ==========================================
 
 /**
- * URLs de configuración para API de promociones
- */
-const FLASH_SALES_URL =
-  "https://racher95.github.io/diy-emercado-api/cats/hot_sales.json";
-const FEATURED_URL =
-  "https://racher95.github.io/diy-emercado-api/cats/featured.json";
-
-/**
  * Cache para datos de promociones (evita múltiples llamadas)
  */
 let flashSalesCache = null;
@@ -339,10 +331,7 @@ async function getFeaturedData(productId) {
       featuredCache.products.find((p) => p.id === parseInt(productId)) || null
     );
   } catch (error) {
-    console.log(
-      "ℹ️ Error obteniendo datos de producto destacado:",
-      error.message
-    );
+    console.log("Error obteniendo datos de producto destacado:", error.message);
     return null;
   }
 }
@@ -364,7 +353,7 @@ async function loadFlashSalesCache() {
   }
 
   try {
-    const response = await fetch(FLASH_SALES_URL);
+    const response = await fetch(API_CONFIG.HOT_SALES);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
     flashSalesCache = await response.json();
@@ -372,7 +361,7 @@ async function loadFlashSalesCache() {
 
     console.log("Cache de flash sales actualizado");
   } catch (error) {
-    console.error("❌ Error cargando flash sales:", error);
+    console.error("Error cargando flash sales:", error);
     flashSalesCache = { products: [] };
   }
 }
@@ -394,7 +383,7 @@ async function loadFeaturedCache() {
   }
 
   try {
-    const response = await fetch(FEATURED_URL);
+    const response = await fetch(API_CONFIG.FEATURED);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
     featuredCache = await response.json();
@@ -402,7 +391,7 @@ async function loadFeaturedCache() {
 
     console.log("Cache de productos destacados actualizado");
   } catch (error) {
-    console.error("❌ Error cargando productos destacados:", error);
+    console.error("Error cargando productos destacados:", error);
     featuredCache = { products: [] };
   }
 }

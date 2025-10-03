@@ -5,50 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mis Pedidos - Craftivity</title>
     <link rel="stylesheet" href="../CSS/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
     <link rel="icon" type="image/x-icon" href="../img/favicon.ico" />
   </head>
   <body>
-    <header>
-  <div class="header-container">
-    <!-- Logo -->
-    <a href="../index.html" class="logo">Craftivity</a>
-
-    <!-- Navegación unificada -->
-    <nav>
-      <ul class="craftivity-nav">
-        <!-- Enlaces de navegación -->
-        <li class="nav-links">
-          <a href="./products.html">Catálogo</a>
-          <a href="./sobre-nosotros.html">Sobre Nosotros</a>
-        </li>
-
-        <!-- Búsqueda dentro del nav -->
-        <li class="nav-search">
-          <div class="search-bar">
-            <input type="text" placeholder="Buscar productos..." id="searchInput" />
-            <button type="button">🔍</button>
-          </div>
-        </li>
-
-        <!-- Acciones de usuario -->
-        <li class="nav-actions">
-          <a href="./login.html" class="btn btn-secondary">Iniciar Sesión</a>
-          <a href="./cart.html" class="btn btn-primary">🛒 Carrito</a>
-        </li>
-      </ul>
-    </nav>
-
-    <!-- Solo el botón hamburger fuera del nav -->
-    <div class="menu-toggle">
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
-  </div>
-</header>
+    <!-- Header cargado dinámicamente desde components/header.html -->
+    <div id="header-placeholder"></div>
 
     <main>
-      <section class="container" style="padding: 4rem 1rem; text-align: center"> <!--mejorar estilos en futuras implementaciones y centralizar en css-->
+      <section class="container" style="padding: 4rem 1rem; text-align: center">
+        <!--mejorar estilos en futuras implementaciones y centralizar en css-->
         <h1>Mis Pedidos</h1>
         <p>Esta página estará disponible próximamente.</p>
         <p>
@@ -56,18 +25,21 @@
           descargar facturas.
         </p>
         <a href="../index.html" class="btn btn-primary" style="margin-top: 2rem"
-          >Volver al Inicio</a> <!-- mejorar estilos en futuras implementaciones y centralizar en css -->
+          >Volver al Inicio</a
+        >
+        <!-- mejorar estilos en futuras implementaciones y centralizar en css -->
       </section>
     </main>
 
-    <footer>
-      <div class="footer-bottom">
-        <p>&copy; 2025 Craftivity • Desarrollado por el Grupo 7 JAP</p>
-      </div>
-    </footer>
+    <!-- Footer cargado dinámicamente desde components/footer.html -->
+    <div id="footer-placeholder"></div>
 
+    <!-- Scripts del sitio -->
+    <script src="../Scripts/component-loader.js"></script>
     <script src="../Scripts/utils.js"></script>
+    <script src="../Scripts/config.js"></script>
     <script src="../Scripts/init.js"></script>
     <script src="../Scripts/main.js"></script>
+    <script src="../Scripts/session-handler.js"></script>
   </body>
 </html>

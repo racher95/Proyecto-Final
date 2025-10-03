@@ -31,17 +31,21 @@ function createUniversalProductCard(product, context = "catalog") {
     ? images[0]
     : `img/${images[0]}`;
 
+  // Obtener categoryId si existe
+  const categoryId = product.categoryId || product.catID || null;
+  const categoryParam = categoryId ? `, '${categoryId}'` : "";
+
   // Crear estructura HTML
   card.innerHTML = `
     <div class="product-image-container">
       <img src="${imageUrl}" alt="${product.name}" class="product-image"
-           onclick="navigateToProduct(${product.id})" />
+           onclick="navigateToProduct(${product.id}${categoryParam})" />
       ${renderProductBadges(product, isFlashSale)}
     </div>
     <div class="product-info">
-      <h3 class="product-name" onclick="navigateToProduct(${product.id})">${
-    product.name
-  }</h3>
+      <h3 class="product-name" onclick="navigateToProduct(${
+        product.id
+      }${categoryParam})">${product.name}</h3>
       <p class="product-description">${product.description}</p>
       ${renderProductPricing(product, isFlashSale)}
       ${
@@ -56,7 +60,7 @@ function createUniversalProductCard(product, context = "catalog") {
         </div>
         <button onclick="navigateToProduct(${
           product.id
-        })" class="btn btn-primary">
+        }${categoryParam})" class="btn btn-primary">
           ${getButtonText(context)}
         </button>
       </div>
@@ -147,24 +151,18 @@ function getButtonText(context) {
 /**
  * Navega a página de producto
  * @param {number} productId - ID del producto
+ * @param {string} categoryId - ID de la categoría (opcional)
  */
-function navigateToProduct(productId) {
+function navigateToProduct(productId, categoryId = null) {
   // Detectar si estamos en la página raíz o en una subpágina
   const currentPath = window.location.pathname;
   const basePath = currentPath.includes("/pages/") ? "./" : "pages/";
 
-  window.location.href = `${basePath}product-details.html?id=${productId}`;
-}
+  // Construir URL con o sin categoryId
+  let url = `${basePath}product-details.html?id=${productId}`;
+  if (categoryId) {
+    url += `&category=${categoryId}`;
+  }
 
-/**
- * Formatea cantidad como moneda
- * @param {number} amount - Cantidad a formatear
- * @param {string} currency - Código de moneda
- * @returns {string} Cantidad formateada
- */
-function formatCurrency(amount, currency = "UYU") {
-  return new Intl.NumberFormat("es-UY", {
-    style: "currency",
-    currency: currency,
-  }).format(amount);
+  window.location.href = url;
 }

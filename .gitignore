@@ -1,0 +1,224 @@
+# ==============================================================================
+# CONFIGURACIÓN DE VS CODE
+# ==============================================================================
+
+# Carpeta de configuración de VS Code
+.vscode/
+*.code-workspace
+
+# Archivos de extensiones de VS Code
+.history/
+.ionide/
+
+# ==============================================================================
+# ARCHIVOS DE SISTEMA - macOS
+# ==============================================================================
+
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# ==============================================================================
+# ARCHIVOS DE SISTEMA - Windows
+# ==============================================================================
+
+# Windows thumbnail cache files
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+
+# Dump file
+*.stackdump
+
+# Folder config file
+[Dd]esktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+# ==============================================================================
+# ARCHIVOS DE SISTEMA - Linux
+# ==============================================================================
+
+*~
+
+# temporary files which can be created if a process still has a handle open of a deleted file
+.fuse_hidden*
+
+# KDE directory preferences
+.directory
+
+# Linux trash folder which might appear on any partition or disk
+.Trash-*
+
+# .nfs files are created when an open file is removed but is still being accessed
+.nfs*
+
+# ==============================================================================
+# NODE.JS / NPM
+# ==============================================================================
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variable files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# parcel-bundler cache
+.cache
+.parcel-cache
+
+# ==============================================================================
+# SASS / SCSS
+# ==============================================================================
+
+# Archivos de caché de SASS
+.sass-cache/
+*.css.map
+
+# Backup del CSS original (si existe)
+CSS/style.css.backup
+
+# ==============================================================================
+# EDITORES DE TEXTO
+# ==============================================================================
+
+# Sublime Text
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+*.sublime-workspace
+*.sublime-project
+
+# JetBrains IDEs (WebStorm, PHPStorm, etc.)
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Vim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ==============================================================================
+# TEMPORALES Y BACKUPS
+# ==============================================================================
+
+# Archivos temporales
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+*.old
+*~
+
+# Carpetas temporales
+tmp/
+temp/
+
+# ==============================================================================
+# ARCHIVOS DE PROYECTO (ESPECÍFICOS)
+# ==============================================================================
+
+# Backups de archivos importantes
+*.backup
+
+# Archivos de prueba
+test/
+tests/
+__tests__/
+
+# Documentación temporal
+docs/temp/
+
+# ==============================================================================
+# OTROS
+# ==============================================================================
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Logs de Git
+*.orig

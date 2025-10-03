@@ -1,19 +1,35 @@
 /*
-CRAFTIVITY - ESTILOS PRINCIPALES
-Archivo de estilos centralizado para todo el proyecto
-Incluye: Layout, componentes, formularios, carrito, etc.
-Autor: Grupo 7 - JAP 2025
-Fecha: 2025
+==============================================================================
+  CRAFTIVITY - ESTILOS PRINCIPALES
+==============================================================================
+  Descripción: Archivo de estilos centralizado modularizado
+  Autor: Grupo 7 - JAP 2025
+  Fecha: 2025
+
+  TABLA DE CONTENIDOS:
+  1. Variables CSS y Configuración
+  2. Reset y Base Styles
+  3. Keyframes y Animaciones Globales
+  4. Layout Principal (Header, Footer, Main)
+  5. Navegación y Menús
+  6. Componentes Reutilizables
+  7. Formularios y Inputs
+  8. Productos (Cards, Grids, Detalles)
+  9. Carrito de Compras
+ 10. Páginas Específicas (Login, Catálogo, Sobre Nosotros)
+ 11. Modales y Overlays
+ 12. Sistema de Notificaciones
+ 13. Estados y Utilities
+ 14. Media Queries y Responsive
+
+  NOTA: Preparado para migración a SASS/SCSS
+==============================================================================
 */
 
-/* ===== RESET Y CONFIGURACIÓN BASE ===== */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* Variables CSS para consistencia de diseño */
+/* ===========================================================================
+   1. VARIABLES CSS Y CONFIGURACIÓN
+   Futuro: _variables.scss
+   =========================================================================== */
 :root {
   /* Colores principales */
   --primary-color: #e67e22; /* Naranja principal */
@@ -30,18 +46,56 @@ Fecha: 2025
   --dark-gray: #34495e; /* Gris oscuro */
   --white: #ffffff; /* Blanco */
 
-  /* Efectos */
+  /* Sombras y efectos */
   --shadow: rgba(0, 0, 0, 0.1); /* Sombra estándar */
+
+  /* Espaciado (preparado para SASS) */
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 3rem;
+
+  /* Tipografía */
+  --font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.2rem;
+  --font-size-xl: 1.5rem;
+
+  /* Bordes */
+  --border-radius-sm: 8px;
+  --border-radius-md: 15px;
+  --border-radius-lg: 25px;
+
+  /* Transiciones */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+}
+
+/* ===========================================================================
+   2. RESET Y BASE STYLES
+   Futuro: _reset.scss + _base.scss
+   =========================================================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: var(--font-family);
   line-height: 1.6;
   color: var(--secondary-color);
   background-color: var(--light-gray);
+  font-size: var(--font-size-base);
 }
 
-/* Animaciones para notificaciones */
+/* ===========================================================================
+   3. KEYFRAMES Y ANIMACIONES GLOBALES
+   Futuro: _animations.scss
+   =========================================================================== */
+
+/* Animaciones de entrada/salida */
 @keyframes slideIn {
   from {
     transform: translateX(100%);
@@ -64,7 +118,12 @@ body {
   }
 }
 
-/* Header */
+/* ===========================================================================
+   4. LAYOUT PRINCIPAL (Header, Footer, Main)
+   Futuro: _layout.scss
+   =========================================================================== */
+
+/* ----------- Header ----------- */
 header {
   background-color: var(--white);
   box-shadow: 0 2px 10px var(--shadow);
@@ -89,7 +148,12 @@ header {
   text-decoration: none;
 }
 
-/* === NAVEGACIÓN UNIFICADA === */
+/* ===========================================================================
+   5. NAVEGACIÓN Y MENÚS
+   Futuro: _navigation.scss
+   =========================================================================== */
+
+/* ----------- Navegación principal ----------- */
 .craftivity-nav {
   display: flex;
   list-style: none;
@@ -185,6 +249,12 @@ header {
   padding: 0.5rem;
 }
 
+/* ===========================================================================
+   6. COMPONENTES REUTILIZABLES
+   Futuro: _components.scss
+   =========================================================================== */
+
+/* ----------- Botones ----------- */
 .btn {
   padding: 0.75rem 1.5rem;
   border: none;
@@ -219,7 +289,7 @@ header {
   color: var(--white);
 }
 
-/* Main content */
+/* ----------- Main Container ----------- */
 main {
   max-width: 1200px;
   margin: 0 auto;
@@ -227,7 +297,7 @@ main {
   min-height: calc(100vh - 200px);
 }
 
-/* Hero section */
+/* ----------- Hero Sections ----------- */
 .hero {
   background: url("../img/heroIndex.jpg");
   background-size: cover;
@@ -271,7 +341,7 @@ main {
 }
 
 .catalog-hero {
-  background: url("../img/cars_index.jpg");
+  background-color: #f48220;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -409,7 +479,12 @@ main {
   color: var(--white);
 }
 
-/* Products section */
+/* ===========================================================================
+   8. PRODUCTOS (Cards, Grids, Detalles)
+   Futuro: _products.scss
+   =========================================================================== */
+
+/* ----------- Sección de productos ----------- */
 .products-section {
   margin-bottom: 3rem;
 }
@@ -523,7 +598,12 @@ main {
   box-shadow: 0 2px 10px var(--shadow);
 }
 
-/* Login form */
+/* ===========================================================================
+   7. FORMULARIOS Y INPUTS
+   Futuro: _forms.scss
+   =========================================================================== */
+
+/* ----------- Formulario de Login ----------- */
 .login-container {
   display: flex;
   justify-content: center;
@@ -1268,6 +1348,311 @@ main {
   font-style: italic;
 }
 
+/* Estilos para productos relacionados */
+.related-products-section {
+  background: var(--light-gray);
+  padding: 3rem 0;
+  margin-top: 0;
+  border-top: 1px solid #e0e0e0;
+}
+
+.related-products-section h2 {
+  color: var(--secondary-color);
+  font-weight: 600;
+  margin-bottom: 2rem;
+}
+
+/* Estilos para el carousel de productos relacionados */
+#relatedProductsCarousel {
+  position: relative;
+  padding: 0 3rem;
+}
+
+#relatedProductsCarousel .carousel-inner {
+  padding: 1rem 0;
+}
+
+#relatedProductsCarousel .carousel-control-prev,
+#relatedProductsCarousel .carousel-control-next {
+  width: 50px;
+  height: 50px;
+  background: var(--primary-color);
+  border-radius: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.9;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#relatedProductsCarousel .carousel-control-prev {
+  left: 0;
+}
+
+#relatedProductsCarousel .carousel-control-next {
+  right: 0;
+}
+
+#relatedProductsCarousel .carousel-control-prev:hover,
+#relatedProductsCarousel .carousel-control-next:hover {
+  background: var(--secondary-color);
+  opacity: 1;
+  transform: translateY(-50%) scale(1.1);
+}
+
+#relatedProductsCarousel .carousel-control-prev-icon,
+#relatedProductsCarousel .carousel-control-next-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.related-product-card {
+  background: var(--white);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px var(--shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+
+.related-product-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.related-product-image {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  background: var(--light-gray);
+}
+
+.related-product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.related-product-card:hover .related-product-image img {
+  transform: scale(1.1);
+}
+
+.related-badge-featured {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: var(--dark-gray);
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+}
+
+.related-badge-flash {
+  position: absolute;
+  top: 45px;
+  right: 10px;
+  background: linear-gradient(135deg, #ff4500 0%, #ff6347 100%);
+  color: var(--white);
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+}
+
+.related-product-info {
+  padding: 1.2rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.related-product-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--secondary-color);
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.related-product-category {
+  font-size: 0.85rem;
+  color: var(--medium-gray);
+  margin-bottom: 0.8rem;
+}
+
+.related-product-price {
+  margin-top: auto;
+  margin-bottom: 1rem;
+}
+
+.related-product-price .price {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.btn-view-related {
+  width: 100%;
+  background: var(--primary-color);
+  color: var(--white);
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.btn-view-related:hover {
+  background: var(--secondary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.no-related-products {
+  text-align: center;
+  padding: 3rem;
+  color: var(--medium-gray);
+  font-style: italic;
+}
+
+/* Estilos para formulario de reseñas */
+.review-form-section {
+  background: var(--white);
+  padding: 3rem 0;
+  border-top: 1px solid #e0e0e0;
+}
+
+.review-form-card {
+  border: none;
+  box-shadow: 0 4px 12px var(--shadow);
+  border-radius: 12px;
+}
+
+.review-form-card .card-body {
+  padding: 2rem;
+}
+
+/* Estrellas de rating */
+.star-rating {
+  display: inline-flex;
+  gap: 0.5rem;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+.star-rating i {
+  color: #ddd;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.star-rating i:hover,
+.star-rating i.hover {
+  color: #ffd700;
+  transform: scale(1.2);
+}
+
+.star-rating i.selected {
+  color: #ffd700;
+}
+
+.star-rating i.fas {
+  color: #ffd700;
+}
+
+/* Contador de caracteres */
+#charCount {
+  float: right;
+  font-size: 0.875rem;
+}
+
+/* Textarea del formulario */
+#reviewText {
+  resize: vertical;
+  min-height: 100px;
+}
+
+#reviewText:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.25rem rgba(244, 130, 32, 0.25);
+}
+
+/* Botones del formulario */
+.review-form-card .btn-primary {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  padding: 0.75rem 2rem;
+  font-weight: 600;
+}
+
+.review-form-card .btn-primary:hover {
+  background: var(--secondary-color);
+  border-color: var(--secondary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.review-form-card .btn-outline-secondary {
+  padding: 0.75rem 2rem;
+  font-weight: 600;
+}
+
+/* Alert de login */
+.review-form-card .alert-info {
+  background: #e7f3ff;
+  border-color: #b3d9ff;
+  color: #004085;
+}
+
+.review-form-card .alert-link {
+  color: var(--primary-color);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* Animación para nuevos comentarios */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.comment.new-comment {
+  animation: slideIn 0.5s ease;
+  border-left: 4px solid var(--primary-color);
+}
+
+/* Badge de "Nueva" en comentarios */
+.comment .badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+}
+
 /* Responsive para página de detalles */
 @media (max-width: 768px) {
   .product-detail-grid {
@@ -1314,6 +1699,39 @@ main {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
+  }
+
+  /* Responsive para productos relacionados */
+  #relatedProductsCarousel {
+    padding: 0 2.5rem;
+  }
+
+  #relatedProductsCarousel .carousel-control-prev,
+  #relatedProductsCarousel .carousel-control-next {
+    width: 40px;
+    height: 40px;
+  }
+
+  #relatedProductsCarousel .carousel-control-prev-icon,
+  #relatedProductsCarousel .carousel-control-next-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .related-product-image {
+    height: 180px;
+  }
+
+  .related-product-name {
+    font-size: 1rem;
+  }
+
+  .related-product-price .price {
+    font-size: 1.2rem;
+  }
+
+  .related-product-info {
+    padding: 1rem;
   }
 }
 
@@ -1395,28 +1813,22 @@ footer {
 
 .social-links a {
   display: inline-flex;
-  width: 45px;
-  height: 45px;
   align-items: center;
   justify-content: center;
+  width: 45px;
+  height: 45px;
   text-decoration: none;
+  color: var(--light-gray);
   transition: all 0.3s ease;
-  flex-shrink: 0;
-  aspect-ratio: 1/1;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+  font-size: 1.5rem;
 }
 
-.social-links a svg {
-  width: 46px;
-  height: 46px;
-  transition: transform 0.3s ease;
-}
-
-.social-links a:hover svg {
-  transform: scale(1.1);
-}
-
-.social-links a:hover svg path {
-  fill: var(--primary-color);
+.social-links a:hover {
+  color: var(--primary-color);
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-3px) scale(1.1);
 }
 
 .footer-bottom {
@@ -1427,7 +1839,12 @@ footer {
   color: var(--medium-gray);
 }
 
-/* Responsive design */
+/* ===========================================================================
+   14. MEDIA QUERIES Y RESPONSIVE
+   Futuro: _responsive.scss o @include breakpoints
+   =========================================================================== */
+
+/* ----------- Desktop (769px+) ----------- */
 @media (min-width: 769px) {
   /* Desktop: navegación horizontal completa */
   .craftivity-nav {
@@ -1445,6 +1862,7 @@ footer {
   }
 }
 
+/* ----------- Tablets y Móviles (max-width: 768px) ----------- */
 @media (max-width: 768px) {
   .header-container {
     flex-wrap: wrap;
@@ -1628,6 +2046,7 @@ footer {
   }
 }
 
+/* ----------- Móviles pequeños (max-width: 480px) ----------- */
 @media (max-width: 480px) {
   .craftivity-nav {
     flex-direction: column;
@@ -1827,7 +2246,12 @@ footer {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Mensaje de carrito vacío */
+/* ===========================================================================
+   9. CARRITO DE COMPRAS
+   Futuro: _cart.scss
+   =========================================================================== */
+
+/* ----------- Mensaje de carrito vacío ----------- */
 .empty-cart-message {
   display: none;
   text-align: center;
@@ -1987,9 +2411,12 @@ footer {
   }
 }
 
-/* ===== COMPONENTES DINÁMICOS ===== */
+/* ===========================================================================
+   11. MODALES Y OVERLAYS
+   Futuro: _modals.scss
+   =========================================================================== */
 
-/* Animaciones para modales y overlays */
+/* ----------- Animaciones para modales ----------- */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -2154,7 +2581,12 @@ footer {
   animation: fadeIn 0.3s ease;
 }
 
-/* Utility Classes */
+/* ===========================================================================
+   13. ESTADOS Y UTILITIES
+   Futuro: _utilities.scss
+   =========================================================================== */
+
+/* ----------- Utility Classes ----------- */
 .hidden {
   display: none !important;
 }
@@ -2191,7 +2623,11 @@ footer {
   margin-bottom: 2rem;
 }
 
-/* Notification System */
+/* ===========================================================================
+   12. SISTEMA DE NOTIFICACIONES
+   Futuro: _notifications.scss
+   =========================================================================== */
+
 .notification {
   position: fixed;
   top: 20px;
@@ -2213,7 +2649,12 @@ footer {
   background-color: var(--danger-color);
 }
 
-/* ===== ESTILOS ESPECÍFICOS PARA SOBRE NOSOTROS ===== */
+/* ===========================================================================
+   10. PÁGINAS ESPECÍFICAS
+   Futuro: pages/_about.scss, pages/_catalog.scss
+   =========================================================================== */
+
+/* ----------- Página: Sobre Nosotros ----------- */
 .our-story {
   padding: 4rem 0;
   background-color: var(--white);
@@ -3507,5 +3948,41 @@ footer {
     width: 2rem;
     height: 2rem;
     font-size: 1rem;
+  }
+
+  /* Responsive para productos relacionados en mobile pequeño */
+  #relatedProductsCarousel {
+    padding: 0 2rem;
+  }
+
+  #relatedProductsCarousel .carousel-control-prev,
+  #relatedProductsCarousel .carousel-control-next {
+    width: 35px;
+    height: 35px;
+  }
+
+  #relatedProductsCarousel .carousel-control-prev {
+    left: -5px;
+  }
+
+  #relatedProductsCarousel .carousel-control-next {
+    right: -5px;
+  }
+
+  .related-product-image {
+    height: 160px;
+  }
+
+  .related-product-name {
+    font-size: 0.95rem;
+  }
+
+  .related-product-price .price {
+    font-size: 1.1rem;
+  }
+
+  .btn-view-related {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
   }
 }

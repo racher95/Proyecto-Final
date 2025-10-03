@@ -24,7 +24,7 @@ async function loadCategories() {
   const categoriesUrl =
     typeof CATEGORIES_URL !== "undefined"
       ? CATEGORIES_URL
-      : "https://racher95.github.io/diy-emercado-api/cats/cat.json";
+      : API_CONFIG.CATEGORIES;
 
   console.log("URL de categorías:", categoriesUrl);
 
@@ -47,7 +47,7 @@ async function loadCategories() {
 
     return true;
   } catch (error) {
-    console.error("❌ Error loading categories:", error);
+    console.error("Error loading categories:", error);
     const categorySelect = document.getElementById("categorySelect");
     if (categorySelect) {
       categorySelect.innerHTML =
@@ -76,7 +76,7 @@ async function loadAllProductsUniversal() {
 
   if (allCategories.length === 0) {
     console.warn(
-      "⚠️ No hay categorías disponibles para cargar productos universales"
+      "No hay categorías disponibles para cargar productos universales"
     );
     return;
   }
@@ -85,7 +85,7 @@ async function loadAllProductsUniversal() {
     const productsBaseUrl =
       typeof PRODUCTS_BASE_URL !== "undefined"
         ? PRODUCTS_BASE_URL
-        : "https://racher95.github.io/diy-emercado-api/cats_products/";
+        : API_CONFIG.PRODUCTS_BASE;
 
     // Crear promesas para todas las categorías
     const categoryPromises = allCategories.map(async (category) => {
@@ -122,7 +122,7 @@ async function loadAllProductsUniversal() {
     // Re-ejecutar búsqueda desde URL si existe y no se había ejecutado correctamente
     await retrySearchFromURL();
   } catch (error) {
-    console.error("❌ Error cargando productos universales:", error);
+    console.error("Error cargando productos universales:", error);
     allProductsUniversal = [];
   }
 }
@@ -179,6 +179,36 @@ function populateCategorySelect() {
 }
 
 /**
+ * Actualiza la imagen del hero section según la categoría seleccionada
+ * @param {string} categoryId - ID de la categoría
+ */
+function updateCategoryHeroImage(categoryId) {
+  const heroSection = document.querySelector(".catalog-hero");
+  if (!heroSection) return;
+
+  // Buscar la categoría en allCategories
+  const category = allCategories.find((cat) => cat.id == categoryId);
+
+  if (category && category.imgSrc && category.imgSrc !== "") {
+    // Si la categoría tiene imagen, usarla
+    heroSection.style.backgroundImage = `url('${category.imgSrc}')`;
+    heroSection.style.backgroundSize = "cover";
+    heroSection.style.backgroundPosition = "center";
+    console.log(`Hero actualizado con imagen de: ${category.name}`);
+  } else {
+    // Si no tiene imagen, usar la imagen por defecto
+    heroSection.style.backgroundImage = "url('../img/cars_index.jpg')";
+    heroSection.style.backgroundSize = "cover";
+    heroSection.style.backgroundPosition = "center";
+    console.log(
+      `Categoría sin imagen, usando default: ${
+        category ? category.name : categoryId
+      }`
+    );
+  }
+}
+
+/**
  * Carga los productos desde la API externa
  * Maneja estados de carga, errores y éxito
  * @param {string} categoryId - ID de la categoría a cargar (opcional)
@@ -214,7 +244,7 @@ async function loadProducts(categoryId = null) {
     const productsBaseUrl =
       typeof PRODUCTS_BASE_URL !== "undefined"
         ? PRODUCTS_BASE_URL
-        : "https://racher95.github.io/diy-emercado-api/cats_products/";
+        : API_CONFIG.PRODUCTS_BASE;
 
     const PRODUCTS_API_URL = `${productsBaseUrl}${currentCategory}.json`;
 
@@ -231,6 +261,12 @@ async function loadProducts(categoryId = null) {
 
     const data = await response.json();
     allProducts = data.products || [];
+
+    // Agregar categoryId a todos los productos
+    allProducts = allProducts.map((product) => ({
+      ...product,
+      categoryId: currentCategory,
+    }));
 
     // Aplicar filtro de búsqueda si existe
     const urlParams = new URLSearchParams(window.location.search);
@@ -254,7 +290,7 @@ async function loadProducts(categoryId = null) {
         updateCategorySelectorForSearch(searchTerm, productsToShow.length);
       } else {
         console.log(
-          "⚠️ Búsqueda universal no disponible, buscando en categoría actual"
+          "Búsqueda universal no disponible, buscando en categoría actual"
         );
         productsToShow = allProducts.filter(
           (product) =>
@@ -269,6 +305,9 @@ async function loadProducts(categoryId = null) {
 
     // Renderizar productos
     await displayProducts(productsToShow);
+
+    // Actualizar imagen del hero según la categoría
+    updateCategoryHeroImage(currentCategory);
 
     // Ocultar loading después del render
     if (loadingMessage) loadingMessage.classList.remove("show");
@@ -316,7 +355,7 @@ async function displayProducts(products) {
       try {
         // Intentar obtener múltiples imágenes del producto individual
         const response = await fetch(
-          `https://racher95.github.io/diy-emercado-api/products/${product.id}.json`
+          `${API_CONFIG.PRODUCTS_DETAIL}${product.id}.json`
         );
         if (response.ok) {
           const detailData = await response.json();
@@ -352,7 +391,7 @@ async function displayProducts(products) {
         };
       } catch (error) {
         console.log(
-          `ℹ️ No se pudieron cargar datos de promoción para producto ${product.id}`
+          `No se pudieron cargar datos de promoción para producto ${product.id}`
         );
         return {
           ...product,
@@ -469,7 +508,7 @@ function viewProductDetails(id) {
     // Redirigir a la página de detalles con el ID del producto y su categoría
     window.location.href = `product-details.html?id=${id}&category=${productCategory}`;
   } else {
-    alert("❌ Producto no encontrado");
+    alert("Producto no encontrado");
     console.log("ID buscado:", id, "Tipo:", typeof id);
     console.log(
       "IDs en allProducts:",
@@ -649,9 +688,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     typeof CATEGORIES_URL === "undefined" ||
     typeof PRODUCTS_BASE_URL === "undefined"
   ) {
-    console.error(
-      "❌ Variables de configuración no definidas. Verificar init.js"
-    );
+    console.error("Variables de configuración no definidas. Verificar init.js");
     return;
   }
 
@@ -693,6 +730,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
       if (selectedCategory && selectedCategory !== "search") {
         loadProducts(selectedCategory);
+        updateCategoryHeroImage(selectedCategory);
       } else if (selectedCategory === "") {
         // Si se selecciona "Todas las categorías", mostrar la primera disponible
         const defaultCategory = getDefaultCategory();

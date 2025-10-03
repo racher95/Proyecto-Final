@@ -15,10 +15,8 @@ let imageModal = null;
 let modalImageIndex = 0;
 
 // URLs de la API para detalles y comentarios
-const PRODUCT_DETAIL_BASE_URL =
-  "https://racher95.github.io/diy-emercado-api/products/";
-const PRODUCT_COMMENTS_BASE_URL =
-  "https://racher95.github.io/diy-emercado-api/products_comments/";
+const PRODUCT_DETAIL_BASE_URL = API_CONFIG.PRODUCTS_DETAIL;
+const PRODUCT_COMMENTS_BASE_URL = API_CONFIG.COMMENTS_BASE;
 
 /**
  * Inicialización cuando carga la página
@@ -40,8 +38,15 @@ document.addEventListener("DOMContentLoaded", async function () {
   // Cargar comentarios del producto
   await loadProductComments(productId);
 
+  // Cargar productos relacionados
+  await loadRelatedProducts();
+
   // Configurar event listeners
   setupEventListeners();
+
+  // Inicializar formulario de reseñas
+  // Esperar un poco para que el sistema de sesión se inicialice
+  setTimeout(initReviewForm, 500);
 
   // Actualizar breadcrumb si tenemos categoría
   if (categoryId) {
@@ -147,6 +152,14 @@ async function displayProductDetails() {
   ).textContent = `${product.soldCount} vendidos`;
   document.getElementById("productId").textContent = `#${product.id}`;
 
+  // Categoría
+  if (product.category && product.category.name) {
+    document.getElementById("productCategory").textContent =
+      product.category.name;
+  } else {
+    document.getElementById("productCategory").textContent = "-";
+  }
+
   // Descripción completa
   document.getElementById("productDescription").textContent =
     product.description;
@@ -160,9 +173,7 @@ async function displayProductDetails() {
  */
 async function checkFlashSaleStatus(productId) {
   try {
-    const response = await fetch(
-      "https://racher95.github.io/diy-emercado-api/cats/hot_sales.json"
-    );
+    const response = await fetch(API_CONFIG.HOT_SALES);
     const flashSalesData = await response.json();
 
     const flashProduct = flashSalesData.products.find(
@@ -193,9 +204,7 @@ async function checkFlashSaleStatus(productId) {
  */
 async function checkFeaturedStatus(productId) {
   try {
-    const response = await fetch(
-      "https://racher95.github.io/diy-emercado-api/cats/featured.json"
-    );
+    const response = await fetch(API_CONFIG.FEATURED);
     const featuredData = await response.json();
 
     const featuredProduct = featuredData.products.find(
@@ -357,25 +366,90 @@ function updateThumbnailSelection() {
 }
 
 /**
- * Carga los comentarios del producto
+ * Elimina comentarios duplicados del localStorage que ya están en la API
+ * Compara por usuario, descripción y score para identificar duplicados
+ */
+function removeDuplicateComments(localComments, apiComments) {
+  return localComments.filter((localComment) => {
+    // Buscar si este comentario local ya existe en la API
+    const existsInAPI = apiComments.some(
+      (apiComment) =>
+        apiComment.user === localComment.user &&
+        apiComment.description === localComment.description &&
+        apiComment.score === localComment.score
+    );
+
+    // Mantener solo los que NO están en la API
+    return !existsInAPI;
+  });
+}
+
+/**
+ * Carga los comentarios del producto (API + localStorage)
  */
 async function loadProductComments(productId) {
   try {
-    const response = await fetch(
-      `${PRODUCT_COMMENTS_BASE_URL}${productId}.json`
-    );
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    // 1. Cargar comentarios de la API
+    let apiComments = [];
+    try {
+      const response = await fetch(
+        `${PRODUCT_COMMENTS_BASE_URL}${productId}.json`
+      );
+      if (response.ok) {
+        apiComments = await response.json();
+      }
+    } catch (error) {
+      console.log("No hay comentarios en API para este producto");
     }
 
-    const commentsData = await response.json();
-    productComments = commentsData || [];
+    // 2. Cargar comentarios de localStorage
+    const storageKey = `comments_${productId}`;
+    let localComments = [];
+    const stored = localStorage.getItem(storageKey);
+    if (stored) {
+      localComments = JSON.parse(stored);
+    }
+
+    // 3. Limpiar duplicados: eliminar de localStorage los que ya están en API
+    if (apiComments.length > 0 && localComments.length > 0) {
+      const cleanedLocalComments = removeDuplicateComments(
+        localComments,
+        apiComments
+      );
+
+      // Si hay cambios, actualizar localStorage
+      if (cleanedLocalComments.length !== localComments.length) {
+        if (cleanedLocalComments.length > 0) {
+          localStorage.setItem(
+            storageKey,
+            JSON.stringify(cleanedLocalComments)
+          );
+        } else {
+          localStorage.removeItem(storageKey);
+        }
+        localComments = cleanedLocalComments;
+        console.log("Comentarios locales sincronizados con API");
+      }
+    }
+
+    // 4. Combinar ambos (ya sin duplicados)
+    productComments = [...apiComments, ...localComments];
+
+    // 5. Ordenar por fecha (más recientes primero)
+    productComments.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
 
     displayComments();
   } catch (error) {
     console.error("Error loading comments:", error);
-    // No mostrar error para comentarios, solo ocultar la sección
-    document.getElementById("commentsSection").style.display = "none";
+    // Si hay error, intentar mostrar solo los locales
+    const storageKey = `comments_${productId}`;
+    const stored = localStorage.getItem(storageKey);
+    if (stored) {
+      productComments = JSON.parse(stored);
+      displayComments();
+    } else {
+      document.getElementById("commentsSection").style.display = "none";
+    }
   }
 }
 
@@ -423,6 +497,184 @@ function displayComments() {
 }
 
 /**
+ * Carga y muestra los productos relacionados en un carousel
+ */
+async function loadRelatedProducts() {
+  const relatedProductsSection = document.getElementById(
+    "relatedProductsSection"
+  );
+  const relatedProductsContainer = document.getElementById(
+    "relatedProductsContainer"
+  );
+  const noRelatedProducts = document.getElementById("noRelatedProducts");
+  const carouselPrevBtn = document.getElementById("carouselPrevBtn");
+  const carouselNextBtn = document.getElementById("carouselNextBtn");
+
+  // Verificar si el producto tiene productos relacionados
+  if (
+    !currentProduct ||
+    !currentProduct.relatedProducts ||
+    currentProduct.relatedProducts.length === 0
+  ) {
+    // Ocultar toda la sección si no hay productos relacionados
+    relatedProductsSection.style.display = "none";
+    return;
+  }
+
+  // Ocultar mensaje de "no hay productos"
+  noRelatedProducts.style.display = "none";
+
+  const products = currentProduct.relatedProducts;
+
+  // Obtener datos de flash sales para verificar ofertas
+  let flashSalesData = null;
+  try {
+    const response = await fetch(API_CONFIG.HOT_SALES);
+    if (response.ok) {
+      flashSalesData = await response.json();
+    }
+  } catch (error) {
+    console.log("No se pudieron cargar datos de flash sales");
+  }
+
+  // Determinar cantidad de productos por slide según el ancho de pantalla
+  const getProductsPerSlide = () => {
+    if (window.innerWidth >= 1200) return 4; // Desktop grande
+    if (window.innerWidth >= 992) return 3; // Desktop
+    if (window.innerWidth >= 768) return 2; // Tablet
+    return 1; // Mobile
+  };
+
+  const productsPerSlide = getProductsPerSlide();
+
+  // Agrupar productos en slides
+  const slides = [];
+  for (let i = 0; i < products.length; i += productsPerSlide) {
+    slides.push(products.slice(i, i + productsPerSlide));
+  }
+
+  // Generar HTML para cada slide del carousel
+  const carouselHTML = slides
+    .map((slideProducts, slideIndex) => {
+      const cardsHTML = slideProducts
+        .map((product) => {
+          const imageUrl = product.image.startsWith("http")
+            ? product.image
+            : `../${product.image}`;
+          const priceFormatted = formatCurrency(product.cost, product.currency);
+
+          // Verificar si el producto está en flash sale
+          let isFlashSale = false;
+          let flashDiscount = 0;
+          if (flashSalesData && flashSalesData.products) {
+            const flashProduct = flashSalesData.products.find(
+              (p) => p.id === product.id
+            );
+            if (flashProduct && flashProduct.flashSale) {
+              const now = new Date();
+              const endsAt = new Date(flashProduct.flashSale.endsAt);
+              const startsAt = new Date(flashProduct.flashSale.startsAt);
+              isFlashSale = now >= startsAt && now <= endsAt;
+              flashDiscount = flashProduct.discount || 0;
+            }
+          }
+
+          // Generar badges
+          let badgesHTML = "";
+          if (product.featured) {
+            badgesHTML +=
+              '<span class="related-badge-featured">⭐ Destacado</span>';
+          }
+          if (isFlashSale) {
+            badgesHTML += `<span class="related-badge-flash">🔥 -${flashDiscount}%</span>`;
+          }
+
+          return `
+            <div class="col">
+              <div class="related-product-card" data-product-id="${product.id}">
+                <div class="related-product-image">
+                  <img src="${imageUrl}" alt="${product.name}" loading="lazy">
+                  ${badgesHTML}
+                </div>
+                <div class="related-product-info">
+                  <h3 class="related-product-name">${product.name}</h3>
+                  <p class="related-product-category">${product.category}</p>
+                  <div class="related-product-price">
+                    <span class="price">${priceFormatted}</span>
+                  </div>
+                  <button class="btn-view-related" data-product-id="${product.id}">
+                    Ver Producto →
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+
+      return `
+        <div class="carousel-item ${slideIndex === 0 ? "active" : ""}">
+          <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
+            ${cardsHTML}
+          </div>
+        </div>
+      `;
+    })
+    .join("");
+
+  // Insertar HTML en el contenedor
+  relatedProductsContainer.innerHTML = carouselHTML;
+
+  // Mostrar/ocultar controles del carousel según la cantidad de slides
+  if (slides.length > 1) {
+    carouselPrevBtn.style.display = "flex";
+    carouselNextBtn.style.display = "flex";
+  } else {
+    carouselPrevBtn.style.display = "none";
+    carouselNextBtn.style.display = "none";
+  }
+
+  // Agregar event listeners a los botones "Ver Producto"
+  const viewButtons =
+    relatedProductsContainer.querySelectorAll(".btn-view-related");
+  viewButtons.forEach((button) => {
+    button.addEventListener("click", function () {
+      const productId = this.getAttribute("data-product-id");
+      navigateToRelatedProduct(productId);
+    });
+  });
+
+  // Mostrar la sección
+  relatedProductsSection.style.display = "block";
+
+  // Actualizar carousel en resize
+  let resizeTimeout;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      loadRelatedProducts();
+    }, 250);
+  });
+}
+
+/**
+ * Navega a un producto relacionado manteniendo la categoría
+ */
+function navigateToRelatedProduct(productId) {
+  const urlParams = new URLSearchParams(window.location.search);
+  const categoryId = urlParams.get("category");
+
+  // Construir URL con categoría si existe
+  let newUrl = `product-details.html?id=${productId}`;
+  if (categoryId) {
+    newUrl += `&category=${categoryId}`;
+  }
+
+  // Navegar al nuevo producto
+  window.location.href = newUrl;
+}
+
+/**
  * Configura los event listeners
  */
 function setupEventListeners() {
@@ -444,30 +696,58 @@ function setupEventListeners() {
     nextBtn.addEventListener("click", nextImageHandler);
   }
 
-  // Botones de acción
-  document.getElementById("addToCartBtn").addEventListener("click", () => {
-    if (currentProduct) {
-      addToCart(currentProduct, 1);
-      showNotification(`${currentProduct.name} agregado al carrito`, "success");
-    } else {
-      showNotification("Error: No se pudo agregar el producto", "error");
-    }
-  });
+  // Botones de acción - Con cleanup para prevenir duplicados
+  const addToCartBtn = document.getElementById("addToCartBtn");
+  const backToCatalogBtn = document.getElementById("backToCatalogBtn");
+  const backBtn = document.getElementById("backBtn");
 
-  document.getElementById("backToCatalogBtn").addEventListener("click", () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const categoryId = urlParams.get("category");
+  if (addToCartBtn) {
+    addToCartBtn.removeEventListener("click", addToCartHandler);
+    addToCartBtn.addEventListener("click", addToCartHandler);
+  }
 
-    if (categoryId) {
-      window.location.href = `products.html?category=${categoryId}`;
-    } else {
-      window.location.href = "products.html";
-    }
-  });
+  if (backToCatalogBtn) {
+    backToCatalogBtn.removeEventListener("click", backToCatalogHandler);
+    backToCatalogBtn.addEventListener("click", backToCatalogHandler);
+  }
 
-  document.getElementById("backBtn").addEventListener("click", () => {
+  if (backBtn) {
+    backBtn.removeEventListener("click", backButtonHandler);
+    backBtn.addEventListener("click", backButtonHandler);
+  }
+}
+
+/**
+ * Handler para agregar al carrito
+ */
+function addToCartHandler() {
+  if (currentProduct) {
+    addToCart(currentProduct, 1);
+    showNotification(`${currentProduct.name} agregado al carrito`, "success");
+  } else {
+    showNotification("Error: No se pudo agregar el producto", "error");
+  }
+}
+
+/**
+ * Handler para volver al catálogo
+ */
+function backToCatalogHandler() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const categoryId = urlParams.get("category");
+
+  if (categoryId) {
+    window.location.href = `products.html?category=${categoryId}`;
+  } else {
     window.location.href = "products.html";
-  });
+  }
+}
+
+/**
+ * Handler para botón atrás
+ */
+function backButtonHandler() {
+  window.location.href = "products.html";
 }
 
 /**
@@ -603,26 +883,23 @@ function initializeImageModal() {
         focus: true,
       });
 
-      // Event listeners para navegación del modal
+      // Event listeners para navegación del modal - Con cleanup
       const modalPrevBtn = document.getElementById("modalPrevBtn");
       const modalNextBtn = document.getElementById("modalNextBtn");
 
       if (modalPrevBtn) {
-        modalPrevBtn.addEventListener("click", () => {
-          navigateModalImage(-1);
-        });
+        modalPrevBtn.removeEventListener("click", modalPrevHandler);
+        modalPrevBtn.addEventListener("click", modalPrevHandler);
       }
 
       if (modalNextBtn) {
-        modalNextBtn.addEventListener("click", () => {
-          navigateModalImage(1);
-        });
+        modalNextBtn.removeEventListener("click", modalNextHandler);
+        modalNextBtn.addEventListener("click", modalNextHandler);
       }
 
       // Event listener para cuando el modal se cierra
-      modalElement.addEventListener("hidden.bs.modal", () => {
-        console.log("Modal cerrado");
-      });
+      modalElement.removeEventListener("hidden.bs.modal", modalHiddenHandler);
+      modalElement.addEventListener("hidden.bs.modal", modalHiddenHandler);
 
       console.log("Modal inicializado correctamente");
       return true;
@@ -634,6 +911,27 @@ function initializeImageModal() {
     console.error("Elemento modal no encontrado");
     return false;
   }
+}
+
+/**
+ * Handler para botón anterior del modal
+ */
+function modalPrevHandler() {
+  navigateModalImage(-1);
+}
+
+/**
+ * Handler para botón siguiente del modal
+ */
+function modalNextHandler() {
+  navigateModalImage(1);
+}
+
+/**
+ * Handler para cuando el modal se oculta
+ */
+function modalHiddenHandler() {
+  console.log("Modal cerrado");
 }
 
 /**
@@ -747,6 +1045,342 @@ function setupImageModalListeners() {
  */
 function openImageModalHandler() {
   openImageModal(currentImageIndex);
+}
+
+/**
+ * Inicializa el formulario de reseñas
+ * Usa el sistema de sesión existente (checkSession de main.js)
+ */
+function initReviewForm() {
+  console.log("Inicializando formulario de reseñas...");
+
+  const reviewFormSection = document.getElementById("reviewFormSection");
+  const reviewForm = document.getElementById("reviewForm");
+  const loginRequired = document.getElementById("loginRequired");
+
+  if (!reviewFormSection) {
+    console.error("No se encontró la sección del formulario de reseñas");
+    return;
+  }
+
+  // Usar checkSession() del sistema existente (main.js)
+  const sessionData =
+    typeof checkSession === "function" ? checkSession() : null;
+  console.log("Datos de sesión:", sessionData);
+
+  if (!sessionData || !sessionData.isLoggedIn) {
+    // Usuario no logueado - mostrar mensaje
+    console.log("Usuario no logueado, mostrando mensaje de login");
+    if (loginRequired) loginRequired.style.display = "block";
+    if (reviewForm) reviewForm.style.display = "none";
+  } else {
+    // Usuario logueado - mostrar formulario
+    console.log("Usuario logueado:", sessionData.usuario);
+    if (loginRequired) loginRequired.style.display = "none";
+    if (reviewForm) reviewForm.style.display = "block";
+
+    // Inicializar estrellas interactivas
+    initStarRating();
+
+    // Inicializar contador de caracteres
+    initCharCounter();
+
+    // Setup form submit
+    reviewForm.addEventListener("submit", handleReviewSubmit);
+
+    // Botón cancelar
+    const cancelBtn = document.getElementById("cancelReviewBtn");
+    if (cancelBtn) {
+      cancelBtn.addEventListener("click", resetReviewForm);
+    }
+  }
+
+  // Mostrar la sección
+  reviewFormSection.style.display = "block";
+  console.log("Formulario de reseñas inicializado correctamente");
+}
+
+/**
+ * Inicializa el sistema de calificación con estrellas
+ */
+function initStarRating() {
+  const stars = document.querySelectorAll("#starRating i");
+  const ratingInput = document.getElementById("ratingValue");
+  let selectedRating = 0;
+
+  stars.forEach((star, index) => {
+    // Hover effect
+    star.addEventListener("mouseenter", () => {
+      updateStarDisplay(index + 1, false);
+    });
+
+    // Click para seleccionar
+    star.addEventListener("click", () => {
+      selectedRating = index + 1;
+      ratingInput.value = selectedRating;
+      updateStarDisplay(selectedRating, true);
+
+      // Ocultar error si había
+      const ratingError = document.getElementById("ratingError");
+      if (ratingError) {
+        ratingError.classList.remove("d-block");
+        ratingError.classList.add("d-none");
+      }
+    });
+  });
+
+  // Restaurar al salir del hover
+  const starRating = document.getElementById("starRating");
+  starRating.addEventListener("mouseleave", () => {
+    updateStarDisplay(selectedRating, true);
+  });
+}
+
+/**
+ * Actualiza la visualización de las estrellas
+ */
+function updateStarDisplay(rating, isSelected) {
+  const stars = document.querySelectorAll("#starRating i");
+
+  stars.forEach((star, index) => {
+    star.classList.remove("fas", "far", "selected", "hover");
+
+    if (index < rating) {
+      if (isSelected) {
+        star.classList.add("fas", "selected");
+      } else {
+        star.classList.add("fas", "hover");
+      }
+    } else {
+      star.classList.add("far");
+    }
+  });
+}
+
+/**
+ * Inicializa el contador de caracteres
+ */
+function initCharCounter() {
+  const reviewText = document.getElementById("reviewText");
+  const charCount = document.getElementById("charCount");
+
+  reviewText.addEventListener("input", () => {
+    const count = reviewText.value.length;
+    charCount.textContent = `${count}/500`;
+
+    // Cambiar color si se acerca al límite
+    if (count > 450) {
+      charCount.style.color = "#dc3545";
+    } else if (count > 400) {
+      charCount.style.color = "#ffc107";
+    } else {
+      charCount.style.color = "#6c757d";
+    }
+  });
+}
+
+/**
+ * Maneja el envío del formulario de reseña
+ */
+async function handleReviewSubmit(event) {
+  event.preventDefault();
+
+  const form = event.target;
+  const ratingValue = document.getElementById("ratingValue").value;
+  const reviewText = document.getElementById("reviewText").value.trim();
+  const ratingError = document.getElementById("ratingError");
+
+  // Obtener datos de sesión para el nombre de usuario
+  const sessionData =
+    typeof checkSession === "function" ? checkSession() : null;
+  const username =
+    sessionData && sessionData.usuario ? sessionData.usuario : "Usuario";
+
+  // Validar rating
+  if (!ratingValue || ratingValue < 1 || ratingValue > 5) {
+    ratingError.classList.remove("d-none");
+    ratingError.classList.add("d-block");
+    return;
+  } else {
+    ratingError.classList.remove("d-block");
+    ratingError.classList.add("d-none");
+  }
+
+  // Validar texto
+  if (reviewText.length < 10 || reviewText.length > 500) {
+    document.getElementById("reviewText").classList.add("is-invalid");
+    return;
+  }
+
+  // Crear objeto de comentario (username ya obtenido arriba)
+  const newComment = {
+    product: currentProduct.id,
+    score: parseInt(ratingValue),
+    description: reviewText,
+    user: username,
+    dateTime: new Date().toISOString().replace("T", " ").substring(0, 19),
+  };
+
+  try {
+    // 1. Guardar en localStorage (inmediato)
+    saveCommentToLocalStorage(newComment);
+
+    // 2. Agregar a la lista visual inmediatamente
+    addCommentToDisplay(newComment);
+
+    // 3. Sincronizar con la API en background
+    syncCommentToAPI(newComment).catch((err) => {
+      console.warn(
+        "No se pudo sincronizar con la API, guardado solo localmente:",
+        err
+      );
+    });
+
+    // 4. Resetear formulario
+    resetReviewForm();
+
+    // 5. Mostrar notificación de éxito
+    showNotification("¡Reseña publicada correctamente!", "success");
+
+    // 6. Scroll a la sección de comentarios
+    document.getElementById("commentsSection").scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  } catch (error) {
+    console.error("Error al guardar reseña:", error);
+    showNotification(
+      "Error al publicar la reseña. Intenta nuevamente.",
+      "error"
+    );
+  }
+}
+
+/**
+ * Sincroniza el comentario con la API a través del Cloudflare Worker
+ */
+async function syncCommentToAPI(comment) {
+  const workerUrl = API_CONFIG.COMMENTS_WORKER + "/sync-comment";
+
+  console.log("Sincronizando comentario con la API...");
+
+  try {
+    const response = await fetch(workerUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        productId: comment.product.toString(),
+        comment: comment,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || `Worker returned ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log("Comentario sincronizado con la API:", result);
+    return result;
+  } catch (error) {
+    console.error("Error al sincronizar con la API:", error);
+    throw error;
+  }
+}
+
+/**
+ * Guarda un comentario en localStorage
+ */
+function saveCommentToLocalStorage(comment) {
+  const storageKey = `comments_${currentProduct.id}`;
+
+  // Obtener comentarios existentes
+  let localComments = [];
+  const stored = localStorage.getItem(storageKey);
+  if (stored) {
+    localComments = JSON.parse(stored);
+  }
+
+  // Agregar nuevo comentario
+  localComments.push(comment);
+
+  // Guardar de vuelta
+  localStorage.setItem(storageKey, JSON.stringify(localComments));
+}
+
+/**
+ * Agrega un comentario a la visualización
+ */
+function addCommentToDisplay(comment) {
+  const commentsContainer = document.getElementById("commentsContainer");
+  const noComments = document.getElementById("noComments");
+
+  // Ocultar mensaje de "no hay comentarios"
+  noComments.style.display = "none";
+
+  // Crear HTML del comentario
+  const commentHTML = `
+    <div class="comment new-comment">
+      <div class="comment-header">
+        <div class="comment-user">
+          <strong>${comment.user}</strong>
+          <div class="comment-rating">
+            ${"★".repeat(comment.score)}${"☆".repeat(5 - comment.score)}
+          </div>
+        </div>
+        <div class="comment-date">
+          ${new Date(comment.dateTime).toLocaleDateString("es-UY")}
+          <span class="badge bg-success ms-2">Nueva</span>
+        </div>
+      </div>
+      <div class="comment-text">
+        ${comment.description}
+      </div>
+    </div>
+  `;
+
+  // Agregar al inicio de la lista
+  commentsContainer.insertAdjacentHTML("afterbegin", commentHTML);
+
+  // Animar el nuevo comentario
+  setTimeout(() => {
+    const newComment = commentsContainer.querySelector(".new-comment");
+    if (newComment) {
+      newComment.style.animation = "slideIn 0.5s ease";
+    }
+  }, 100);
+}
+
+/**
+ * Resetea el formulario de reseña
+ */
+function resetReviewForm() {
+  const form = document.getElementById("reviewForm");
+  form.reset();
+
+  // Resetear estrellas
+  const stars = document.querySelectorAll("#starRating i");
+  stars.forEach((star) => {
+    star.classList.remove("fas", "selected", "hover");
+    star.classList.add("far");
+  });
+
+  // Resetear rating value
+  document.getElementById("ratingValue").value = "";
+
+  // Resetear contador de caracteres
+  document.getElementById("charCount").textContent = "0/500";
+  document.getElementById("charCount").style.color = "#6c757d";
+
+  // Ocultar errores
+  const ratingError = document.getElementById("ratingError");
+  if (ratingError) {
+    ratingError.classList.remove("d-block");
+    ratingError.classList.add("d-none");
+  }
+  document.getElementById("reviewText").classList.remove("is-invalid");
 }
 
 /**
