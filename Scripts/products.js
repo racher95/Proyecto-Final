@@ -37,10 +37,8 @@ async function loadCategories() {
     }
 
     const data = await response.json();
-    console.log("Datos recibidos:", data);
 
     allCategories = data || [];
-    console.log("Categorías cargadas:", allCategories.length);
 
     // Llenar el selector de categorías
     populateCategorySelect();
@@ -55,17 +53,6 @@ async function loadCategories() {
     }
     return false;
   }
-}
-
-/**
- * Obtiene la primera categoría disponible como categoría por defecto
- * @returns {string|null} ID de la primera categoría disponible
- */
-function getDefaultCategory() {
-  if (allCategories.length > 0) {
-    return allCategories[0].id;
-  }
-  return null;
 }
 
 /**
@@ -144,17 +131,78 @@ async function retrySearchFromURL() {
 }
 
 /**
+ * Muestra TODOS los productos de TODAS las categorías
+ */
+async function displayAllProducts() {
+  const loadingMessage = document.getElementById("loadingMessage");
+  const errorMessage = document.getElementById("errorMessage");
+  const productsContainer = document.getElementById("productsContainer");
+
+  try {
+    // Mostrar indicador de carga
+    if (loadingMessage) loadingMessage.style.display = "block";
+    if (errorMessage) errorMessage.style.display = "none";
+    if (productsContainer) productsContainer.innerHTML = "";
+
+    // Si no hay productos universales cargados, cargarlos
+    if (allProductsUniversal.length === 0) {
+      await loadAllProductsUniversal();
+    }
+
+    // Ocultar indicador de carga
+    if (loadingMessage) loadingMessage.style.display = "none";
+
+    // Actualizar título del hero
+    const heroTitle = document.querySelector(".catalog-hero h1");
+    if (heroTitle) {
+      heroTitle.textContent = "Nuestro Catálogo";
+    }
+
+    const heroDescription = document.querySelector(".catalog-hero p");
+    if (heroDescription) {
+      heroDescription.textContent =
+        "Descubre nuestra increíble selección de productos DIY";
+    }
+
+    // Usar imagen por defecto en el hero
+    const heroSection = document.querySelector(".catalog-hero");
+    if (heroSection) {
+      heroSection.style.backgroundImage = "url('../img/cars_index.jpg')";
+      heroSection.style.backgroundSize = "cover";
+      heroSection.style.backgroundPosition = "center";
+    }
+
+    // Guardar productos originales y mostrarlos
+    allProducts = [...allProductsUniversal];
+    currentCategory = null; // No hay categoría específica seleccionada
+
+    // Aplicar filtros y mostrar productos
+    await applyAllFilters();
+
+    console.log(
+      `Mostrando ${allProductsUniversal.length} productos de todas las categorías`
+    );
+  } catch (error) {
+    console.error("Error mostrando todos los productos:", error);
+    if (loadingMessage) loadingMessage.style.display = "none";
+    if (errorMessage) {
+      errorMessage.style.display = "block";
+      errorMessage.textContent =
+        "Error al cargar los productos. Por favor, intenta de nuevo.";
+    }
+  }
+}
+
+/**
  * Llena el selector de categorías con las opciones disponibles
  */
 function populateCategorySelect() {
   const categorySelect = document.getElementById("categorySelect");
-  console.log("Elemento categorySelect encontrado:", !!categorySelect);
 
   if (!categorySelect) return;
 
   // Limpiar opciones existentes
   categorySelect.innerHTML = '<option value="">Todas las categorías</option>';
-  console.log("Selector limpiado");
 
   // Agregar cada categoría como opción
   allCategories.forEach((category) => {
@@ -168,14 +216,7 @@ function populateCategorySelect() {
     }
 
     categorySelect.appendChild(option);
-    console.log("Categoría agregada:", category.name, "ID:", category.id);
   });
-
-  console.log(
-    "Selector de categorías poblado con",
-    allCategories.length,
-    "categorías"
-  );
 }
 
 /**
@@ -194,17 +235,11 @@ function updateCategoryHeroImage(categoryId) {
     heroSection.style.backgroundImage = `url('${category.imgSrc}')`;
     heroSection.style.backgroundSize = "cover";
     heroSection.style.backgroundPosition = "center";
-    console.log(`Hero actualizado con imagen de: ${category.name}`);
   } else {
     // Si no tiene imagen, usar la imagen por defecto
     heroSection.style.backgroundImage = "url('../img/cars_index.jpg')";
     heroSection.style.backgroundSize = "cover";
     heroSection.style.backgroundPosition = "center";
-    console.log(
-      `Categoría sin imagen, usando default: ${
-        category ? category.name : categoryId
-      }`
-    );
   }
 }
 
@@ -223,20 +258,16 @@ async function loadProducts(categoryId = null) {
     if (categoryId) {
       currentCategory = categoryId;
     } else if (!currentCategory) {
-      // Si no hay categoría actual, usar la de URL o la primera disponible
+      // Si no hay categoría actual, usar la de URL
       const urlParams = new URLSearchParams(window.location.search);
       const urlCategory = urlParams.get("category");
 
       if (urlCategory) {
         currentCategory = urlCategory;
       } else {
-        // Usar la primera categoría disponible como fallback
-        currentCategory = getDefaultCategory();
-
-        // Si no hay categorías disponibles, mostrar error
-        if (!currentCategory) {
-          throw new Error("No hay categorías disponibles");
-        }
+        // Si no hay parámetro de URL, mostrar TODAS las categorías
+        await displayAllProducts();
+        return;
       }
     }
 
@@ -732,11 +763,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         loadProducts(selectedCategory);
         updateCategoryHeroImage(selectedCategory);
       } else if (selectedCategory === "") {
-        // Si se selecciona "Todas las categorías", mostrar la primera disponible
-        const defaultCategory = getDefaultCategory();
-        if (defaultCategory) {
-          loadProducts(defaultCategory);
-        }
+        // Si se selecciona "Todas las categorías", mostrar TODOS los productos
+        displayAllProducts();
       }
       // Si selectedCategory === "search", no hacer nada (mantener resultados de búsqueda)
     });
