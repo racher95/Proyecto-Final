@@ -5,7 +5,7 @@
  */
 
 // Cuando carga cualquier página, ejecuto estas funciones iniciales
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
   // Actualizo el contador del carrito en el header
   updateCartCounter();
 
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
     window.location.pathname.includes("index.html") ||
     window.location.pathname === "/"
   ) {
-    initializeCarousels();
+    await initializeCarousels();
   }
 });
 
