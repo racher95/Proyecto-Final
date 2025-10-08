@@ -9,8 +9,8 @@
     <a href="{{baseUrl}}index.html" class="logo">Craftivity</a>
 
     <!-- Navegación unificada -->
-    <nav>
-      <ul class="craftivity-nav">
+    <nav aria-label="Navegación principal">
+      <ul class="craftivity-nav" id="site-navigation">
         <!-- Enlaces de navegación -->
         <li class="nav-links">
           <a href="{{baseUrl}}pages/products.html">Catálogo</a>
@@ -24,8 +24,11 @@
               type="text"
               placeholder="Buscar productos..."
               id="searchInput"
+              aria-label="Buscar productos"
             />
-            <button type="button">🔍</button>
+            <button type="button" aria-label="Ejecutar búsqueda">
+              🔍
+            </button>
           </div>
         </li>
 
@@ -42,10 +45,16 @@
     </nav>
 
     <!-- Solo el botón hamburger fuera del nav -->
-    <div class="menu-toggle">
+    <button
+      type="button"
+      class="menu-toggle"
+      aria-label="Abrir menú de navegación"
+      aria-expanded="false"
+      aria-controls="site-navigation"
+    >
       <span></span>
       <span></span>
       <span></span>
-    </div>
+    </button>
   </div>
 </header>

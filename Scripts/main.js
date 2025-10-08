@@ -19,7 +19,19 @@ document.addEventListener("DOMContentLoaded", async function () {
   initGlobalNavigation();
 
   // configurar menu responsive
-  initResponsiveMenu();
+  if (document.querySelector(".menu-toggle")) {
+    initResponsiveMenu();
+  } else {
+    document.addEventListener("componentsLoaded", initResponsiveMenu, {
+      once: true,
+    });
+  }
+
+  if (!document.getElementById("searchInput")) {
+    document.addEventListener("componentsLoaded", initGlobalSearch, {
+      once: true,
+    });
+  }
 
   // Inicializar carruseles si estamos en index.html
   if (
@@ -282,9 +294,10 @@ function initGlobalSearch() {
   // (products.js maneja su propia búsqueda)
   if (!window.location.pathname.includes("products.html")) {
     const searchInput = document.getElementById("searchInput");
-    const searchButton = document.querySelector('button[type="button"]');
+    const searchButton = document.querySelector(".search-bar button");
 
-    if (searchInput) {
+    if (searchInput && searchInput.dataset.bound !== "true") {
+      searchInput.dataset.bound = "true";
       searchInput.addEventListener("keypress", function (e) {
         if (e.key === "Enter") {
           e.preventDefault();
@@ -293,7 +306,8 @@ function initGlobalSearch() {
       });
     }
 
-    if (searchButton) {
+    if (searchButton && searchButton.dataset.bound !== "true") {
+      searchButton.dataset.bound = "true";
       searchButton.addEventListener("click", function (e) {
         e.preventDefault();
         performGlobalSearch();
@@ -308,13 +322,17 @@ function initResponsiveMenu() {
   const menuToggle = document.querySelector(".menu-toggle");
   const navMenu = document.querySelector(".craftivity-nav");
 
-  if (menuToggle && navMenu) {
+  if (menuToggle && navMenu && menuToggle.dataset.bound !== "true") {
+    menuToggle.dataset.bound = "true";
+    menuToggle.setAttribute("aria-expanded", "false");
+
     menuToggle.addEventListener("click", function () {
       // Toggle clase active en menú toggle (animación hamburguesa)
-      this.classList.toggle("active");
+      const isActive = this.classList.toggle("active");
 
       // Toggle clase show en navegación (mostrar/ocultar menú)
-      navMenu.classList.toggle("show");
+      navMenu.classList.toggle("show", isActive);
+      menuToggle.setAttribute("aria-expanded", String(isActive));
     });
 
     // Cerrar menú al hacer clic en un enlace (mobile)
@@ -323,6 +341,7 @@ function initResponsiveMenu() {
       link.addEventListener("click", () => {
         menuToggle.classList.remove("active");
         navMenu.classList.remove("show");
+        menuToggle.setAttribute("aria-expanded", "false");
       });
     });
 
@@ -331,6 +350,7 @@ function initResponsiveMenu() {
       if (window.innerWidth > 768) {
         menuToggle.classList.remove("active");
         navMenu.classList.remove("show");
+        menuToggle.setAttribute("aria-expanded", "false");
       }
     });
 
@@ -339,6 +359,7 @@ function initResponsiveMenu() {
       if (!menuToggle.contains(e.target) && !navMenu.contains(e.target)) {
         menuToggle.classList.remove("active");
         navMenu.classList.remove("show");
+        menuToggle.setAttribute("aria-expanded", "false");
       }
     });
   }

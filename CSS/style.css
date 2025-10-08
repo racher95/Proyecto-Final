@@ -207,6 +207,13 @@ header {
   flex-direction: column;
   cursor: pointer;
   padding: 0.5rem;
+  background: transparent;
+  border: none;
+}
+
+.menu-toggle:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 4px;
 }
 
 .menu-toggle span {
@@ -247,6 +254,11 @@ header {
   color: var(--medium-gray);
   cursor: pointer;
   padding: 0.5rem;
+}
+
+.search-bar button:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 4px;
 }
 
 /* ===========================================================================
