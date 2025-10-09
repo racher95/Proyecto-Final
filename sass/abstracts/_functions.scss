@@ -1,0 +1,29 @@
+@use 'sass:map';
+@use 'sass:math';
+@use 'sass:string';
+
+@use 'variables' as vars;
+
+@function color($token) {
+  @return map.get(vars.$colors, $token);
+}
+
+@function font-stack($token) {
+  @return string.unquote(map.get(vars.$font-stacks, $token));
+}
+
+@function space($index) {
+  @return nth(vars.$spaces, $index);
+}
+
+@function radius($token) {
+  @return map.get(vars.$radius, $token);
+}
+
+@function z($token) {
+  @return map.get(vars.$z, $token);
+}
+
+@function rem($px, $base: 16) {
+  @return math.div($px, $base) * 1rem;
+}

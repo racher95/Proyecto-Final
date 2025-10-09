@@ -1,0 +1,23 @@
+@use '../abstracts/functions' as f;
+
+
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  z-index: 10000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: slideIn 0.3s ease;
+}
+
+.notification.success {
+  background-color: f.color(success);
+}
+
+.notification.error {
+  background-color: f.color(danger);
+}

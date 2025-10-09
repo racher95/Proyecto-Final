@@ -1,0 +1,28 @@
+@use '../abstracts/functions' as f;
+@use '../abstracts/mixins' as mx;
+
+/* Newsletter */
+.newsletter-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.newsletter-form input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 2px solid f.color(light);
+  border-radius: 8px;
+  font-size: 1rem;
+  @include mx.transition(border-color);
+}
+
+.newsletter-form input:focus {
+  outline: none;
+  border-color: f.color(primary);
+}
+
+.newsletter-form button {
+  padding: 0.75rem 1.5rem;
+  white-space: nowrap;
+}

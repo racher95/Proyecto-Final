@@ -1,0 +1,292 @@
+### index.html
+div#header-placeholder
+main
+  section.hero
+    h1
+    p
+    a.btn.btn-secondary
+  section.flash-sales-section
+    div.container
+      div.section-header
+        h2.section-title
+        p.section-subtitle
+      div.carousel-container
+        button.carousel-btn.prev-btn#flashPrevBtn
+        div.carousel-track#flashGrid
+        button.carousel-btn.next-btn#flashNextBtn
+  section.featured-section
+    div.container
+      div.section-header
+        h2.section-title
+        p.section-subtitle
+      div.carousel-container
+        button.carousel-btn.prev-btn#featuredPrevBtn
+        div.carousel-track#featuredGrid
+        button.carousel-btn.next-btn#featuredNextBtn
+  section.about-section
+    h2
+    div.features-grid
+      div.feature
+        h3
+        p
+      div.feature
+        h3
+        p
+      div.feature
+        h3
+        p
+div#footer-placeholder
+script
+script
+script
+script
+script
+script
+script
+
+### pages/cart.html
+div#header-placeholder
+main
+  h2
+  div.empty-cart-message#emptyCart
+    h3
+    p
+    a.btn.btn-primary
+  div.cart-content#cartContent
+    div.cart-items#cartItems
+    div.cart-summary
+      h3
+      div.summary-line
+        span
+        span#subtotal
+      div.summary-line
+        span
+        span#iva
+      div.summary-line
+        span
+        span#shipping
+      div.summary-line.total
+        span
+        span#total
+      button.btn.btn-primary.checkout-button#checkoutButton
+div#footer-placeholder
+script
+script
+script
+script
+script
+script
+script
+
+### pages/login.html
+div#header-placeholder
+main
+  div.login-container
+    form.login-form#loginForm
+      h2
+      div.form-group
+        label
+        input#usuario
+        div.error-message#usuarioError
+      div.form-group
+        label
+        input#contraseña
+        div.error-message#contraseñaError
+      button.btn.btn-primary.form-button-primary
+div#footer-placeholder
+script
+script
+script
+script
+script
+script
+
+### pages/orders.html
+div#header-placeholder
+main
+  section.container
+    h1
+    p
+    p
+    a.btn.btn-primary
+div#footer-placeholder
+script
+script
+script
+script
+script
+script
+
+### pages/product-details.html
+div#header-placeholder
+main
+  section.breadcrumbs
+    div.container-fluid
+      nav.breadcrumb-nav
+        a
+        span
+        a#categoryBreadcrumb
+        span
+        span#productBreadcrumb
+  div.loading-message#loadingMessage
+    div.spinner
+    p
+  div.error-message#errorMessage
+    h3
+    p
+    button.btn.btn-secondary#backBtn
+  section.product-detail#productDetailSection
+    div.container-fluid
+      div.row.g-4
+        div.col-12.col-lg-6
+        div.col-12.col-lg-6.d-flex.align-items-start
+      div.row.mt-3
+        div.col-12
+  section.related-products-section#relatedProductsSection
+    div.container-fluid
+      div.row
+        div.col-12
+  section.review-form-section#reviewFormSection
+    div.container-fluid
+      div.row.justify-content-center
+        div.col-12.col-lg-10
+  section.product-comments#commentsSection
+    div.container-fluid
+      div.row
+        div.col-12
+div.modal.fade#imageModal
+  div.modal-dialog.modal-xl.modal-dialog-centered
+    div.modal-content
+      div.modal-header
+        h5.modal-title#imageModalLabel
+        button.btn-close
+      div.modal-body.p-0
+        div.position-relative
+      div.modal-footer.justify-content-center
+        div.text-muted#modalImageCounter
+div#footer-placeholder
+script
+script
+script
+script
+script
+script
+script
+script
+
+### pages/products.html
+div#header-placeholder
+main
+  section.catalog-hero
+    div.container
+      h1
+      p
+  section.catalog-controls
+    div.container
+      div.controls-row
+        div.category-container
+        div.price-filter-container
+        div.sort-container
+        div.view-toggle
+  section.products-section
+    div.container
+      div.loading-message#loadingMessage
+        div.spinner
+        p
+      div.error-message#errorMessage
+        h3
+        p
+        button.retry-btn#retryBtn
+      div.products-grid#productsContainer
+      div.no-results#noResults
+        h3
+        p
+div#footer-placeholder
+script
+script
+script
+script
+script
+script
+script
+script
+
+### pages/profile.html
+div#header-placeholder
+main
+  section.container
+    h1
+    p
+    p
+    a.btn.btn-primary
+div#footer-placeholder
+script
+script
+script
+script
+script
+script
+
+### pages/sobre-nosotros.html
+div#header-placeholder
+main
+  section.about-hero
+    div.container
+      h1
+      p
+  section.our-story
+    div.container
+      div.story-content
+        div.story-text
+        div.story-image
+  section.stats-section
+    div.container
+      h2
+      div.stats-grid
+        div.stat-card
+        div.stat-card
+        div.stat-card
+        div.stat-card
+  section.mission-vision
+    div.container
+      div.mvv-grid
+        div.mvv-card
+        div.mvv-card
+        div.mvv-card
+  section.why-choose-us
+    div.container
+      h2
+      div.why-choose-features-grid
+        div.feature-card
+        div.feature-card
+        div.feature-card
+        div.feature-card
+        div.feature-card
+        div.feature-card
+  section.our-team
+    div.container
+      h2
+      p.team-intro
+      div.team-grid
+        div.team-member
+        div.team-member
+        div.team-member
+        div.team-member
+  section.join-community
+    div.container
+      div.community-content
+        h2
+        p
+        a.btn.btn-primary.btn-large
+div#footer-placeholder
+script
+script
+script
+script
+script
+script
+
+### components/footer.html
+
+### components/header.html
+

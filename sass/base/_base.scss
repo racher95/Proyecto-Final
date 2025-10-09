@@ -1,0 +1,16 @@
+@use '../abstracts/functions' as f;
+
+body {
+  font-family: f.font-stack(base);
+  line-height: 1.6;
+  color: f.color(secondary);
+  background-color: f.color(light);
+  font-size: 1rem;
+}
+
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: calc(100vh - 200px);
+}

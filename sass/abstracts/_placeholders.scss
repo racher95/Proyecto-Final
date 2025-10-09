@@ -1,0 +1,25 @@
+@use 'functions' as f;
+@use 'mixins' as mx;
+
+%btn-base {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 25px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+%card-base {
+  background: f.color(base-bg);
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+%visually-hidden {
+  @include mx.visually-hidden();
+}

@@ -1,0 +1,536 @@
+/* ========================================== ESTILOS PARA FLASH SALES Y DESTACADOS
+   ========================================== */
+
+/* Animaciones para badges */
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+@keyframes flashGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(231, 76, 60, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(231, 76, 60, 0.6);
+  }
+}
+
+/* Badges de productos */
+.flash-badge,
+.featured-badge {
+  position: absolute;
+  top: 10px;
+  z-index: 10;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  line-height: 1;
+}
+
+.flash-badge {
+  left: 10px;
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  animation: pulse 2s infinite;
+}
+
+.featured-badge {
+  right: 10px;
+  background: linear-gradient(135deg, #f39c12, #e67e22);
+}
+
+/* Cuando ambos badges están presentes, ajustar posición del featured */
+.product-image-container:has(.flash-badge) .featured-badge {
+  top: 45px; /* Mover hacia abajo para evitar solapamiento */
+}
+
+/* Tarjetas con flash sale */
+.flash-sale-card {
+  border: 2px solid #e74c3c !important;
+  box-shadow: 0 8px 25px rgba(231, 76, 60, 0.15) !important;
+  animation: flashGlow 3s infinite;
+}
+
+.featured-card:not(.flash-sale-card) {
+  border: 2px solid #f39c12 !important;
+  box-shadow: 0 8px 25px rgba(243, 156, 18, 0.15) !important;
+}
+
+/* Sección de precios */
+.product-pricing {
+  margin: 15px 0;
+}
+
+.flash-pricing {
+  background: linear-gradient(135deg, #fff5f5, #ffeaea);
+  border: 1px solid #e74c3c;
+  border-radius: 8px;
+  padding: 12px;
+  margin: 10px 0;
+}
+
+.normal-pricing .product-price {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+.original-price {
+  font-size: 1rem;
+  color: #999;
+  text-decoration: line-through;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.flash-price {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #e74c3c;
+  display: block;
+}
+
+/* Countdown timer */
+.countdown-container {
+  background: linear-gradient(135deg, #fff5f5, #ffeaea);
+  border: 1px solid #e74c3c;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 10px 0;
+  text-align: center;
+  position: relative;
+}
+
+.countdown-label {
+  display: block;
+  font-size: 11px;
+  color: #666;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.countdown-timer {
+  font-family: "Courier New", monospace;
+  font-weight: bold;
+  color: #e74c3c;
+  font-size: 14px;
+  display: block;
+}
+
+/* Efectos hover para tarjetas promocionales */
+.flash-sale-card:hover {
+  transform: translateY(-5px);
+  transition: transform 0.3s ease;
+}
+
+.featured-card:hover {
+  transform: translateY(-3px);
+  transition: transform 0.3s ease;
+}
+
+/* Responsive para badges */
+@media (max-width: 768px) {
+  .flash-badge,
+  .featured-badge {
+    padding: 4px 8px;
+    font-size: 10px;
+    top: 8px;
+  }
+
+  .flash-badge {
+    left: 8px;
+  }
+
+  .featured-badge {
+    right: 8px;
+  }
+
+  .flash-pricing {
+    padding: 8px;
+  }
+
+  .countdown-container {
+    padding: 8px;
+  }
+
+  .countdown-timer {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .flash-badge,
+  .featured-badge {
+    padding: 3px 6px;
+    font-size: 9px;
+    top: 6px;
+  }
+
+  .original-price {
+    font-size: 0.9rem;
+  }
+
+  .flash-price {
+    font-size: 1.4rem;
+  }
+
+  .countdown-label {
+    font-size: 10px;
+  }
+
+  .countdown-timer {
+    font-size: 11px;
+  }
+}
+
+/* Estados de productos expirados */
+.product-card[style*="opacity"] .flash-badge {
+  background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+  animation: none;
+}
+
+.product-card[style*="opacity"] {
+  filter: grayscale(50%);
+}
+
+/* Mejoras para accesibilidad */
+.flash-badge:focus,
+.featured-badge:focus {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.countdown-container:focus-within {
+  box-shadow: 0 0 0 2px #e74c3c;
+}
+
+/* Compatibilidad con modo oscuro */
+@media (prefers-color-scheme: dark) {
+  .flash-pricing,
+  .countdown-container {
+    background: linear-gradient(135deg, #2c1810, #3d1f15);
+    border-color: #e74c3c;
+  }
+
+  .countdown-label {
+    color: #ccc;
+  }
+}
+
+/* CARRUSELES */
+
+/* Secciones de carrusel */
+.flash-sales-section {
+  background: linear-gradient(
+    135deg,
+    #ff6b6b 0%,
+    #ee5a24 30%,
+    #ff3838 70%,
+    #c44569 100%
+  );
+  color: white;
+  padding: 4rem 0;
+  margin: 4rem 0 3rem 0;
+  position: relative;
+  border-radius: 20px;
+  box-shadow: 0 15px 35px rgba(255, 56, 56, 0.3);
+  overflow: hidden;
+}
+
+.flash-sales-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 40%,
+    rgba(255, 107, 107, 0.2) 60%,
+    transparent 100%
+  );
+  opacity: 0.6;
+  animation: flashShimmer 4s infinite;
+}
+
+.featured-section {
+  background: linear-gradient(135deg, #8360c3 0%, #2ebf91 50%, #8360c3 100%);
+  padding: 4rem 0;
+  margin: 3rem 0 4rem 0;
+  color: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.featured-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  animation: sparkle 4s infinite;
+}
+
+/* Headers de sección */
+.section-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 2;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: white;
+}
+
+.section-subtitle {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.flash-icon {
+  font-size: 3rem;
+  animation: flicker 1.5s infinite alternate;
+}
+
+.star-icon {
+  font-size: 3rem;
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+/* Contenedor de carrusel */
+.carousel-container {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 3rem;
+  overflow: hidden; /* Importante: ocultar overflow */
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.3s ease;
+  gap: 1rem;
+  width: fit-content; /* Asegurar que el track tenga el ancho correcto */
+}
+
+.carousel-track .product-card {
+  flex: 0 0 calc(25% - 0.75rem);
+  min-width: 250px;
+  max-width: 300px; /* Límite máximo para evitar tarjetas muy anchas */
+}
+
+/* Botones de navegación */
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+  color: var(--secondary-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.carousel-btn:hover:not(.disabled) {
+  background: white;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.carousel-btn:disabled,
+.carousel-btn.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: translateY(-50%) scale(0.9);
+}
+
+.prev-btn {
+  left: 0;
+}
+
+.next-btn {
+  right: 0;
+}
+
+/* Tarjetas optimizadas */
+.product-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.product-image-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.product-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.05);
+}
+
+.product-info {
+  padding: 1rem;
+}
+
+.product-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--secondary-color);
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+  cursor: pointer;
+}
+
+.product-name:hover {
+  color: var(--primary-color);
+}
+
+.product-description {
+  color: var(--dark-gray);
+  font-size: 0.85rem;
+  margin-bottom: 0.8rem;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Pricing */
+.product-pricing {
+  margin-bottom: 0.8rem;
+}
+
+.product-price {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.flash-pricing {
+  background: linear-gradient(135deg, #fff1f1, #ffe6e6);
+  border: 1px solid #e74c3c;
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.original-price {
+  font-size: 0.9rem;
+  color: #999;
+  text-decoration: line-through;
+  margin-bottom: 3px;
+}
+
+.flash-price {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #e74c3c;
+}
+
+/* Badges */
+.flash-badge,
+.featured-badge {
+  position: absolute;
+  top: 10px;
+  z-index: 15;
+  padding: 6px 12px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: 900;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(5px);
+}
+
+.flash-badge {
+  left: 10px;
+  background: linear-gradient(135deg, #ff4757 0%, #ff3838 50%, #c44569 100%);
+  animation: flashPulse 2s infinite;
+}
+
+.featured-badge {
+  right: 10px;
+  background: linear-gradient(135deg, #ffa502 0%, #ff6348 50%, #ff4757 100%);
+  animation: sparkle 3s infinite;
+}
+
+/* Countdown */
+.countdown-container {
+  background: linear-gradient(135deg, #fff1f1, #ffe6e6);
+  border: 1px solid #e74c3c;
+  border-radius: 6px;
+  padding: 6px 8px;
+  margin: 6px 0;
+  text-align: center;
+}
+
+.countdown-label {
+  display: block;
+  font-size: 10px;
+  color: #666;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.countdown-timer {
+  font-family: "Courier New", monospace;
+  font-weight: bold;
+  color: #e74c3c;
+  font-size: 12px;
+}

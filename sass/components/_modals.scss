@@ -1,0 +1,167 @@
+@use '../abstracts/functions' as f;
+
+
+/* ----------- Animaciones para modales ----------- */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slideInScale {
+  from {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Overlay para modales */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+  backdrop-filter: blur(2px);
+}
+
+/* Login Prompt Modal */
+.login-prompt {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  z-index: 10000;
+  text-align: center;
+  animation: slideInScale 0.4s ease;
+  max-width: 450px;
+  width: 90%;
+  position: relative;
+  border: 3px solid f.color(primary);
+}
+
+.login-prompt .emoji-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.login-prompt h3 {
+  color: f.color(secondary);
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+}
+
+.login-prompt p {
+  color: f.color(medium);
+  margin: 0;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.login-prompt .button-group {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.login-prompt .btn {
+  font-size: 1rem;
+  padding: 0.75rem 2rem;
+  text-decoration: none;
+}
+
+.login-prompt .close-button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: f.color(medium);
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.login-prompt .close-button:hover {
+  background: f.color(light);
+}
+
+/* User Menu Dropdown */
+.user-menu {
+  position: fixed;
+  background: white;
+  border: 1px solid f.color(light);
+  border-radius: 10px;
+  box-shadow: 0 5px 20px f.color(overlay);
+  z-index: 1000;
+  min-width: 200px;
+}
+
+.user-menu-content {
+  padding: 1rem;
+}
+
+.user-menu-item {
+  display: block;
+  padding: 0.5rem 0;
+  text-decoration: none;
+  color: f.color(secondary);
+  transition: color 0.2s ease;
+}
+
+.user-menu-item:hover {
+  color: f.color(primary);
+}
+
+.user-menu-item.logout {
+  color: f.color(danger);
+}
+
+.user-menu-separator {
+  margin: 0.5rem 0;
+  border: none;
+  border-top: 1px solid f.color(light);
+}
+
+/* Success Message */
+.success-message {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  background-color: f.color(success);
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}

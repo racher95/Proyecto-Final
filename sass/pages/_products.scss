@@ -1,0 +1,118 @@
+/* ----------- Sección de productos ----------- */
+.products-section {
+  margin-bottom: 3rem;
+}
+
+.loading-message,
+.error-message {
+  text-align: center;
+  padding: 3rem;
+  background-color: var(--white);
+  border-radius: 10px;
+  box-shadow: 0 2px 10px var(--shadow);
+  display: none;
+}
+
+.loading-message.show,
+.error-message.show {
+  display: block;
+}
+
+.spinner {
+  border: 4px solid var(--light-gray);
+  border-top: 4px solid var(--primary-color);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+/* Vista de lista para productos */
+.products-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.products-list .product-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 1.5rem;
+  height: auto;
+  max-width: none;
+}
+
+.products-list .product-card img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 1.5rem;
+  flex-shrink: 0;
+}
+
+.products-list .product-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 120px;
+}
+
+.products-list .product-card h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+}
+
+.products-list .product-card p {
+  margin: 0 0 1rem 0;
+  flex: 1;
+}
+
+.products-list .product-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+.products-list .product-price {
+  margin: 0;
+}
+
+.products-list .btn {
+  margin-left: 1rem;
+}
+
+.no-results {
+  display: none;
+  text-align: center;
+  padding: 3rem;
+  background-color: var(--white);
+  border-radius: 10px;
+  box-shadow: 0 2px 10px var(--shadow);
+}
+
+/* ===========================================================================
+   7. FORMULARIOS Y INPUTS
+   Futuro: _forms.scss
+   =========================================================================== */

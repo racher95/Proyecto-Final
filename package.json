@@ -1,0 +1,27 @@
+{
+  "name": "proyecto-final",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "scss:build": "sass sass/main.scss CSS/style.css --style=expanded --source-map",
+    "scss:watch": "sass --watch sass/main.scss:CSS/style.css --style=expanded --source-map",
+    "css:build": "npm run scss:build",
+    "css:watch": "npm run scss:watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/racher95/Proyecto-Final.git"
+  },
+  "keywords": [],
+  "author": "kevin <kevincamara95@gmail.com>",
+  "license": "MIT",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/racher95/Proyecto-Final/issues"
+  },
+  "homepage": "https://github.com/racher95/Proyecto-Final#readme",
+  "devDependencies": {
+    "sass": "1.93.2"
+  }
+}

@@ -1,0 +1,32 @@
+@use 'sass:map';
+
+@use 'breakpoints' as bp;
+
+@function bp-value($key) {
+  $value: map.get(bp.$breakpoints, $key);
+  @if $value == null {
+    @error 'Breakpoint #{ $key } no definido';
+  }
+  @return $value;
+}
+
+@mixin up($key) {
+  @media (min-width: bp-value($key)) {
+    @content;
+  }
+}
+
+@mixin down($key) {
+  $max: bp-value($key) - 0.02px;
+  @media (max-width: $max) {
+    @content;
+  }
+}
+
+@mixin between($from, $to) {
+  $min: bp-value($from);
+  $max: bp-value($to) - 0.02px;
+  @media (min-width: $min) and (max-width: $max) {
+    @content;
+  }
+}

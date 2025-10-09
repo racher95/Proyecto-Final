@@ -1,0 +1,67 @@
+/* ----------- Utility Classes ----------- */
+.hidden {
+  display: none !important;
+}
+
+.visible {
+  display: block !important;
+}
+
+/* Clases específicas para elementos HTML */
+.form-button-primary {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.cart-content {
+  display: none;
+}
+
+.checkout-button {
+  width: 100%;
+  margin-top: 2rem;
+}
+
+.offers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.section-subtitle {
+  text-align: center;
+  color: var(--medium-gray);
+  margin-bottom: 2rem;
+}
+
+/* ===========================================================================
+   12. SISTEMA DE NOTIFICACIONES
+   Futuro: _notifications.scss
+   =========================================================================== */
+
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  z-index: 10000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: slideIn 0.3s ease;
+}
+
+.notification.success {
+  background-color: var(--success-color);
+}
+
+.notification.error {
+  background-color: var(--danger-color);
+}
+
+/* ===========================================================================
+   10. PÁGINAS ESPECÍFICAS
+   Futuro: pages/_about.scss, pages/_catalog.scss
+   =========================================================================== */
