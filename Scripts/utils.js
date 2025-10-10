@@ -86,7 +86,6 @@ function migrateCartToUser(username) {
  */
 function clearTempCart() {
   localStorage.removeItem("craftivityCart");
-  console.log("Carrito temporal limpiado");
 }
 
 /**
@@ -397,13 +396,12 @@ async function loadFeaturedCache() {
 }
 
 /**
- * Limpia el cache de promociones (forzar recarga)
+ * Limpia el cache de promociones para forzar recarga
  */
 function clearPromotionsCache() {
   flashSalesCache = null;
   featuredCache = null;
   cacheTimestamp = null;
-  console.log("Cache de promociones limpiado");
 }
 
 /**

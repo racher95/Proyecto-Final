@@ -1,0 +1,38 @@
+{
+  "name": "craftivity",
+  "version": "1.0.0",
+  "description": "Craftivity - E-commerce de kits DIY (Proyecto Final JAP 2025)",
+  "main": "index.html",
+  "scripts": {
+    "scss:build": "sass sass/main.scss CSS/style.css --no-source-map",
+    "scss:watch": "sass --watch sass/main.scss:CSS/style.css --no-source-map",
+    "css:mqpack": "postcss CSS/style.css -u postcss-combine-media-query -o CSS/style.css",
+    "css:build": "npm run scss:build && npm run css:mqpack",
+    "css:watch": "npm run scss:watch"
+  },
+  "keywords": [
+    "sass",
+    "scss",
+    "craftivity",
+    "diy",
+    "ecommerce"
+  ],
+  "author": "Grupo 7 - JAP 2025",
+  "license": "ISC",
+  "devDependencies": {
+    "sass": "^1.71.0",
+    "postcss": "^8.4.33",
+    "postcss-cli": "^11.0.0",
+    "autoprefixer": "^10.4.17",
+    "postcss-combine-media-query": "^1.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/racher95/Proyecto-Final.git"
+  },
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/racher95/Proyecto-Final/issues"
+  },
+  "homepage": "https://github.com/racher95/Proyecto-Final#readme"
+}

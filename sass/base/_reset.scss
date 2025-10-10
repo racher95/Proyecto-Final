@@ -1,0 +1,22 @@
+// ===========================================================================
+// CRAFTIVITY - RESET
+// Normalización de estilos base
+// ===========================================================================
+
+@use "../abstracts/variables" as m;
+@use "sass:map";
+
+// Variables CSS globales para uso en JavaScript
+:root {
+  --primary-color: #{map.get(m.$colors, "primary")};
+  --success-color: #{map.get(m.$colors, "success")};
+  --danger-color: #{map.get(m.$colors, "danger")};
+  --warning-color: #{map.get(m.$colors, "warning")};
+  --info-color: #{map.get(m.$colors, "info")};
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}

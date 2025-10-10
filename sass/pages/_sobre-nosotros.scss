@@ -1,0 +1,451 @@
+// ===========================================================================
+// CRAFTIVITY - ABOUT
+// Estilos de la página sobre nosotros
+// ===========================================================================
+
+@use "../abstracts/variables" as m;
+@use "sass:map";
+
+// Hero section de la página sobre nosotros
+.about-hero {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    map.get(m.$colors, "primary") 0%,
+    map.get(m.$colors, "secondary") 100%
+  );
+  padding: map.get(m.$spaces, "4xl") map.get(m.$spaces, "xl");
+  border-radius: map.get(m.$spaces, "2xl");
+  text-align: center;
+  color: map.get(m.$colors, "white");
+  overflow: hidden;
+  margin-bottom: map.get(m.$spaces, "3xl");
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.2) 0%,
+      rgba(0, 0, 0, 0.4) 100%
+    );
+    z-index: 1;
+  }
+
+  > * {
+    position: relative;
+    z-index: 2;
+  }
+
+  h1 {
+    font-size: 3rem;
+    font-weight: map.get(m.$font-weights, "bold");
+    margin-bottom: map.get(m.$spaces, "lg");
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  p {
+    font-size: 1.3rem;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: map.get(m.$line-heights, "relaxed");
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.our-story {
+  padding: map.get(m.$spaces, "4xl") 0;
+  background-color: map.get(m.$colors, "white");
+}
+
+.story-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: map.get(m.$spaces, "4xl");
+  align-items: center;
+}
+
+.story-text {
+  padding: map.get(m.$spaces, "xl");
+
+  h2 {
+    color: map.get(m.$colors, "secondary");
+    margin-bottom: map.get(m.$spaces, "xl");
+    font-size: 2.2rem;
+    font-weight: map.get(m.$font-weights, "bold");
+  }
+
+  p {
+    margin-bottom: 1.8rem;
+    line-height: map.get(m.$line-heights, "relaxed");
+    color: map.get(m.$colors, "dark-gray");
+    font-size: 1.1rem;
+  }
+}
+
+.story-image {
+  text-align: center;
+  padding: map.get(m.$spaces, "3xl") map.get(m.$spaces, "xl");
+  background: linear-gradient(
+    135deg,
+    map.get(m.$colors, "primary"),
+    map.get(m.$colors, "accent")
+  );
+  border-radius: map.get(m.$radius, "3xl");
+  color: map.get(m.$colors, "white");
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+
+  h4 {
+    font-size: 1.3rem;
+    margin-bottom: map.get(m.$spaces, "sm");
+    font-weight: map.get(m.$font-weights, "semibold");
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  p {
+    font-size: map.get(m.$font-sizes, "base");
+    opacity: 0.9;
+    margin: 0;
+  }
+}
+
+// Placeholder image dentro de story-image (sobrescribe _placeholders.scss)
+.story-image .placeholder-image {
+  // Resetear estilos de _placeholders.scss
+  background: none;
+  background-color: transparent;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+
+  // Estilos propios
+  font-size: 8rem;
+  opacity: 0.9;
+  margin-bottom: map.get(m.$spaces, "lg");
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  // Ocultar el emoji ::before de _placeholders.scss
+  &::before {
+    content: none;
+    display: none;
+  }
+}
+
+.mission-vision {
+  padding: map.get(m.$spaces, "4xl") 0;
+  background-color: map.get(m.$colors, "light-gray");
+
+  h2 {
+    text-align: center;
+    color: map.get(m.$colors, "secondary");
+    margin-bottom: map.get(m.$spaces, "3xl");
+    font-size: 2.2rem;
+    font-weight: map.get(m.$font-weights, "bold");
+  }
+}
+
+.mvv-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: map.get(m.$spaces, "2xl");
+  margin-top: map.get(m.$spaces, "xl");
+}
+
+.mvv-card {
+  background-color: map.get(m.$colors, "white");
+  padding: map.get(m.$spaces, "3xl") map.get(m.$spaces, "2xl");
+  border-radius: map.get(m.$radius, "2xl");
+  text-align: center;
+  box-shadow: 0 8px 25px map.get(m.$colors, "shadow-base");
+  transition: map.get(m.$transitions, "normal");
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(
+      90deg,
+      map.get(m.$colors, "primary"),
+      map.get(m.$colors, "accent")
+    );
+  }
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    border-color: map.get(m.$colors, "primary");
+
+    li {
+      color: map.get(m.$colors, "secondary");
+    }
+  }
+
+  h3 {
+    color: map.get(m.$colors, "secondary");
+    margin-bottom: map.get(m.$spaces, "lg");
+    font-size: map.get(m.$font-sizes, "lg");
+    font-weight: map.get(m.$font-weights, "semibold");
+  }
+
+  p {
+    color: map.get(m.$colors, "dark-gray");
+    line-height: map.get(m.$line-heights, "relaxed");
+    font-size: 1.05rem;
+    margin-bottom: map.get(m.$spaces, "md");
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin-top: map.get(m.$spaces, "md");
+  }
+
+  li {
+    padding: map.get(m.$spaces, "sm") 0;
+    color: map.get(m.$colors, "dark-gray");
+    font-size: map.get(m.$font-sizes, "base");
+    transition: map.get(m.$transitions, "normal");
+  }
+}
+
+.mvv-icon {
+  font-size: 3.5rem;
+  margin-bottom: map.get(m.$spaces, "lg");
+  display: block;
+}
+
+.stats-section {
+  padding: map.get(m.$spaces, "4xl") map.get(m.$spaces, "xl");
+  background: linear-gradient(
+    135deg,
+    map.get(m.$colors, "primary"),
+    map.get(m.$colors, "accent")
+  );
+  color: map.get(m.$colors, "white");
+  border-radius: map.get(m.$radius, "3xl");
+  margin: map.get(m.$spaces, "xl") 0;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+
+  h2 {
+    text-align: center;
+    margin-bottom: map.get(m.$spaces, "3xl");
+    font-size: 2.4rem;
+    font-weight: map.get(m.$font-weights, "bold");
+    color: map.get(m.$colors, "white");
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: map.get(m.$spaces, "2xl");
+  margin-top: map.get(m.$spaces, "xl");
+}
+
+.stat-card {
+  text-align: center;
+  padding: map.get(m.$spaces, "2xl") map.get(m.$spaces, "lg");
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: map.get(m.$radius, "2xl");
+  backdrop-filter: blur(15px);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  transition: map.get(m.$transitions, "normal");
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    transform: translateY(-8px);
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.stat-number {
+  font-size: map.get(m.$font-sizes, "2xl");
+  font-weight: 800;
+  color: rgba(255, 200, 100, 0.95);
+  margin-bottom: map.get(m.$spaces, "sm");
+}
+
+.stat-label {
+  font-size: 1.1rem;
+  font-weight: map.get(m.$font-weights, "bold");
+  color: map.get(m.$colors, "white");
+  margin-bottom: map.get(m.$spaces, "sm");
+}
+
+.stat-desc {
+  font-size: map.get(m.$font-sizes, "sm");
+  color: rgba(255, 255, 255, 0.9);
+  line-height: map.get(m.$line-heights, "base");
+}
+
+.join-community {
+  padding: map.get(m.$spaces, "4xl") map.get(m.$spaces, "2xl");
+  background: linear-gradient(
+    135deg,
+    map.get(m.$colors, "secondary"),
+    map.get(m.$colors, "primary")
+  );
+  color: map.get(m.$colors, "white");
+  text-align: center;
+  border-radius: map.get(m.$radius, "3xl");
+  margin: map.get(m.$spaces, "xl") 0;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.community-content {
+  h2 {
+    font-size: 2.6rem;
+    margin-bottom: map.get(m.$spaces, "xl");
+    font-weight: map.get(m.$font-weights, "bold");
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  p {
+    font-size: 1.3rem;
+    margin-bottom: map.get(m.$spaces, "3xl");
+    max-width: 650px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: map.get(m.$line-heights, "relaxed");
+  }
+}
+
+// Our Team Section
+.our-team {
+  padding: map.get(m.$spaces, "4xl") 0;
+  background-color: map.get(m.$colors, "light-gray");
+
+  h2 {
+    text-align: center;
+    color: map.get(m.$colors, "secondary");
+    margin-bottom: map.get(m.$spaces, "md");
+    font-size: 2.2rem;
+    font-weight: map.get(m.$font-weights, "bold");
+  }
+}
+
+.team-intro {
+  text-align: center;
+  margin-bottom: map.get(m.$spaces, "3xl");
+  color: map.get(m.$colors, "dark-gray");
+  font-size: 1.2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: map.get(m.$spaces, "2xl");
+  margin-top: map.get(m.$spaces, "xl");
+}
+
+.team-member {
+  background-color: map.get(m.$colors, "white");
+  padding: map.get(m.$spaces, "2xl");
+  border-radius: map.get(m.$radius, "2xl");
+  text-align: center;
+  box-shadow: 0 8px 25px map.get(m.$colors, "shadow-base");
+  transition: map.get(m.$transitions, "normal");
+  border: 2px solid transparent;
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    border-color: map.get(m.$colors, "primary");
+  }
+
+  h3 {
+    color: map.get(m.$colors, "secondary");
+    margin-bottom: map.get(m.$spaces, "sm");
+  }
+
+  p {
+    color: map.get(m.$colors, "dark-gray");
+    line-height: map.get(m.$line-heights, "relaxed");
+  }
+}
+
+.member-photo {
+  font-size: 4rem;
+  margin-bottom: map.get(m.$spaces, "md");
+}
+
+.member-role {
+  color: map.get(m.$colors, "primary");
+  font-weight: map.get(m.$font-weights, "semibold");
+  margin-bottom: map.get(m.$spaces, "md");
+}
+
+// Why Choose Us Section
+.why-choose-us {
+  padding: map.get(m.$spaces, "4xl") 0;
+  background-color: map.get(m.$colors, "white");
+
+  h2 {
+    text-align: center;
+    color: map.get(m.$colors, "secondary");
+    margin-bottom: map.get(m.$spaces, "3xl");
+    font-size: 2.2rem;
+    font-weight: map.get(m.$font-weights, "bold");
+  }
+}
+
+.why-choose-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: map.get(m.$spaces, "2xl");
+  margin-top: map.get(m.$spaces, "xl");
+}
+
+.feature-card {
+  text-align: center;
+  padding: map.get(m.$spaces, "2xl");
+  background-color: map.get(m.$colors, "light-gray");
+  border-radius: map.get(m.$radius, "lg");
+  transition: map.get(m.$transitions, "normal");
+  border: 2px solid transparent;
+
+  &:hover {
+    background-color: map.get(m.$colors, "primary");
+    color: map.get(m.$colors, "white");
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    border-color: map.get(m.$colors, "accent");
+  }
+
+  h3 {
+    margin-bottom: map.get(m.$spaces, "lg");
+    font-size: 1.4rem;
+    font-weight: map.get(m.$font-weights, "semibold");
+  }
+
+  p {
+    line-height: map.get(m.$line-heights, "relaxed");
+    font-size: map.get(m.$font-sizes, "base");
+  }
+}
+
+.feature-icon {
+  font-size: 3.5rem;
+  margin-bottom: map.get(m.$spaces, "lg");
+  display: block;
+}
+
+// ===========================================================================
+// NOTA: Media queries movidos a sass/responsive/_media-queries.scss
+// para centralización según arquitectura 7-1
+// ===========================================================================

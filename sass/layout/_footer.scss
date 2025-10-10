@@ -1,0 +1,141 @@
+// ===========================================================================
+// CRAFTIVITY - FOOTER
+// Estilos del footer
+// ===========================================================================
+
+@use "../abstracts/variables" as m;
+@use "sass:map";
+
+footer {
+  background-color: map.get(m.$colors, "secondary");
+  color: map.get(m.$colors, "white");
+  padding: map.get(m.$spaces, "3xl") 0 map.get(m.$spaces, "md");
+  margin-top: map.get(m.$spaces, "4xl");
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 map.get(m.$spaces, "xl");
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: map.get(m.$spaces, "xl");
+}
+
+.footer-section {
+  h3 {
+    margin-bottom: map.get(m.$spaces, "md");
+    color: map.get(m.$colors, "primary");
+  }
+
+  p,
+  a {
+    color: map.get(m.$colors, "light-gray");
+    text-decoration: none;
+    margin-bottom: map.get(m.$spaces, "sm");
+    display: block;
+  }
+
+  a:hover {
+    color: map.get(m.$colors, "primary");
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      margin-bottom: map.get(m.$spaces, "sm");
+    }
+  }
+}
+
+.jap-logo {
+  max-width: 120px;
+  height: auto;
+  margin-bottom: map.get(m.$spaces, "md");
+  opacity: 0.8;
+  transition: map.get(m.$transitions, "normal");
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.footer-logo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  p {
+    font-size: map.get(m.$font-sizes, "sm");
+    margin-top: map.get(m.$spaces, "md");
+    color: map.get(m.$colors, "medium-gray");
+    line-height: map.get(m.$line-heights, "base");
+  }
+}
+
+.social-links {
+  display: flex;
+  gap: map.get(m.$spaces, "md");
+  margin-top: map.get(m.$spaces, "md");
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    line-height: 45px;
+    font-size: 1.25rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: map.get(m.$radius, "md");
+    transition: map.get(m.$transitions, "normal");
+
+    &:hover {
+      background-color: map.get(m.$colors, "primary");
+      transform: translateY(-3px);
+    }
+  }
+}
+
+.newsletter-form {
+  display: flex;
+  flex-direction: column;
+  gap: map.get(m.$spaces, "sm");
+  margin-top: map.get(m.$spaces, "md");
+
+  input {
+    width: 100%;
+    padding: map.get(m.$spaces, "sm") + 0.25rem;
+    border: 2px solid map.get(m.$colors, "light-gray");
+    border-radius: map.get(m.$radius, "md");
+    font-size: map.get(m.$font-sizes, "base");
+
+    &:focus {
+      outline: none;
+      border-color: map.get(m.$colors, "primary");
+    }
+  }
+
+  button {
+    padding: map.get(m.$spaces, "sm") + 0.25rem map.get(m.$spaces, "lg");
+    white-space: nowrap;
+  }
+}
+
+.footer-bottom {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: map.get(m.$spaces, "lg") map.get(m.$spaces, "xl");
+  margin-top: map.get(m.$spaces, "2xl");
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+
+  p {
+    color: map.get(m.$colors, "medium-gray");
+    font-size: map.get(m.$font-sizes, "sm");
+    margin: 0;
+  }
+}

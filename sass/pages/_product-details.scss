@@ -1,0 +1,700 @@
+@use "../abstracts/variables" as m;
+@use "sass:map";
+
+// Product Detail Grid
+.product-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: map.get(m.$spaces, "3xl");
+  align-items: flex-start;
+}
+
+// Product Gallery
+.product-gallery {
+  position: static;
+}
+
+.main-image-container {
+  position: relative;
+  border-radius: map.get(m.$radius, "md");
+  overflow: hidden;
+  margin-bottom: map.get(m.$spaces, "md");
+  background: map.get(m.$colors, "white");
+  box-shadow: 0 4px 20px map.get(m.$colors, "shadow-base");
+  margin-top: 0;
+
+  &:hover .gallery-nav {
+    opacity: 1;
+  }
+}
+
+.main-image {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  display: block;
+}
+
+.gallery-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 map.get(m.$spaces, "md");
+  opacity: 0;
+  transition: map.get(m.$transitions, "normal");
+}
+
+.gallery-nav-btn {
+  background: rgba(0, 0, 0, 0.7);
+  color: map.get(m.$colors, "white");
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: map.get(m.$font-sizes, "xl");
+  cursor: pointer;
+  transition: map.get(m.$transitions, "normal");
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.9);
+  }
+}
+
+// Thumbnails
+.thumbnails {
+  display: flex;
+  gap: map.get(m.$spaces, "sm");
+  overflow-x: auto;
+  padding: map.get(m.$spaces, "sm") 0;
+}
+
+.thumbnail {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: map.get(m.$radius, "md");
+  cursor: pointer;
+  opacity: 0.7;
+  transition: map.get(m.$transitions, "normal");
+  border: 2px solid transparent;
+
+  &:hover,
+  &.active {
+    opacity: 1;
+    border-color: map.get(m.$colors, "primary");
+  }
+}
+
+// Product Info Detail
+.product-info-detail {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  margin-top: 0;
+  height: fit-content;
+
+  h1 {
+    margin-top: 0;
+    margin-bottom: map.get(m.$spaces, "md");
+    line-height: map.get(m.$line-heights, "tight");
+    color: map.get(m.$colors, "dark");
+    text-align: left;
+    font-weight: map.get(m.$font-weights, "semibold");
+  }
+}
+
+// Product Badges Detail
+.product-badges-detail {
+  display: flex;
+  gap: map.get(m.$spaces, "md");
+  margin-bottom: map.get(m.$spaces, "md");
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: -60px;
+  padding-top: 0;
+}
+
+// NOTA: Media query movido a sass/responsive/_media-queries.scss
+
+.badge-featured-detail,
+.badge-flash-detail {
+  padding: map.get(m.$spaces, "sm") map.get(m.$spaces, "lg");
+  border-radius: map.get(m.$radius, "3xl");
+  font-size: map.get(m.$font-sizes, "sm");
+  font-weight: map.get(m.$font-weights, "bold");
+  color: map.get(m.$colors, "white");
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: map.get(m.$spaces, "sm");
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  opacity: 1 !important;
+  z-index: map.get(m.$z, "dropdown");
+  position: relative;
+}
+
+.badge-featured-detail {
+  background: linear-gradient(135deg, #f39c12, #e67e22);
+  box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);
+}
+
+.badge-flash-detail {
+  background: linear-gradient(
+    135deg,
+    map.get(m.$colors, "danger"),
+    map.get(m.$colors, "danger-dark")
+  );
+  box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+  animation: pulse 2s infinite;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent
+    );
+    animation: shimmer 3s infinite;
+  }
+}
+
+// Product Pricing Detail
+.product-pricing-detail {
+  margin: map.get(m.$spaces, "sm") 0;
+}
+
+.product-price-large {
+  font-size: 2.2rem;
+  font-weight: map.get(m.$font-weights, "bold");
+  color: map.get(m.$colors, "primary");
+}
+
+.flash-pricing-detail {
+  background: linear-gradient(135deg, #fff1f1, #ffe6e6);
+  border: 2px solid map.get(m.$colors, "danger");
+  border-radius: map.get(m.$radius, "lg");
+  padding: map.get(m.$spaces, "sm");
+  margin: map.get(m.$spaces, "sm") 0;
+}
+
+.original-price-detail {
+  font-size: 1.1rem;
+  color: map.get(m.$colors, "medium-gray");
+  text-decoration: line-through;
+  margin-bottom: map.get(m.$spaces, "sm");
+}
+
+.flash-price-section {
+  display: flex;
+  align-items: center;
+  gap: map.get(m.$spaces, "md");
+  flex-wrap: wrap;
+}
+
+.flash-price-large {
+  font-size: 2.4rem;
+  font-weight: map.get(m.$font-weights, "bold");
+  color: map.get(m.$colors, "danger");
+}
+
+.discount-badge {
+  background: map.get(m.$colors, "danger");
+  color: map.get(m.$colors, "white");
+  padding: map.get(m.$spaces, "sm") map.get(m.$spaces, "md");
+  border-radius: map.get(m.$radius, "2xl");
+  font-weight: map.get(m.$font-weights, "bold");
+  font-size: 1.1rem;
+  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+}
+
+// Flash Sale Countdown Detail
+.flash-sale-countdown-detail {
+  background: linear-gradient(135deg, #e67e22, #f39c12, #f1c40f);
+  border-radius: map.get(m.$radius, "md");
+  padding: map.get(m.$spaces, "sm");
+  margin: map.get(m.$spaces, "sm") 0;
+  color: map.get(m.$colors, "white");
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      45deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.1) 50%,
+      transparent 70%
+    );
+    animation: countdown-shine 3s infinite;
+  }
+}
+
+@keyframes countdown-shine {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.countdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: map.get(m.$spaces, "sm");
+  margin-bottom: map.get(m.$spaces, "md");
+}
+
+.fire-icon {
+  font-size: map.get(m.$font-sizes, "lg");
+  animation: flicker 1.5s infinite alternate;
+}
+
+.countdown-label {
+  font-size: 1.2rem;
+  font-weight: map.get(m.$font-weights, "semibold");
+}
+
+.countdown-timer-detail {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: map.get(m.$spaces, "sm");
+  flex-wrap: wrap;
+}
+
+.time-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 50px;
+}
+
+.time-number {
+  font-size: 1.6rem;
+  font-weight: map.get(m.$font-weights, "bold");
+  font-family: "Courier New", monospace;
+  background: rgba(255, 255, 255, 0.1);
+  padding: map.get(m.$spaces, "xs");
+  border-radius: map.get(m.$radius, "sm");
+  min-width: 40px;
+  display: inline-block;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.time-label {
+  font-size: map.get(m.$font-sizes, "xs");
+  opacity: 0.9;
+  margin-top: map.get(m.$spaces, "xs");
+  position: relative;
+  z-index: 1;
+}
+
+.time-separator {
+  font-size: map.get(m.$font-sizes, "lg");
+  font-weight: map.get(m.$font-weights, "bold");
+  opacity: 0.7;
+  margin: 0 map.get(m.$spaces, "xs");
+}
+
+// Product Metadata Detail
+.product-metadata-detail {
+  margin: map.get(m.$spaces, "sm") 0;
+  padding: map.get(m.$spaces, "md");
+  background: map.get(m.$colors, "light-gray");
+  border-radius: map.get(m.$radius, "md");
+}
+
+.metadata-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: map.get(m.$spaces, "xs");
+}
+
+.metadata-label {
+  font-weight: map.get(m.$font-weights, "medium");
+  color: map.get(m.$colors, "secondary");
+}
+
+.product-id-detail {
+  font-family: monospace;
+  background: rgba(74, 144, 226, 0.1);
+  padding: map.get(m.$spaces, "xs") map.get(m.$spaces, "sm");
+  border-radius: map.get(m.$radius, "sm");
+  font-size: map.get(m.$font-sizes, "sm");
+}
+
+// Product Description Section
+.product-description-section {
+  margin-top: map.get(m.$spaces, "lg");
+  padding-top: map.get(m.$spaces, "md");
+  border-top: 1px solid map.get(m.$colors, "light-gray");
+}
+
+.product-description-full {
+  background: map.get(m.$colors, "white");
+  border-radius: map.get(m.$radius, "md");
+  padding: map.get(m.$spaces, "lg");
+  box-shadow: 0 2px 10px map.get(m.$colors, "shadow-base");
+  margin: map.get(m.$spaces, "xl") 0;
+
+  h3 {
+    color: map.get(m.$colors, "secondary");
+    margin-bottom: map.get(m.$spaces, "md");
+    font-size: map.get(m.$font-sizes, "lg");
+  }
+
+  p {
+    line-height: map.get(m.$line-heights, "relaxed");
+    color: map.get(m.$colors, "text");
+  }
+}
+
+// Product Actions Detail
+.product-actions-detail {
+  display: flex;
+  gap: map.get(m.$spaces, "md");
+  margin-top: map.get(m.$spaces, "sm");
+}
+
+// Product Comments
+.product-comments {
+  background: map.get(m.$colors, "light-gray");
+  padding: map.get(m.$spaces, "3xl") 0;
+  margin-top: map.get(m.$spaces, "3xl");
+}
+
+.comments-container {
+  display: flex;
+  flex-direction: column;
+  gap: map.get(m.$spaces, "lg");
+}
+
+.comment {
+  background: map.get(m.$colors, "white");
+  padding: map.get(m.$spaces, "lg");
+  border-radius: map.get(m.$radius, "md");
+  box-shadow: 0 2px 10px map.get(m.$colors, "shadow-base");
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: map.get(m.$spaces, "md");
+}
+
+.comment-user {
+  display: flex;
+  align-items: center;
+  gap: map.get(m.$spaces, "md");
+}
+
+.comment-rating {
+  color: #ffd700;
+  font-size: 1.2rem;
+}
+
+.comment-date {
+  color: map.get(m.$colors, "medium-gray");
+  font-size: map.get(m.$font-sizes, "sm");
+}
+
+.comment-text {
+  line-height: map.get(m.$line-heights, "relaxed");
+  color: map.get(m.$colors, "dark-gray");
+}
+
+.no-comments {
+  text-align: center;
+  padding: map.get(m.$spaces, "3xl");
+  color: map.get(m.$colors, "medium-gray");
+  font-style: italic;
+}
+
+// Related Products Section
+.related-products-section {
+  background: map.get(m.$colors, "light-gray");
+  padding: map.get(m.$spaces, "3xl") 0;
+  margin-top: 0;
+  border-top: 1px solid #e0e0e0;
+
+  h2 {
+    color: map.get(m.$colors, "secondary");
+    font-weight: map.get(m.$font-weights, "semibold");
+    margin-bottom: map.get(m.$spaces, "xl");
+  }
+}
+
+// Related Products Carousel
+#relatedProductsCarousel {
+  position: relative;
+  padding: 0 map.get(m.$spaces, "3xl");
+
+  .carousel-inner {
+    padding: map.get(m.$spaces, "md") 0;
+  }
+
+  .carousel-control-prev,
+  .carousel-control-next {
+    width: 50px;
+    height: 50px;
+    background: map.get(m.$colors, "primary");
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.9;
+    transition: map.get(m.$transitions, "normal");
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background: map.get(m.$colors, "secondary");
+      opacity: 1;
+      transform: translateY(-50%) scale(1.1);
+    }
+  }
+
+  .carousel-control-prev {
+    left: 0;
+  }
+
+  .carousel-control-next {
+    right: 0;
+  }
+
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.related-product-card {
+  background: map.get(m.$colors, "white");
+  border-radius: map.get(m.$radius, "lg");
+  overflow: hidden;
+  box-shadow: 0 4px 12px map.get(m.$colors, "shadow-base");
+  transition: map.get(m.$transitions, "normal");
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+
+    .related-product-image img {
+      transform: scale(1.1);
+    }
+  }
+}
+
+.related-product-image {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  background: map.get(m.$colors, "light-gray");
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: map.get(m.$transitions, "normal");
+  }
+}
+
+.related-badge-featured {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: map.get(m.$colors, "dark-gray");
+  padding: map.get(m.$spaces, "xs") map.get(m.$spaces, "md");
+  border-radius: map.get(m.$radius, "2xl");
+  font-size: map.get(m.$font-sizes, "xs");
+  font-weight: map.get(m.$font-weights, "semibold");
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: map.get(m.$z, "dropdown");
+}
+
+.related-badge-flash {
+  position: absolute;
+  top: 45px;
+  right: 10px;
+  background: linear-gradient(135deg, #ff4500 0%, #ff6347 100%);
+  color: map.get(m.$colors, "white");
+  padding: map.get(m.$spaces, "xs") map.get(m.$spaces, "md");
+  border-radius: map.get(m.$radius, "2xl");
+  font-size: map.get(m.$font-sizes, "xs");
+  font-weight: map.get(m.$font-weights, "semibold");
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: map.get(m.$z, "dropdown");
+}
+
+.related-product-info {
+  padding: map.get(m.$spaces, "lg");
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.related-product-name {
+  font-size: 1.1rem;
+  font-weight: map.get(m.$font-weights, "semibold");
+  color: map.get(m.$colors, "secondary");
+  margin-bottom: map.get(m.$spaces, "sm");
+  line-height: map.get(m.$line-heights, "tight");
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.related-product-category {
+  font-size: map.get(m.$font-sizes, "sm");
+  color: map.get(m.$colors, "medium-gray");
+  margin-bottom: map.get(m.$spaces, "md");
+}
+
+.related-product-price {
+  margin-top: auto;
+  margin-bottom: map.get(m.$spaces, "md");
+
+  .price {
+    font-size: 1.4rem;
+    font-weight: map.get(m.$font-weights, "bold");
+    color: map.get(m.$colors, "primary");
+  }
+}
+
+.btn-view-related {
+  width: 100%;
+  background: map.get(m.$colors, "primary");
+  color: map.get(m.$colors, "white");
+  border: none;
+  padding: map.get(m.$spaces, "md") map.get(m.$spaces, "lg");
+  border-radius: map.get(m.$radius, "md");
+  font-weight: map.get(m.$font-weights, "semibold");
+  font-size: map.get(m.$font-sizes, "sm");
+  cursor: pointer;
+  transition: map.get(m.$transitions, "normal");
+  text-align: center;
+
+  &:hover {
+    background: map.get(m.$colors, "secondary");
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.no-related-products {
+  text-align: center;
+  padding: map.get(m.$spaces, "3xl");
+  color: map.get(m.$colors, "medium-gray");
+  font-style: italic;
+}
+
+// Review Form Section
+.review-form-section {
+  background: map.get(m.$colors, "white");
+  padding: map.get(m.$spaces, "3xl") 0;
+  border-top: 1px solid #e0e0e0;
+}
+
+.review-form-card {
+  border: none;
+  box-shadow: 0 4px 12px map.get(m.$shadows, "md");
+  border-radius: map.get(m.$radius, "xl");
+
+  .card-body {
+    padding: map.get(m.$spaces, "2xl");
+  }
+
+  .btn-primary {
+    background: map.get(m.$colors, "primary");
+    border-color: map.get(m.$colors, "primary");
+    padding: map.get(m.$spaces, "md") map.get(m.$spaces, "2xl");
+    font-weight: map.get(m.$font-weights, "semibold");
+
+    &:hover {
+      background: map.get(m.$colors, "secondary");
+      border-color: map.get(m.$colors, "secondary");
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  .btn-outline-secondary {
+    padding: map.get(m.$spaces, "md") map.get(m.$spaces, "2xl");
+    font-weight: map.get(m.$font-weights, "semibold");
+  }
+}
+
+// Star Rating
+.star-rating {
+  display: inline-flex;
+  gap: map.get(m.$spaces, "sm");
+  font-size: map.get(m.$font-sizes, "xl");
+  cursor: pointer;
+
+  i {
+    color: #ddd;
+    transition: map.get(m.$transitions, "fast");
+    cursor: pointer;
+
+    &:hover,
+    &.hover {
+      color: #ffd700;
+      transform: scale(1.2);
+    }
+
+    &.selected,
+    &.fas {
+      color: #ffd700;
+    }
+  }
+}
+
+// Character Counter
+#charCount {
+  float: right;
+  font-size: map.get(m.$font-sizes, "sm");
+}
+
+// Review Textarea
+#reviewText {
+  resize: vertical;
+  min-height: 100px;
+
+  &:focus {
+    border-color: map.get(m.$colors, "primary");
+    box-shadow: 0 0 0 0.25rem rgba(map.get(m.$colors, "primary"), 0.25);
+  }
+}

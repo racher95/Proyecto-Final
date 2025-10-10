@@ -1,0 +1,117 @@
+@use "../abstracts/variables" as m;
+@use "sass:map";
+
+// Loading and Error Messages
+.loading-message,
+.error-message {
+  text-align: center;
+  padding: map.get(m.$spaces, "3xl");
+  background-color: map.get(m.$colors, "white");
+  border-radius: map.get(m.$radius, "md");
+  box-shadow: 0 2px 10px map.get(m.$colors, "shadow-base");
+  display: none;
+
+  &.show {
+    display: block;
+  }
+}
+
+.error-message {
+  color: map.get(m.$colors, "danger");
+  border: 2px solid map.get(m.$colors, "danger");
+}
+
+// Spinner
+.spinner {
+  border: 4px solid map.get(m.$colors, "light-gray");
+  border-top: 4px solid map.get(m.$colors, "primary");
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto map.get(m.$spaces, "md");
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+// Loading State
+.loading {
+  opacity: 0.6;
+  pointer-events: none;
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 3px solid map.get(m.$colors, "light-gray");
+    border-top: 3px solid map.get(m.$colors, "primary");
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+  }
+}
+
+// No Results Message
+.no-results {
+  display: none;
+  text-align: center;
+  padding: map.get(m.$spaces, "3xl");
+  background-color: map.get(m.$colors, "white");
+  border-radius: map.get(m.$radius, "md");
+  box-shadow: 0 2px 10px map.get(m.$colors, "shadow-base");
+  color: map.get(m.$colors, "medium-gray");
+
+  &.show {
+    display: block;
+  }
+
+  i {
+    font-size: map.get(m.$font-sizes, "2xl");
+    margin-bottom: map.get(m.$spaces, "md");
+    color: map.get(m.$colors, "medium-gray");
+  }
+
+  p {
+    font-size: map.get(m.$font-sizes, "lg");
+    margin-bottom: map.get(m.$spaces, "sm");
+  }
+}
+
+// Empty States
+.empty-cart-message {
+  display: none;
+  text-align: center;
+  padding: map.get(m.$spaces, "4xl");
+  color: map.get(m.$colors, "medium-gray");
+
+  &.show {
+    display: block;
+  }
+
+  i {
+    font-size: 4rem;
+    margin-bottom: map.get(m.$spaces, "xl");
+    opacity: 0.5;
+  }
+
+  h3 {
+    color: map.get(m.$colors, "secondary");
+    margin-bottom: map.get(m.$spaces, "md");
+  }
+
+  p {
+    font-size: map.get(m.$font-sizes, "lg");
+    margin-bottom: map.get(m.$spaces, "xl");
+  }
+}

@@ -38,20 +38,15 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 /**
- * Carga y muestra el contenido del carrito
- * Lee los datos del localStorage y actualiza la interfaz
+ * Carga y muestra el contenido del carrito desde localStorage
  */
 function loadCart() {
   // Obtengo el carrito usando función utilitaria
   const cart = getCart();
-  console.log("Carrito cargado:", cart);
-
   const emptyCart = document.getElementById("emptyCart");
   const cartContent = document.getElementById("cartContent");
-  const cartItems = document.getElementById("cartItems");
-
+  // Si hay productos, muestro mensaje de carrito vacio
   if (cart.length === 0) {
-    // Si no hay productos, muestro el mensaje de carrito vacío
     if (emptyCart) emptyCart.classList.add("show");
     if (cartContent) cartContent.classList.remove("show");
   } else {
@@ -63,10 +58,7 @@ function loadCart() {
   }
 }
 
-/**
- * Genera el HTML para mostrar los productos del carrito
- * @param {Array} cart - array con los productos del carrito
- */
+// Genera y renderiza el HTML de los productos en el carrito
 function displayCartItems(cart) {
   const cartItems = document.getElementById("cartItems");
 
@@ -113,9 +105,8 @@ function displayCartItems(cart) {
 }
 
 /**
- * Actualiza la cantidad de un producto en el carrito
- * @param {number} productId - ID del producto a modificar
- * @param {number} newQuantity - nueva cantidad (si es 0 o menos, se elimina)
+ * Actualiza la cantidad de un producto
+ * Si la cantidad es menor a 1, elimina el producto del carrito
  */
 function updateQuantity(productId, newQuantity) {
   if (newQuantity < 1) {
@@ -139,10 +130,7 @@ function updateQuantity(productId, newQuantity) {
   }
 }
 
-/**
- * Elimina un producto completamente del carrito
- * @param {number} productId - ID del producto a eliminar
- */
+// Elimina un producto del carrito
 function removeFromCart(productId) {
   // Filtro el carrito para excluir el producto seleccionado
   let cart = getCart();
@@ -158,22 +146,12 @@ function removeFromCart(productId) {
 }
 
 /**
- * Calcula y muestra el resumen de precios del carrito
- * Incluye subtotal, IVA, envío y total final
- * @param {Array} cart - productos del carrito
+ * Calcula y actualiza el resumen de precios
+ * Incluye subtotal, IVA, costo de envío y total
  */
 function updateCartSummary(cart) {
-  console.log("Calculando resumen del carrito:", cart);
-
-  // Calculo el subtotal sumando precio × cantidad de cada producto
   const subtotal = cart.reduce((sum, item) => {
-    const itemCost = item.cost || 0;
-    const itemQuantity = item.quantity || 0;
-    const itemTotal = itemCost * itemQuantity;
-    console.log(
-      `   Producto: ${item.name}, Costo: ${itemCost}, Cantidad: ${itemQuantity}, Total: ${itemTotal}`
-    );
-    return sum + itemTotal;
+    return sum + (item.cost || 0) * (item.quantity || 0);
   }, 0);
 
   // Configurar costos adicionales desde configuración centralizada
@@ -182,9 +160,6 @@ function updateCartSummary(cart) {
   const iva = subtotal * ivaRate;
   const total = subtotal + iva + shippingCost;
 
-  console.log(
-    `💰 Subtotal: ${subtotal}, IVA: ${iva}, Envío: ${shippingCost}, Total: ${total}`
-  );
 
   // Actualizar los elementos del DOM con los valores calculados
   const subtotalElement = document.getElementById("subtotal");

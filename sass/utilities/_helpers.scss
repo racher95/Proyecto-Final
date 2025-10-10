@@ -1,0 +1,39 @@
+// ===========================================================================
+// CRAFTIVITY - HELPERS
+// Clases utilitarias globales
+// ===========================================================================
+
+@use "../abstracts/variables" as m;
+@use "sass:map";
+
+.hidden {
+  display: none !important;
+}
+
+.visible {
+  display: block !important;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.form-button-primary {
+  width: 100%;
+  margin-top: map.get(m.$spaces, "md");
+}
+
+.cart-content {
+  display: none;
+}
+
+.checkout-button {
+  width: 100%;
+  margin-top: map.get(m.$spaces, "xl");
+}
+
+.section-subtitle {
+  text-align: center;
+  color: map.get(m.$colors, "medium-gray");
+  margin-bottom: map.get(m.$spaces, "xl");
+}

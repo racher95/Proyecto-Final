@@ -1,0 +1,154 @@
+// ===========================================================================
+// CRAFTIVITY - PRODUCTS
+// Estilos de la página de catálogo
+// ===========================================================================
+
+@use "../abstracts/variables" as m;
+@use "sass:map";
+
+// Catalog Hero
+.catalog-hero {
+  background: linear-gradient(
+    135deg,
+    map.get(m.$colors, "overlay-gradient-start"),
+    map.get(m.$colors, "overlay-gradient-end")
+  );
+  background-color: map.get(m.$colors, "accent-alt");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: map.get(m.$colors, "white");
+  text-align: center;
+  padding: map.get(m.$spaces, "4xl") 2.5rem;
+  min-height: 300px;
+  margin-bottom: map.get(m.$spaces, "xl");
+  border-radius: map.get(m.$radius, "2xl");
+  box-shadow: map.get(m.$shadows, "xl");
+  text-shadow: map.get(m.$shadows, "text-md");
+
+  h1 {
+    font-size: map.get(m.$font-sizes, "2xl");
+    margin-bottom: map.get(m.$spaces, "lg");
+    font-weight: map.get(m.$font-weights, "bold");
+    text-shadow: map.get(m.$shadows, "text-sm");
+  }
+
+  p {
+    font-size: map.get(m.$font-sizes, "md");
+    opacity: 0.95;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: map.get(m.$line-heights, "base");
+  }
+}
+
+// Catalog Controls
+.catalog-controls {
+  background-color: map.get(m.$colors, "white");
+  padding: map.get(m.$spaces, "lg");
+  border-radius: map.get(m.$radius, "lg");
+  margin-bottom: map.get(m.$spaces, "xl");
+  box-shadow: map.get(m.$shadows, "md");
+}
+
+.controls-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: map.get(m.$spaces, "md");
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+.products-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: map.get(m.$spaces, "xl");
+
+  h2 {
+    color: map.get(m.$colors, "secondary");
+    font-size: map.get(m.$font-sizes, "xl");
+  }
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 350px));
+  gap: map.get(m.$spaces, "xl");
+  margin-bottom: map.get(m.$spaces, "3xl");
+  justify-content: center;
+}
+
+// Products List (vista horizontal)
+.products-list {
+  display: flex;
+  flex-direction: column;
+  gap: map.get(m.$spaces, "lg");
+  margin-top: map.get(m.$spaces, "xl");
+
+  .product-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: map.get(m.$spaces, "lg");
+    height: auto;
+    max-width: none;
+  }
+
+  .product-card img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: map.get(m.$radius, "md");
+    margin-right: map.get(m.$spaces, "lg");
+    flex-shrink: 0;
+  }
+
+  .product-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 120px;
+  }
+
+  .product-card h3 {
+    margin: 0 0 map.get(m.$spaces, "sm") 0;
+    font-size: map.get(m.$font-sizes, "lg");
+  }
+
+  .product-card p {
+    margin: 0 0 map.get(m.$spaces, "md") 0;
+    flex: 1;
+  }
+
+  .product-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+  }
+
+  .product-price {
+    margin: 0;
+  }
+
+  .btn {
+    margin-left: map.get(m.$spaces, "md");
+  }
+}
+
+.no-results {
+  display: none;
+  text-align: center;
+  padding: map.get(m.$spaces, "3xl");
+  background-color: map.get(m.$colors, "white");
+  border-radius: map.get(m.$radius, "lg");
+  box-shadow: map.get(m.$shadows, "md");
+}
+
+// ===========================================================================
+// NOTA: Media queries movidos a sass/responsive/_media-queries.scss
+// para centralización según arquitectura 7-1
+// ===========================================================================

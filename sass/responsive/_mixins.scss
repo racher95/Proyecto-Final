@@ -1,0 +1,26 @@
+// ===========================================================================
+// CRAFTIVITY - MIXINS RESPONSIVE
+// Mixins para media queries
+// ===========================================================================
+
+@use "breakpoints" as bp;
+@use "sass:map";
+
+@function get-bp($key) {
+  @return map.get(bp.$breakpoints, $key);
+}
+
+@mixin mq($from, $to: null) {
+  $min: get-bp($from);
+
+  @if $to != null {
+    $max: get-bp($to);
+    @media (min-width: $min) and (max-width: $max) {
+      @content;
+    }
+  } @else {
+    @media (min-width: $min) {
+      @content;
+    }
+  }
+}

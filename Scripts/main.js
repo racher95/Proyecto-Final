@@ -4,8 +4,11 @@
  * Autor: Grupo 7 - Proyecto Final JAP 2025
  */
 
-// Cuando carga cualquier página, ejecuto estas funciones iniciales
-document.addEventListener("DOMContentLoaded", function () {
+// M1 FIX: Esperar a que los componentes (header/footer) se carguen antes de inicializar
+document.addEventListener("componentsLoaded", function () {
+  // M1 FIX: Ahora el header ya existe, podemos inicializar el menú responsive
+  initResponsiveMenu();
+
   // Actualizo el contador del carrito en el header
   updateCartCounter();
 
@@ -17,10 +20,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Configuro la navegación programática
   initGlobalNavigation();
+});
 
-  // configurar menu responsive
-  initResponsiveMenu();
-
+// Inicializar carruseles cuando el DOM esté listo (no dependen de header/footer)
+document.addEventListener("DOMContentLoaded", function () {
   // Inicializar carruseles si estamos en index.html
   if (
     window.location.pathname.includes("index.html") ||
@@ -416,7 +419,7 @@ async function initializeCarousels() {
 
     console.log("Carruseles cargados correctamente");
   } catch (error) {
-    console.error("❌ Error al cargar carruseles:", error);
+    console.error("Error al cargar carruseles:", error);
   }
 }
 
@@ -455,11 +458,17 @@ function initCarouselNavigation(name, trackId, prevBtnId, nextBtnId) {
     // Asegurar que el índice esté dentro del rango válido
     currentIndex = Math.max(0, Math.min(currentIndex, maxIndex));
 
-    // Calcular el porcentaje de movimiento
-    const movePercentage =
-      totalItems > 0 ? (currentIndex / totalItems) * 100 : 0;
+    // Calcular desplazamiento basado en el ancho real de las cards + gap
+    if (totalItems > 0 && track.children[0]) {
+      const firstCard = track.children[0];
+      const cardWidth = firstCard.offsetWidth;
+      const gap = 16; // 1rem = 16px (gap entre cards)
+      const moveDistance = currentIndex * (cardWidth + gap);
 
-    track.style.transform = `translateX(-${movePercentage}%)`;
+      track.style.transform = `translateX(-${moveDistance}px)`;
+    } else {
+      track.style.transform = `translateX(0)`;
+    }
 
     // Actualizar estado de botones
     prevBtn.disabled = currentIndex === 0;
@@ -507,7 +516,7 @@ function initCarouselNavigation(name, trackId, prevBtnId, nextBtnId) {
  */
 function getItemsToShow() {
   const width = window.innerWidth;
-  if (width >= 1200) return 4;
+  if (width >= 1201) return 4;
   if (width >= 768) return 3;
   if (width >= 640) return 2;
   return 1;

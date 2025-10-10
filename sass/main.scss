@@ -1,0 +1,84 @@
+// ===========================================================================
+// CRAFTIVITY - MAIN STYLESHEET
+// Punto de entrada principal para compilación Sass
+// ===========================================================================
+// Arquitectura 7-1 Pattern
+// Orden estricto de importación para garantizar cascada correcta
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
+// 1. ABSTRACTS - Herramientas y configuración (no generan CSS)
+// ---------------------------------------------------------------------------
+@use "abstracts/variables" as m;
+@use "abstracts/functions" as f;
+@use "abstracts/mixins" as mx;
+@use "abstracts/placeholders" as ph;
+
+// ---------------------------------------------------------------------------
+// 2. BASE - Reset y estilos fundamentales
+// ---------------------------------------------------------------------------
+@use "base/reset" as b_reset;
+@use "base/base" as b_base;
+@use "base/typography" as b_ty;
+@use "base/animations" as b_anim;
+
+// ---------------------------------------------------------------------------
+// 3. LAYOUT - Estructura principal (header, footer, grid)
+// ---------------------------------------------------------------------------
+@use "layout/header" as ly_header;
+@use "layout/footer" as ly_footer;
+@use "layout/grid" as ly_grid;
+@use "layout/nav" as ly_nav;
+
+// ---------------------------------------------------------------------------
+// 4. COMPONENTS - Componentes reutilizables
+// ---------------------------------------------------------------------------
+@use "components/badges" as c_badges;
+@use "components/breadcrumbs" as c_breadcrumbs;
+@use "components/buttons" as c_btn;
+@use "components/cards" as c_card;
+@use "components/carousel" as c_carousel;
+@use "components/filters" as c_filters;
+@use "components/forms" as c_form;
+@use "components/loading" as c_loading;
+@use "components/modals" as c_modal;
+@use "components/notifications" as c_notify;
+@use "components/quantity" as c_quantity;
+@use "components/search" as c_search;
+@use "components/user-menu" as c_umenu;
+
+// ---------------------------------------------------------------------------
+// 5. PAGES - Estilos específicos por página
+// ---------------------------------------------------------------------------
+@use "pages/home" as p_home;
+@use "pages/products" as p_products;
+@use "pages/product-details" as p_pdetails;
+@use "pages/cart" as p_cart;
+@use "pages/login" as p_login;
+@use "pages/profile" as p_profile;
+@use "pages/orders" as p_orders;
+@use "pages/sobre-nosotros" as p_about;
+
+// ---------------------------------------------------------------------------
+// 6. THEMES - Temas (claro/oscuro)
+// ---------------------------------------------------------------------------
+@use "themes/light" as th_light;
+@use "themes/dark" as th_dark;
+
+// ---------------------------------------------------------------------------
+// 7. UTILITIES - Clases helper globales
+// ---------------------------------------------------------------------------
+@use "utilities/helpers" as u_helpers;
+@use "utilities/placeholders" as u_placeholders;
+
+// ---------------------------------------------------------------------------
+// 8. RESPONSIVE - Breakpoints y media queries
+// ---------------------------------------------------------------------------
+@use "responsive/breakpoints" as bp;
+@use "responsive/mixins" as rmx;
+@use "responsive/media-queries" as r_mq;
+
+// ---------------------------------------------------------------------------
+// 9. LEGACY - Capa temporal para paridad (DEBE QUEDAR VACÍO AL FINAL)
+// ---------------------------------------------------------------------------
+@use "legacy/shims" as legacy;

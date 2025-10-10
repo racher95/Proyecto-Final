@@ -1,0 +1,14 @@
+// ===========================================================================
+// CRAFTIVITY - GRID
+// Sistema de grids y contenedores
+// ===========================================================================
+
+@use "../abstracts/variables" as m;
+@use "sass:map";
+
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: map.get(m.$spaces, "xl");
+  min-height: calc(100vh - 200px);
+}

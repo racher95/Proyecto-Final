@@ -1,0 +1,51 @@
+@use "../abstracts/variables" as m;
+@use "sass:map";
+
+// Placeholder for Empty Images
+.product-image[src=""],
+.product-image:not([src]),
+.cart-item-image[src=""],
+.cart-item-image:not([src]),
+.placeholder-image {
+  background: linear-gradient(
+      45deg,
+      map.get(m.$colors, "light-gray") 25%,
+      transparent 25%
+    ),
+    linear-gradient(
+      -45deg,
+      map.get(m.$colors, "light-gray") 25%,
+      transparent 25%
+    ),
+    linear-gradient(
+      45deg,
+      transparent 75%,
+      map.get(m.$colors, "light-gray") 75%
+    ),
+    linear-gradient(
+      -45deg,
+      transparent 75%,
+      map.get(m.$colors, "light-gray") 75%
+    );
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  background-color: map.get(m.$colors, "medium-gray");
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: map.get(m.$colors, "white");
+  font-weight: map.get(m.$font-weights, "bold");
+}
+
+.product-image[src=""]:before,
+.product-image:not([src]):before,
+.placeholder-image::before {
+  content: "📦";
+  font-size: map.get(m.$font-sizes, "2xl") + 0.5rem;
+}
+
+.placeholder-image {
+  width: 100%;
+  height: 300px;
+  border-radius: map.get(m.$radius, "lg");
+}

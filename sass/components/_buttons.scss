@@ -1,0 +1,56 @@
+// ===========================================================================
+// CRAFTIVITY - BOTONES
+// Estilos de botones reutilizables
+// ===========================================================================
+
+@use "../abstracts/variables" as m;
+@use "sass:map";
+
+.btn {
+  padding: map.get(m.$spaces, "sm") + 0.25rem map.get(m.$spaces, "lg");
+  border: none;
+  border-radius: map.get(m.$radius, "3xl");
+  font-weight: map.get(m.$font-weights, "semibold");
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  cursor: pointer;
+  transition: map.get(m.$transitions, "normal");
+  font-size: map.get(m.$font-sizes, "base");
+}
+
+.btn-primary {
+  background-color: map.get(m.$colors, "primary");
+  color: map.get(m.$colors, "white");
+
+  &:hover {
+    background-color: map.get(m.$colors, "primary-dark");
+    transform: translateY(-2px);
+  }
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: map.get(m.$colors, "secondary");
+  border: 2px solid map.get(m.$colors, "secondary");
+
+  &:hover {
+    background-color: map.get(m.$colors, "secondary");
+    color: map.get(m.$colors, "white");
+  }
+}
+
+// Button Size Variants
+.btn-large {
+  padding: map.get(m.$spaces, "md") map.get(m.$spaces, "3xl");
+  font-size: 1.2rem;
+  font-weight: map.get(m.$font-weights, "semibold");
+  border-radius: map.get(m.$radius, "lg");
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  transition: map.get(m.$transitions, "normal");
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  }
+}

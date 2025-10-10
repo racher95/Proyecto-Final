@@ -1,0 +1,56 @@
+// ===========================================================================
+// CRAFTIVITY - MENÚ USUARIO
+// Dropdown de usuario logueado
+// ===========================================================================
+
+@use "../abstracts/variables" as m;
+@use "sass:map";
+
+.user-menu {
+  position: fixed;
+  background: map.get(m.$colors, "white");
+  border: 1px solid map.get(m.$colors, "light-gray");
+  border-radius: map.get(m.$radius, "lg");
+  box-shadow: map.get(m.$shadows, "lg");
+  z-index: map.get(m.$z, "header");
+  min-width: 200px;
+}
+
+.user-menu-content {
+  padding: map.get(m.$spaces, "md");
+}
+
+.user-menu-item {
+  display: block;
+  padding: map.get(m.$spaces, "sm") 0;
+  text-decoration: none;
+  color: map.get(m.$colors, "secondary");
+  transition: map.get(m.$transitions, "fast");
+
+  &:hover {
+    color: map.get(m.$colors, "primary");
+  }
+
+  &.logout {
+    color: map.get(m.$colors, "danger");
+  }
+}
+
+.user-menu-separator {
+  margin: map.get(m.$spaces, "sm") 0;
+  border: none;
+  border-top: 1px solid map.get(m.$colors, "light-gray");
+}
+
+.success-message {
+  position: fixed;
+  top: map.get(m.$spaces, "xl");
+  right: map.get(m.$spaces, "xl");
+  background-color: map.get(m.$colors, "success");
+  color: map.get(m.$colors, "white");
+  padding: map.get(m.$spaces, "md") map.get(m.$spaces, "xl");
+  border-radius: map.get(m.$radius, "lg");
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  z-index: map.get(m.$z, "header");
+  animation: fadeIn 0.3s ease;
+}

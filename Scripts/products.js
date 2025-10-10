@@ -14,8 +14,7 @@ let allProductsUniversal = []; // Todos los productos de todas las categorías (
 let currentCategory = null; // Categoría actualmente seleccionada
 
 /**
- * Carga las categorías disponibles desde la API
- * Llena el selector de categorías dinámicamente
+ * Carga las categorías desde la API y llena el selector
  */
 async function loadCategories() {
   console.log("Iniciando carga de categorías...");

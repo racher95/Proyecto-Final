@@ -1,0 +1,188 @@
+// ===========================================================================
+// CRAFTIVITY - HOME
+// Estilos específicos de index.html
+// ===========================================================================
+
+@use "../abstracts/variables" as m;
+@use "sass:map";
+
+// Hero Section
+.hero {
+  background: url("../img/heroIndex.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: map.get(m.$colors, "white");
+  text-align: center;
+  padding: map.get(m.$spaces, "4xl") map.get(m.$spaces, "xl");
+  border-radius: map.get(m.$radius, "xl");
+  margin-bottom: map.get(m.$spaces, "3xl");
+  text-shadow: map.get(m.$shadows, "text-md");
+
+  h1 {
+    font-size: map.get(m.$font-sizes, "3xl");
+    margin-bottom: map.get(m.$spaces, "md");
+    font-weight: map.get(m.$font-weights, "bold");
+  }
+
+  p {
+    font-size: map.get(m.$font-sizes, "md");
+    margin-bottom: map.get(m.$spaces, "xl");
+    opacity: 0.9;
+  }
+}
+
+// Flash Sales Section
+.flash-sales-section {
+  background: linear-gradient(
+    135deg,
+    #ff6b6b 0%,
+    #ee5a24 30%,
+    #ff3838 70%,
+    #c44569 100%
+  );
+  color: map.get(m.$colors, "white");
+  padding: map.get(m.$spaces, "4xl") 0;
+  margin: map.get(m.$spaces, "4xl") 0 map.get(m.$spaces, "3xl") 0;
+  position: relative;
+  border-radius: map.get(m.$radius, "2xl");
+  box-shadow: 0 15px 35px rgba(255, 56, 56, 0.3);
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 40%,
+      rgba(255, 107, 107, 0.2) 60%,
+      transparent 100%
+    );
+    opacity: 0.6;
+    animation: flashShimmer 4s infinite;
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: map.get(m.$spaces, "xl");
+    font-size: 2.5rem;
+    font-weight: map.get(m.$font-weights, "bold");
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+}
+
+@keyframes flashShimmer {
+  0%,
+  100% {
+    transform: translateX(-100%) rotate(-45deg);
+  }
+  50% {
+    transform: translateX(100%) rotate(-45deg);
+  }
+}
+
+// Featured Section (alternative)
+.featured-section {
+  background: linear-gradient(135deg, #8360c3 0%, #2ebf91 50%, #8360c3 100%);
+  padding: map.get(m.$spaces, "4xl") 0;
+  margin: map.get(m.$spaces, "3xl") 0 map.get(m.$spaces, "4xl") 0;
+  color: map.get(m.$colors, "white");
+  border-radius: map.get(m.$radius, "2xl");
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), transparent);
+    animation: featuredShine 8s infinite;
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: map.get(m.$spaces, "xl");
+    font-size: 2.5rem;
+    font-weight: map.get(m.$font-weights, "bold");
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 1;
+  }
+}
+
+@keyframes featuredShine {
+  0%,
+  100% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  50% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+}
+
+// About Section - Features
+.about-section {
+  padding: map.get(m.$spaces, "4xl") 0;
+  background-color: map.get(m.$colors, "light-gray");
+
+  h2 {
+    text-align: center;
+    color: map.get(m.$colors, "secondary");
+    margin-bottom: map.get(m.$spaces, "3xl");
+    font-size: 2.2rem;
+    font-weight: map.get(m.$font-weights, "bold");
+  }
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: map.get(m.$spaces, "2xl");
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 map.get(m.$spaces, "xl");
+}
+
+.feature {
+  text-align: center;
+  padding: map.get(m.$spaces, "xl");
+  background-color: map.get(m.$colors, "white");
+  border-radius: map.get(m.$radius, "lg");
+  transition: map.get(m.$transitions, "normal");
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  h3 {
+    font-size: map.get(m.$font-sizes, "lg");
+    margin-bottom: map.get(m.$spaces, "md");
+    color: map.get(m.$colors, "secondary");
+    font-weight: map.get(m.$font-weights, "semibold");
+  }
+
+  p {
+    color: map.get(m.$colors, "dark-gray");
+    line-height: map.get(m.$line-heights, "relaxed");
+    font-size: map.get(m.$font-sizes, "base");
+  }
+}
+
+// Section Header (compartido por flash-sales y featured)
+.section-header {
+  text-align: center;
+  margin-bottom: map.get(m.$spaces, "2xl");
+  position: relative;
+  z-index: 1;
+}

@@ -1,0 +1,45 @@
+@use "../abstracts/variables" as m;
+@use "sass:map";
+
+// Search Bar
+.search-bar {
+  display: flex;
+  align-items: center;
+  background-color: map.get(m.$colors, "light-gray");
+  border-radius: map.get(m.$radius, "3xl");
+  padding: map.get(m.$spaces, "sm") map.get(m.$spaces, "md");
+  min-width: 300px;
+
+  input {
+    border: none;
+    background: transparent;
+    outline: none;
+    flex: 1;
+    padding: map.get(m.$spaces, "sm");
+    color: map.get(m.$colors, "dark");
+
+    &::placeholder {
+      color: map.get(m.$colors, "medium-gray");
+    }
+  }
+
+  button {
+    border: none;
+    background: transparent;
+    color: map.get(m.$colors, "medium-gray");
+    cursor: pointer;
+    padding: map.get(m.$spaces, "sm");
+    transition: map.get(m.$transitions, "normal");
+
+    &:hover {
+      color: map.get(m.$colors, "primary");
+    }
+  }
+}
+
+// Nav Search (responsive)
+.nav-search {
+  .search-bar {
+    min-width: 250px;
+  }
+}

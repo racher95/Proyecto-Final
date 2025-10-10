@@ -65,11 +65,8 @@
       }
 
       target.innerHTML = html;
-
-      console.log(`✓ Component loaded: ${componentPath}`);
     } catch (error) {
       console.error(`Error loading component ${componentPath}:`, error);
-      // No lanzar error para no romper el resto de la página
     }
   }
 
@@ -100,11 +97,11 @@
     // Disparar evento personalizado cuando todos los componentes estén listos
     document.dispatchEvent(new CustomEvent("componentsLoaded"));
 
-    console.log("✓ All components loaded successfully");
+    console.log("Componentes cargados con exito");
   }
 
   /**
-   * Inicializar la carga de componentes cuando el DOM esté listo
+   * Inicializa la carga cuando el DOM esté listo
    */
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", loadAllComponents);

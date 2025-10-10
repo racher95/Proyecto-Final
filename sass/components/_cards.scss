@@ -1,0 +1,250 @@
+// ===========================================================================
+// CRAFTIVITY - CARDS
+// Estilos de tarjetas de productos
+// ===========================================================================
+
+@use "../abstracts/variables" as m;
+@use "sass:map";
+
+// M2: Product card base (backup líneas 3647-3662)
+.product-card {
+  background: map.get(m.$colors, "white");
+  border-radius: 12px; // M2: 12px como backup (no variable 15px)
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); // M2: shadow exacto backup línea 3651
+  transition: all map.get(m.$transitions, "normal");
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-4px); // M2: -4px como backup línea 3657
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); // M2: shadow hover backup línea 3658
+  }
+}
+
+// M2: Product image container (backup líneas 3664-3667)
+.product-image-container {
+  position: relative;
+  overflow: hidden;
+}
+
+// M2: Product image (backup líneas 3669-3673)
+.product-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform map.get(m.$transitions, "normal");
+}
+
+// M2: Zoom en hover (backup líneas 3675-3677)
+.product-card:hover .product-image {
+  transform: scale(1.05);
+}
+
+// M2: Product info padding (backup línea 3679)
+.product-info {
+  padding: map.get(m.$spaces, "md"); // M2: 1rem como backup
+}
+
+// M2: Product name (backup líneas 3680-3686)
+.product-name {
+  font-size: 1.1rem; // M2: 1.1rem backup línea 3681
+  font-weight: map.get(m.$font-weights, "semibold");
+  color: map.get(m.$colors, "secondary");
+  margin-bottom: map.get(m.$spaces, "sm");
+  line-height: 1.3; // M2: line-height 1.3 para truncation backup línea 3685
+  cursor: pointer;
+
+  &:hover {
+    color: map.get(m.$colors, "primary"); // M2: hover naranja backup línea 3690
+  }
+}
+
+// M2: Product description con truncation (backup líneas 3692-3701)
+.product-description {
+  color: map.get(m.$colors, "dark-gray");
+  font-size: 0.85rem; // M2: 0.85rem backup línea 3694
+  margin-bottom: 0.8rem; // M2: 0.8rem backup línea 3695
+  line-height: 1.4; // M2: 1.4 para truncation backup línea 3696
+  // M2: Truncation con line-clamp (backup líneas 3697-3700)
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.product-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+// M2: Product pricing container (backup línea 3704)
+.product-pricing {
+  margin-bottom: 0.8rem;
+}
+
+// M2: Product price (backup líneas 3707-3711)
+.product-price {
+  font-size: 1.3rem; // M2: 1.3rem backup línea 3708
+  font-weight: map.get(m.$font-weights, "bold");
+  color: map.get(m.$colors, "primary");
+}
+
+// M2: Flash pricing container (backup líneas 3713-3717)
+.flash-pricing {
+  background: linear-gradient(135deg, #fff1f1, #ffe6e6);
+  border: 1px solid #e74c3c;
+  border-radius: 6px;
+  padding: 8px;
+}
+
+// M2: Original price tachado (backup líneas 3719-3723)
+.original-price {
+  font-size: 0.9rem;
+  color: #999;
+  text-decoration: line-through;
+  margin-bottom: 3px;
+}
+
+.product-sold {
+  font-size: map.get(m.$font-sizes, "sm");
+  color: map.get(m.$colors, "medium-gray");
+}
+
+.product-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: map.get(m.$spaces, "md");
+  font-size: map.get(m.$font-sizes, "sm");
+}
+
+.product-id {
+  color: map.get(m.$colors, "light-gray");
+  font-size: map.get(m.$font-sizes, "xs");
+  opacity: 0.7;
+  font-family: map.get(m.$font-stacks, "mono");
+}
+
+// M2: Image navigation (ya no se usa en backup moderno)
+.image-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+  opacity: 0;
+  transition: map.get(m.$transitions, "normal");
+  pointer-events: none;
+
+  .product-image-container:hover & {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.nav-btn {
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  border-radius: map.get(m.$radius, "pill");
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  transition: map.get(m.$transitions, "normal");
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.9);
+  }
+}
+
+.image-indicators {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.cart-item {
+  display: grid;
+  grid-template-columns: 100px 1fr auto auto auto;
+  gap: map.get(m.$spaces, "md");
+  align-items: center;
+  background: map.get(m.$colors, "white");
+  padding: map.get(m.$spaces, "lg");
+  border-radius: map.get(m.$radius, "lg");
+  box-shadow: map.get(m.$shadows, "md");
+  margin-bottom: map.get(m.$spaces, "md");
+  position: relative;
+}
+
+.cart-item-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: map.get(m.$radius, "md");
+}
+
+.cart-item-details {
+  h4 {
+    color: map.get(m.$colors, "secondary");
+    margin-bottom: map.get(m.$spaces, "sm");
+    font-size: map.get(m.$font-sizes, "md");
+  }
+}
+
+.cart-item-price {
+  color: map.get(m.$colors, "medium-gray");
+  font-size: map.get(m.$font-sizes, "sm");
+}
+
+.cart-item-controls {
+  display: flex;
+  align-items: center;
+  gap: map.get(m.$spaces, "sm");
+  background: map.get(m.$colors, "light-gray");
+  border-radius: map.get(m.$radius, "3xl");
+  padding: map.get(m.$spaces, "sm");
+}
+
+.quantity-btn {
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: map.get(m.$colors, "primary");
+  color: map.get(m.$colors, "white");
+  border-radius: map.get(m.$radius, "pill");
+  cursor: pointer;
+  font-weight: map.get(m.$font-weights, "bold");
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: map.get(m.$colors, "accent");
+  }
+}
+
+.quantity {
+  min-width: 30px;
+  text-align: center;
+  font-weight: map.get(m.$font-weights, "semibold");
+}
+
+.cart-item-total {
+  font-weight: map.get(m.$font-weights, "bold");
+  color: map.get(m.$colors, "primary");
+  font-size: map.get(m.$font-sizes, "md");
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  font-size: map.get(m.$font-sizes, "md");
+}

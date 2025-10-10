@@ -1,0 +1,172 @@
+// ===========================================================================
+// CRAFTIVITY - CART
+// Estilos del carrito de compras
+// ===========================================================================
+
+@use "../abstracts/variables" as m;
+@use "sass:map";
+
+// Contenedor principal del carrito (oculto por defecto)
+.cart-content {
+  display: none;
+
+  &.show {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: map.get(m.$spaces, "xl");
+    align-items: start;
+  }
+}
+
+// Mensaje cuando el carrito está vacío
+.empty-cart-message {
+  display: none;
+  text-align: center;
+  padding: map.get(m.$spaces, "4xl");
+  color: map.get(m.$colors, "medium-gray");
+
+  &.show {
+    display: block;
+  }
+
+  h3 {
+    color: map.get(m.$colors, "secondary");
+    margin-bottom: map.get(m.$spaces, "md");
+  }
+
+  p {
+    margin-bottom: map.get(m.$spaces, "lg");
+  }
+}
+
+.cart-items {
+  // Columna de productos (no necesita margin-bottom porque está en grid)
+}
+
+// Cada producto en el carrito
+.cart-item {
+  display: grid;
+  grid-template-columns: 100px 1fr auto auto auto;
+  gap: map.get(m.$spaces, "lg"); // Aumentado de "md" a "lg" para más espacio
+  align-items: center;
+  background: map.get(m.$colors, "white");
+  padding: map.get(m.$spaces, "lg");
+  border-radius: map.get(m.$radius, "lg");
+  box-shadow: map.get(m.$shadows, "md");
+  margin-bottom: map.get(m.$spaces, "md");
+  position: relative;
+}
+
+.cart-item-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: map.get(m.$radius, "md");
+}
+
+.cart-item-details {
+  padding-left: map.get(
+    m.$spaces,
+    "sm"
+  ); // Espacio adicional entre imagen y texto
+
+  h4 {
+    color: map.get(m.$colors, "secondary");
+    margin-bottom: map.get(m.$spaces, "sm");
+    font-size: 1.1rem;
+  }
+}
+
+.cart-item-price {
+  color: map.get(m.$colors, "medium-gray");
+  font-size: map.get(m.$font-sizes, "sm");
+}
+
+// Controles de cantidad
+.cart-item-controls {
+  display: flex;
+  align-items: center;
+  gap: map.get(m.$spaces, "sm");
+  background: map.get(m.$colors, "light-gray");
+  border-radius: map.get(m.$radius, "3xl");
+  padding: map.get(m.$spaces, "sm");
+}
+
+// Botones + y -
+.quantity-btn {
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: map.get(m.$colors, "primary");
+  color: map.get(m.$colors, "white");
+  border-radius: 50%;
+  cursor: pointer;
+  font-weight: map.get(m.$font-weights, "bold");
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: map.get(m.$transitions, "normal");
+
+  &:hover {
+    background: map.get(m.$colors, "accent");
+  }
+}
+
+// Número de cantidad
+.quantity {
+  min-width: 30px;
+  text-align: center;
+  font-weight: map.get(m.$font-weights, "semibold");
+}
+
+// Total por producto
+.cart-item-total {
+  font-weight: map.get(m.$font-weights, "bold");
+  color: map.get(m.$colors, "primary");
+  font-size: 1.1rem;
+}
+
+// Botón eliminar
+.remove-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: map.get(m.$spaces, "sm");
+  border-radius: map.get(m.$radius, "md");
+  transition: map.get(m.$transitions, "normal");
+
+  &:hover {
+    background: map.get(m.$colors, "danger");
+    color: map.get(m.$colors, "white");
+  }
+}
+
+.cart-summary {
+  background: map.get(m.$colors, "white");
+  padding: map.get(m.$spaces, "xl");
+  border-radius: map.get(m.$radius, "lg");
+  box-shadow: map.get(m.$shadows, "md");
+  width: 100%; // Ocupa todo el ancho de su columna
+  position: sticky; // Se queda pegado al scroll
+  top: map.get(m.$spaces, "xl"); // Espacio desde el top al hacer scroll
+
+  h3 {
+    color: map.get(m.$colors, "secondary");
+    margin-bottom: map.get(m.$spaces, "lg");
+    font-size: map.get(m.$font-sizes, "lg");
+  }
+}
+
+.summary-line {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: map.get(m.$spaces, "md");
+  padding-bottom: map.get(m.$spaces, "sm");
+
+  &.total {
+    border-top: 2px solid map.get(m.$colors, "light-gray");
+    padding-top: map.get(m.$spaces, "md");
+    font-size: map.get(m.$font-sizes, "md");
+  }
+}

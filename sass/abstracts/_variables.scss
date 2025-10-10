@@ -1,0 +1,134 @@
+// Variables de diseño centralizadas
+// Contiene todos los tokens del sistema de diseño: colores, tipografía,
+// espaciado, sombras, transiciones y z-index
+// Uso: @use "../abstracts/variables" as v; luego map.get(v.$colors, "primary")
+
+// Paleta de colores del sitio
+// Incluye colores de marca, estados semánticos, escala de grises y overlays
+$colors: (
+  // Colores principales de la marca
+  "primary": #e67e22,          // Naranja principal
+  "primary-dark": #d35400,     // Naranja oscuro para hover
+  "secondary": #2c3e50,        // Azul oscuro para texto
+  "accent": #f39c12,           // Naranja brillante para acentos
+  "accent-alt": #f48220,       // Variante alternativa del acento
+
+  // Estados de la interfaz
+  "success": #27ae60,          // Verde para mensajes de éxito
+  "danger": #e74c3c,           // Rojo para errores y eliminación
+  "danger-dark": #c0392b,      // Rojo oscuro para hover
+  "warning": #ffc107,          // Amarillo para advertencias
+  "info": #3498db,             // Azul para información
+
+  // Escala de grises
+  "white": #ffffff,
+  "light-gray": #ecf0f1,       // Fondos claros
+  "medium-gray": #bdc3c7,      // Texto secundario
+  "dark-gray": #34495e,        // Texto terciario
+  "black": #000000,
+
+  // Overlays semitransparentes
+  "overlay-light": rgba(230, 126, 34, 0.1),
+  "overlay-medium": rgba(230, 126, 34, 0.15),
+  "overlay-gradient-start": rgba(244, 130, 32, 0.9),
+  "overlay-gradient-end": rgba(255, 143, 0, 0.9),
+  
+  // Sombras predefinidas
+  "shadow-base": rgba(0, 0, 0, 0.1),
+  "shadow-dark": rgba(0, 0, 0, 0.15),
+  "shadow-text": rgba(0, 0, 0, 0.7)
+) !default;
+
+// Stacks de fuentes del sistema
+// Define las familias tipográficas usadas en el sitio
+$font-stacks: (
+  "base": ("Segoe UI", Tahoma, Geneva, Verdana, sans-serif),
+  "mono": ("Courier New", Courier, monospace)
+) !default;
+
+// Escala de tamaños tipográficos
+// Basado en sistema de rem para accesibilidad
+$font-sizes: (
+  "xs": 0.7rem,    // Textos muy pequeños
+  "sm": 0.8rem,    // Textos secundarios
+  "base": 1rem,    // Tamaño base del body
+  "md": 1.2rem,    // Subtítulos y destacados
+  "lg": 1.5rem,    // Títulos de sección
+  "xl": 2rem,      // Títulos principales
+  "2xl": 2.5rem,   // Títulos de página
+  "3xl": 3rem      // Títulos hero
+) !default;
+
+// Pesos de fuente
+$font-weights: (
+  "normal": 400,   // Texto regular
+  "medium": 500,   // Texto medio
+  "semibold": 600, // Texto semi negrita
+  "bold": 700      // Texto negrita
+) !default;
+
+// Alturas de línea
+$line-heights: (
+  "tight": 1.2,    // Títulos
+  "base": 1.6,     // Texto normal
+  "relaxed": 1.8   // Párrafos largos
+) !default;
+
+// Escala de espaciado
+// Sistema de 8px base para consistencia visual
+$spaces: (
+  "xs": 0.25rem,   // 4px
+  "sm": 0.5rem,    // 8px
+  "md": 1rem,      // 16px
+  "lg": 1.5rem,    // 24px
+  "xl": 2rem,      // 32px
+  "2xl": 2.5rem,   // 40px
+  "3xl": 3rem,     // 48px
+  "4xl": 4rem      // 64px
+) !default;
+
+// Radios de borde
+// Define el redondeo de esquinas en elementos
+$radius: (
+  "xs": 2px,       // Bordes muy sutiles
+  "sm": 5px,       // Bordes pequeños
+  "md": 8px,       // Bordes medianos
+  "lg": 10px,      // Bordes grandes (cards)
+  "xl": 15px,      // Bordes extra grandes
+  "2xl": 20px,     // Modales y overlays
+  "3xl": 25px,     // Elementos especiales
+  "pill": 50%      // Botones redondeados
+) !default;
+
+// Sombras de caja
+// Define elevaciones y profundidad visual
+$shadows: (
+  "none": none,
+  "sm": 0 2px 4px rgba(0, 0, 0, 0.1),      // Elevación sutil
+  "md": 0 2px 10px rgba(0, 0, 0, 0.1),     // Elevación media (cards)
+  "lg": 0 5px 20px rgba(0, 0, 0, 0.1),     // Elevación alta (dropdowns)
+  "xl": 0 10px 30px rgba(0, 0, 0, 0.1),    // Elevación muy alta
+  "2xl": 0 10px 30px rgba(0, 0, 0, 0.15),  // Elevación máxima (modales)
+  "text-sm": 0 2px 4px rgba(0, 0, 0, 0.1), // Sombra de texto sutil
+  "text-md": 2px 2px 4px rgba(0, 0, 0, 0.7) // Sombra de texto pronunciada
+) !default;
+
+// Índices z para capas de la interfaz
+// Define el orden de apilamiento de elementos
+$z: (
+  "base": 1,           // Elementos base
+  "dropdown": 100,     // Menús desplegables
+  "header": 1000,      // Header sticky
+  "modal-overlay": 1040, // Overlay de modales
+  "modal": 1050,       // Modales centrados
+  "modal-controls": 1060, // Controles de modal
+  "notification": 9999 // Notificaciones toast (siempre visibles)
+) !default;
+
+// Transiciones de animación
+// Define la velocidad de las animaciones
+$transitions: (
+  "fast": 0.2s ease,   // Animaciones rápidas (hover)
+  "normal": 0.3s ease, // Animaciones normales (general)
+  "slow": 0.5s ease    // Animaciones lentas (modales)
+) !default;
