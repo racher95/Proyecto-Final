@@ -77,8 +77,3 @@
 @use "responsive/breakpoints" as bp;
 @use "responsive/mixins" as rmx;
 @use "responsive/media-queries" as r_mq;
-
-// ---------------------------------------------------------------------------
-// 9. LEGACY - Capa temporal para paridad (DEBE QUEDAR VACÍO AL FINAL)
-// ---------------------------------------------------------------------------
-@use "legacy/shims" as legacy;
