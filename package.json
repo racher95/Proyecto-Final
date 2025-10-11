@@ -6,7 +6,7 @@
   "scripts": {
     "scss:build": "sass sass/main.scss CSS/style.css --no-source-map",
     "scss:watch": "sass --watch sass/main.scss:CSS/style.css --no-source-map",
-    "css:mqpack": "postcss CSS/style.css -u postcss-combine-media-query -o CSS/style.css",
+    "css:mqpack": "postcss CSS/style.css -u postcss-combine-media-query --no-map -o CSS/style.css",
     "css:build": "npm run scss:build && npm run css:mqpack",
     "css:watch": "npm run scss:watch"
   },
