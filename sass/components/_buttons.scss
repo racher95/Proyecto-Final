@@ -20,23 +20,24 @@
 }
 
 .btn-primary {
-  background-color: map.get(m.$colors, "primary");
-  color: map.get(m.$colors, "white");
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
 
   &:hover {
-    background-color: map.get(m.$colors, "primary-dark");
+    background-color: var(--btn-primary-hover);
     transform: translateY(-2px);
+    box-shadow: var(--shadow-glow);
   }
 }
 
 .btn-secondary {
-  background-color: transparent;
-  color: map.get(m.$colors, "secondary");
-  border: 2px solid map.get(m.$colors, "secondary");
+  background-color: var(--btn-secondary-bg);
+  color: var(--btn-secondary-text);
+  border: 2px solid var(--btn-secondary-border);
 
   &:hover {
-    background-color: map.get(m.$colors, "secondary");
-    color: map.get(m.$colors, "white");
+    background-color: var(--btn-secondary-hover);
+    color: var(--btn-secondary-text-hover);
   }
 }
 

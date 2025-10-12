@@ -3,9 +3,11 @@
 
 // Breadcrumbs
 .breadcrumbs {
-  background-color: map.get(m.$colors, "light-gray");
+  background-color: var(--bg-section);
   padding: map.get(m.$spaces, "md") 0;
   margin-bottom: map.get(m.$spaces, "xl");
+  border-bottom: 1px solid var(--card-border);
+  transition: background-color 0.3s ease;
 }
 
 .breadcrumb-nav {
@@ -15,17 +17,26 @@
   font-size: map.get(m.$font-sizes, "sm");
 
   a {
-    color: map.get(m.$colors, "primary");
+    color: var(--brand-primary);
     text-decoration: none;
     transition: map.get(m.$transitions, "normal");
+    font-weight: map.get(m.$font-weights, "medium");
 
     &:hover {
       text-decoration: underline;
-      color: map.get(m.$colors, "secondary");
+      color: var(--brand-primary-dark);
     }
   }
 
   span {
-    color: map.get(m.$colors, "medium-gray");
+    color: var(--text-primary);
+    opacity: 0.6;
+  }
+
+  // El último elemento (página actual) más destacado
+  span:last-child {
+    color: var(--text-primary);
+    opacity: 1;
+    font-weight: map.get(m.$font-weights, "semibold");
   }
 }

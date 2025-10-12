@@ -8,6 +8,9 @@
 document.addEventListener("componentsLoaded", function () {
   // Verifico si el usuario está logueado y actualizo la UI
   checkSessionStatus();
+
+  // Aplicar guard de perfil (redirige si falta completar perfil)
+  enforceProfileGuard();
 });
 
 /**
@@ -117,5 +120,41 @@ function closeLoginPrompt() {
         overlay.parentNode.removeChild(overlay);
       }
     }, 300);
+  }
+}
+
+/**
+ * Verifica si el usuario tiene su perfil completo (email y avatar).
+ * Redirige a profile.html si el perfil está incompleto.
+ */
+function enforceProfileGuard() {
+  // 1. Verificar si el usuario está logueado
+  const sessionData = checkSession();
+  if (!sessionData || !sessionData.isLoggedIn) {
+    return;
+  }
+
+  // 2. Verificar si ya estamos en profile.html (evitar bucle infinito)
+  const currentPath = window.location.pathname;
+  if (currentPath.includes("/profile.html")) {
+    return;
+  }
+
+  // 3. Obtener el perfil del usuario actual
+  const username = sessionData.usuario;
+  const userProfile = getUserProfile(username);
+
+  // 4. Verificar si el perfil está completo
+  if (!isProfileComplete(userProfile)) {
+    // Perfil incompleto → redirigir a profile.html
+    console.warn(
+      `🚧 Perfil incompleto para usuario "${username}". Redirigiendo a profile.html...`
+    );
+
+    const profilePath = currentPath.includes("/pages/")
+      ? "./profile.html"
+      : "./pages/profile.html";
+
+    window.location.href = profilePath;
   }
 }

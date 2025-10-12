@@ -91,6 +91,35 @@
   main {
     padding: 1rem;
   }
+
+  // Comentarios responsive - mobile (mantener al lado, solo reducir tamaño)
+  .comment {
+    gap: map.get(m.$spaces, "sm");
+    padding: map.get(m.$spaces, "md");
+  }
+
+  .comment-avatar {
+    width: 44px;
+    height: 44px;
+  }
+
+  .comment-avatar-placeholder {
+    font-size: 1rem;
+  }
+
+  .comment-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .comment-date {
+    font-size: 0.8rem;
+  }
+
+  .comment-text {
+    font-size: 0.9rem;
+  }
 }
 
 // ===========================================================================
@@ -109,7 +138,8 @@
   }
 }
 
-@media (max-width: 1200px) {
+// Desktop mediano (769px - 1200px) - 3 tarjetas por fila
+@media (min-width: 769px) and (max-width: 1200px) {
   .carousel-track .product-card {
     flex: 0 0 calc(33.333% - 0.67rem);
     min-width: 250px;
@@ -117,7 +147,8 @@
   }
 }
 
-@include rmx.mq("md") {
+// Tablet (481px - 768px) - 2 tarjetas por fila
+@media (min-width: 481px) and (max-width: 768px) {
   .carousel-container {
     padding: 0 map.get(m.$spaces, "2xl");
   }
@@ -215,6 +246,21 @@
 
   .related-product-info {
     padding: map.get(m.$spaces, "md");
+  }
+
+  // Comentarios responsive - tablet (mantener al lado)
+  .comment {
+    gap: map.get(m.$spaces, "md");
+    padding: map.get(m.$spaces, "md");
+  }
+
+  .comment-avatar {
+    width: 50px;
+    height: 50px;
+  }
+
+  .comment-avatar-placeholder {
+    font-size: 1.2rem;
   }
 }
 
@@ -397,8 +443,9 @@
     top: 100%;
     left: 0;
     right: 0;
-    background-color: #ffffff;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    background-color: var(--header-bg);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--header-border);
     flex-direction: column;
     gap: 0;
     padding: 1rem;
@@ -425,7 +472,7 @@
     li:nth-child(2) {
       order: 1 !important;
       margin-bottom: 1rem;
-      border-bottom: 1px solid #ecf0f1;
+      border-bottom: 1px solid var(--border-secondary);
       padding-bottom: 1rem;
     }
 
@@ -440,7 +487,7 @@
     li:nth-child(3) {
       order: 3 !important;
       margin-top: 1rem;
-      border-top: 1px solid #ecf0f1;
+      border-top: 1px solid var(--border-secondary);
       padding-top: 1rem;
     }
   }

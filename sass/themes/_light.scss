@@ -1,6 +1,253 @@
 // ===========================================================================
 // CRAFTIVITY - TEMA CLARO
-// Variables y ajustes para tema claro (default)
+// CSS Custom Properties para tema claro (default)
 // ===========================================================================
 
-// Placeholder - tema claro
+// Este es el tema por defecto del sitio
+// Los colores estan organizados por componente para facilitar el mantenimiento
+// Modificar estos valores para ajustar la paleta del tema claro
+
+:root,
+[data-theme="light"] {
+  // =========================================================================
+  // COLORES DE FONDO PRINCIPALES
+  // =========================================================================
+  // Fondo general del sitio
+  --bg-primary: #ecf0f1;
+
+  // Fondo de cards, modales y elementos elevados
+  --bg-surface: #ffffff;
+
+  // Fondo secundario para secciones alternadas
+  --bg-secondary: #f8f9fa;
+
+  // Fondo para secciones de contenido (grisaceo suave)
+  --bg-section: #f5f7f9;
+
+  // Fondo para areas de informacion (mas gris que bg-section)
+  --bg-info: #e8ecef;
+
+  // =========================================================================
+  // COLORES DE TEXTO
+  // =========================================================================
+  // Texto principal (titulos, parrafos importantes)
+  --text-primary: #2c3e50;
+
+  // Texto secundario (descripciones, subtitulos)
+  --text-secondary: #7f8c8d;
+
+  // Texto terciario (metadatos, timestamps)
+  --text-tertiary: #95a5a6;
+
+  // Texto sobre fondos oscuros
+  --text-inverse: #ffffff;
+
+  // =========================================================================
+  // COLORES DE LA MARCA (NO CAMBIAN CON EL TEMA)
+  // =========================================================================
+  // Naranja principal de Craftivity
+  --brand-primary: #e67e22;
+
+  // Naranja mas oscuro para hover
+  --brand-primary-dark: #d35400;
+
+  // Naranja mas claro para fondos suaves
+  --brand-primary-light: rgba(230, 126, 34, 0.1);
+
+  // =========================================================================
+  // HEADER Y NAVEGACION
+  // =========================================================================
+  // Fondo del header
+  --header-bg: #ffffff;
+
+  // Color de los links en el nav
+  --nav-link: #2c3e50;
+
+  // Color de los links al hacer hover
+  --nav-link-hover: #e67e22;
+
+  // Color de los links activos
+  --nav-link-active: #e67e22;
+
+  // Borde inferior del header
+  --header-border: rgba(0, 0, 0, 0.08);
+
+  // Sombra del header para que sobresalga del contenido
+  --header-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+
+  // =========================================================================
+  // FOOTER
+  // =========================================================================
+  // Fondo del footer
+  --footer-bg: #2c3e50;
+
+  // Texto del footer
+  --footer-text: #bdc3c7;
+
+  // Titulos en el footer
+  --footer-heading: #e67e22;
+
+  // Borde superior del footer
+  --footer-border: rgba(255, 255, 255, 0.1);
+
+  // Sombra del footer para que sobresalga del contenido
+  --footer-shadow: 0 -2px 12px rgba(0, 0, 0, 0.1);
+
+  // =========================================================================
+  // BOTONES
+  // =========================================================================
+  // Boton primario - Fondo
+  --btn-primary-bg: #e67e22;
+
+  // Boton primario - Hover
+  --btn-primary-hover: #d35400;
+
+  // Boton primario - Texto
+  --btn-primary-text: #ffffff;
+
+  // Boton secundario - Fondo
+  --btn-secondary-bg: transparent;
+
+  // Boton secundario - Borde
+  --btn-secondary-border: #2c3e50;
+
+  // Boton secundario - Texto
+  --btn-secondary-text: #2c3e50;
+
+  // Boton secundario - Hover fondo
+  --btn-secondary-hover-bg: #2c3e50;
+
+  // Boton secundario - Hover texto
+  --btn-secondary-hover-text: #ffffff;
+
+  // =========================================================================
+  // CARDS Y PRODUCTOS
+  // =========================================================================
+  // Fondo de las cards de productos
+  --card-bg: #ffffff;
+
+  // Borde de las cards
+  --card-border: #e0e0e0;
+
+  // Sombra al hacer hover sobre las cards
+  --card-hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+
+  // Color del precio
+  --price-text: #e67e22;
+
+  // Color del precio tachado
+  --price-old: #95a5a6;
+
+  // =========================================================================
+  // INPUTS Y FORMULARIOS
+  // =========================================================================
+  // Fondo de inputs
+  --input-bg: #ffffff;
+
+  // Borde de inputs
+  --input-border: #dfe6e9;
+
+  // Borde de inputs al hacer focus
+  --input-border-focus: #e67e22;
+
+  // Texto dentro de inputs
+  --input-text: #2c3e50;
+
+  // Placeholder de inputs
+  --input-placeholder: #95a5a6;
+
+  // Fondo de inputs deshabilitados
+  --input-disabled-bg: #f8f9fa;
+
+  // =========================================================================
+  // BORDES GENERALES
+  // =========================================================================
+  // Borde principal
+  --border-primary: #dfe6e9;
+
+  // Borde secundario
+  --border-secondary: #b2bec3;
+
+  // =========================================================================
+  // SOMBRAS
+  // =========================================================================
+  // Sombra pequeña para elementos sutiles
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.08);
+
+  // Sombra media para cards normales
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+  // Sombra grande para modales y overlays
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  // Sombra para efecto de brillo en botones
+  --shadow-glow: 0 4px 12px rgba(230, 126, 34, 0.3);
+
+  // =========================================================================
+  // ESTADOS (SUCCESS, ERROR, WARNING, INFO)
+  // =========================================================================
+  // Estado exitoso
+  --success: #27ae60;
+  --success-light: #6dd5a1;
+  --success-dark: #1e8449;
+
+  // Estado de error
+  --danger: #e74c3c;
+  --danger-light: #f1948a;
+  --danger-dark: #c0392b;
+
+  // Estado de advertencia
+  --warning: #ffc107;
+  --warning-light: #ffd54f;
+  --warning-dark: #f57c00;
+
+  // Estado informativo
+  --info: #3498db;
+  --info-light: #7fb3d5;
+  --info-dark: #2471a3;
+
+  // =========================================================================
+  // OVERLAYS Y MODALES
+  // =========================================================================
+  // Overlay oscuro para modales
+  --overlay-dark: rgba(0, 0, 0, 0.5);
+
+  // Overlay medio
+  --overlay-medium: rgba(0, 0, 0, 0.3);
+
+  // Overlay claro
+  --overlay-light: rgba(0, 0, 0, 0.1);
+
+  // =========================================================================
+  // SECCIONES ESPECIALES (OFERTAS, DESTACADOS)
+  // =========================================================================
+  // Fondo de la seccion de ofertas flash
+  --flash-bg: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+
+  // Texto de la seccion de ofertas flash
+  --flash-text: #ffffff;
+
+  // Fondo de la seccion de destacados
+  --featured-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+  // Texto de la seccion de destacados
+  --featured-text: #ffffff;
+
+  // =========================================================================
+  // COUNTDOWN Y TEMPORIZADORES DE OFERTAS
+  // =========================================================================
+  // Fondo del contenedor de countdown (rosado suave en light)
+  --countdown-bg: linear-gradient(135deg, #fff5f5, #ffeaea);
+
+  // Borde del countdown
+  --countdown-border: #e74c3c;
+
+  // Texto del countdown
+  --countdown-text: #c0392b;
+
+  // Fondo del countdown en detalles (naranja brillante)
+  --countdown-detail-bg: linear-gradient(135deg, #e67e22, #f39c12, #f1c40f);
+
+  // Sombra del countdown en detalles
+  --countdown-detail-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+}

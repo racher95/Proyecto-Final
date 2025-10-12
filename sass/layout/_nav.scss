@@ -19,7 +19,7 @@
 
   a {
     text-decoration: none;
-    color: map.get(m.$colors, "secondary");
+    color: var(--nav-link);
     font-weight: map.get(m.$font-weights, "semibold");
     font-size: map.get(m.$font-sizes, "base");
     padding: map.get(m.$spaces, "sm") map.get(m.$spaces, "md");
@@ -28,14 +28,14 @@
     position: relative;
 
     &:hover {
-      color: map.get(m.$colors, "primary");
-      background-color: map.get(m.$colors, "overlay-light");
+      color: var(--nav-link-hover);
+      background-color: var(--overlay-light);
       transform: translateY(-2px);
     }
 
     &.active {
-      color: map.get(m.$colors, "primary");
-      background-color: map.get(m.$colors, "overlay-medium");
+      color: var(--nav-link-active);
+      background-color: var(--overlay-medium);
       font-weight: map.get(m.$font-weights, "bold");
 
       &::after {
@@ -46,7 +46,7 @@
         transform: translateX(-50%);
         width: 30px;
         height: 3px;
-        background-color: map.get(m.$colors, "primary");
+        background-color: var(--brand-primary);
         border-radius: map.get(m.$radius, "xs");
       }
     }
@@ -62,7 +62,7 @@
   span {
     width: 25px;
     height: 3px;
-    background-color: map.get(m.$colors, "secondary");
+    background-color: var(--text-secondary);
     margin: 3px 0;
     transition: map.get(m.$transitions, "normal");
     border-radius: map.get(m.$radius, "xs");
@@ -75,13 +75,50 @@
   align-items: center;
 }
 
+// Estilos para las acciones de navegación (botones de login/carrito)
+.nav-actions {
+  display: flex;
+  gap: map.get(m.$spaces, "md");
+  align-items: center;
+
+  .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    min-height: 42px; // Altura mínima para igualar ambos botones
+    height: 42px; // Altura fija para ambos botones
+  }
+}
+
 .search-bar {
   display: flex;
   align-items: center;
-  background-color: map.get(m.$colors, "light-gray");
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
   border-radius: map.get(m.$radius, "3xl");
   padding: map.get(m.$spaces, "sm") map.get(m.$spaces, "md");
   min-width: 300px;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+
+  input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+
+    &::placeholder {
+      color: var(--input-placeholder);
+    }
+  }
+
+  button {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
 }
 
 // ===========================================================================

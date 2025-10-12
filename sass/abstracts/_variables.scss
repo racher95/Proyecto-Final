@@ -4,7 +4,8 @@
 // Uso: @use "../abstracts/variables" as v; luego map.get(v.$colors, "primary")
 
 // Paleta de colores del sitio
-// Incluye colores de marca, estados semánticos, escala de grises y overlays
+// Sistema de diseño expandido con variantes completas de colores
+// Incluye colores de marca, variantes lighter/darker, superficies, estados y grises
 $colors: (
   // Colores principales de la marca
   "primary": #e67e22,          // Naranja principal
@@ -32,11 +33,13 @@ $colors: (
   "overlay-medium": rgba(230, 126, 34, 0.15),
   "overlay-gradient-start": rgba(244, 130, 32, 0.9),
   "overlay-gradient-end": rgba(255, 143, 0, 0.9),
-  
-  // Sombras predefinidas
-  "shadow-base": rgba(0, 0, 0, 0.1),
-  "shadow-dark": rgba(0, 0, 0, 0.15),
-  "shadow-text": rgba(0, 0, 0, 0.7)
+
+  // === SOMBRAS ===
+  // Colores base para sombras (usar con $shadows para aplicar)
+  "shadow-base": rgba(0, 0, 0, 0.1),     // Sombra sutil
+  "shadow-medium": rgba(0, 0, 0, 0.15),  // Sombra media
+  "shadow-dark": rgba(0, 0, 0, 0.2),     // Sombra pronunciada
+  "shadow-text": rgba(0, 0, 0, 0.7)      // Sombra de texto
 ) !default;
 
 // Stacks de fuentes del sistema
@@ -125,10 +128,68 @@ $z: (
   "notification": 9999 // Notificaciones toast (siempre visibles)
 ) !default;
 
-// Transiciones de animación
-// Define la velocidad de las animaciones
+// === TRANSICIONES Y ANIMACIONES ===
+// Sistema completo de duraciones y easings para animaciones fluidas
+
+// Duraciones de transición
+$transition-durations: (
+  "instant": 0.1s,     // Cambios instantáneos
+  "fast": 0.2s,        // Animaciones rápidas (hover, focus)
+  "normal": 0.3s,      // Animaciones normales (general)
+  "moderate": 0.4s,    // Animaciones moderadas
+  "slow": 0.5s,        // Animaciones lentas (modales, slides)
+  "slower": 0.7s,      // Animaciones muy lentas
+  "slowest": 1s        // Animaciones más lentas (efectos especiales)
+) !default;
+
+// Funciones de easing (aceleración)
+// Basado en especificaciones de Material Design y CSS Easing Functions
+$easings: (
+  // Easings estándar
+  "linear": linear,
+  "ease": ease,
+  "ease-in": ease-in,
+  "ease-out": ease-out,
+  "ease-in-out": ease-in-out,
+
+  // Easings personalizados con cubic-bezier
+  "smooth": cubic-bezier(0.4, 0, 0.2, 1),        // Suave y natural
+  "sharp": cubic-bezier(0.4, 0, 0.6, 1),         // Entrada rápida
+  "bounce": cubic-bezier(0.68, -0.55, 0.265, 1.55), // Efecto rebote
+  "elastic": cubic-bezier(0.175, 0.885, 0.32, 1.275), // Elástico sutil
+
+  // Easings para entradas
+  "in-quad": cubic-bezier(0.55, 0.085, 0.68, 0.53),
+  "in-cubic": cubic-bezier(0.55, 0.055, 0.675, 0.19),
+  "in-back": cubic-bezier(0.6, -0.28, 0.735, 0.045),
+
+  // Easings para salidas
+  "out-quad": cubic-bezier(0.25, 0.46, 0.45, 0.94),
+  "out-cubic": cubic-bezier(0.215, 0.61, 0.355, 1),
+  "out-back": cubic-bezier(0.175, 0.885, 0.32, 1.275),
+
+  // Easings para entradas y salidas
+  "in-out-quad": cubic-bezier(0.455, 0.03, 0.515, 0.955),
+  "in-out-cubic": cubic-bezier(0.645, 0.045, 0.355, 1),
+  "in-out-back": cubic-bezier(0.68, -0.55, 0.265, 1.55)
+) !default;
+
+// Transiciones predefinidas (combinación de duración + easing)
+// Alias para facilitar el uso en componentes
 $transitions: (
-  "fast": 0.2s ease,   // Animaciones rápidas (hover)
-  "normal": 0.3s ease, // Animaciones normales (general)
-  "slow": 0.5s ease    // Animaciones lentas (modales)
+  "fast": 0.2s ease,              // Animaciones rápidas (hover) - deprecated
+  "normal": 0.3s ease,            // Animaciones normales - deprecated
+  "slow": 0.5s ease,              // Animaciones lentas - deprecated
+
+  // Transiciones recomendadas (nuevas)
+  "quick": 0.2s cubic-bezier(0.4, 0, 0.2, 1),     // Interacciones rápidas
+  "standard": 0.3s cubic-bezier(0.4, 0, 0.2, 1),  // Transiciones estándar
+  "smooth": 0.4s cubic-bezier(0.4, 0, 0.2, 1),    // Transiciones suaves
+  "gentle": 0.5s cubic-bezier(0.4, 0, 0.2, 1),    // Transiciones lentas
+
+  // Transiciones especiales
+  "bounce": 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55),  // Efecto rebote
+  "elastic": 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), // Elástico
+  "fade": 0.3s ease-in-out,       // Para fade in/out
+  "slide": 0.4s ease-out          // Para slides y desplazamientos
 ) !default;

@@ -8,16 +8,17 @@
 
 // M2: Product card base (backup líneas 3647-3662)
 .product-card {
-  background: map.get(m.$colors, "white");
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
   border-radius: 12px; // M2: 12px como backup (no variable 15px)
   overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); // M2: shadow exacto backup línea 3651
+  box-shadow: var(--shadow-md); // M2: shadow exacto backup línea 3651
   transition: all map.get(m.$transitions, "normal");
   cursor: pointer;
 
   &:hover {
     transform: translateY(-4px); // M2: -4px como backup línea 3657
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); // M2: shadow hover backup línea 3658
+    box-shadow: var(--card-hover-shadow); // M2: shadow hover backup línea 3658
   }
 }
 
@@ -49,19 +50,19 @@
 .product-name {
   font-size: 1.1rem; // M2: 1.1rem backup línea 3681
   font-weight: map.get(m.$font-weights, "semibold");
-  color: map.get(m.$colors, "secondary");
+  color: var(--text-primary);
   margin-bottom: map.get(m.$spaces, "sm");
   line-height: 1.3; // M2: line-height 1.3 para truncation backup línea 3685
   cursor: pointer;
 
   &:hover {
-    color: map.get(m.$colors, "primary"); // M2: hover naranja backup línea 3690
+    color: var(--brand-primary); // M2: hover naranja backup línea 3690
   }
 }
 
 // M2: Product description con truncation (backup líneas 3692-3701)
 .product-description {
-  color: map.get(m.$colors, "dark-gray");
+  color: var(--text-secondary);
   font-size: 0.85rem; // M2: 0.85rem backup línea 3694
   margin-bottom: 0.8rem; // M2: 0.8rem backup línea 3695
   line-height: 1.4; // M2: 1.4 para truncation backup línea 3696
@@ -87,15 +88,16 @@
 .product-price {
   font-size: 1.3rem; // M2: 1.3rem backup línea 3708
   font-weight: map.get(m.$font-weights, "bold");
-  color: map.get(m.$colors, "primary");
+  color: var(--price-text);
 }
 
 // M2: Flash pricing container (backup líneas 3713-3717)
 .flash-pricing {
-  background: linear-gradient(135deg, #fff1f1, #ffe6e6);
-  border: 1px solid #e74c3c;
+  background: var(--countdown-bg);
+  border: 1px solid var(--countdown-border);
   border-radius: 6px;
   padding: 8px;
+  transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 // M2: Original price tachado (backup líneas 3719-3723)
@@ -108,7 +110,7 @@
 
 .product-sold {
   font-size: map.get(m.$font-sizes, "sm");
-  color: map.get(m.$colors, "medium-gray");
+  color: var(--text-tertiary);
 }
 
 .product-meta {
@@ -120,7 +122,7 @@
 }
 
 .product-id {
-  color: map.get(m.$colors, "light-gray");
+  color: var(--text-tertiary);
   font-size: map.get(m.$font-sizes, "xs");
   opacity: 0.7;
   font-family: map.get(m.$font-stacks, "mono");
@@ -176,10 +178,11 @@
   grid-template-columns: 100px 1fr auto auto auto;
   gap: map.get(m.$spaces, "md");
   align-items: center;
-  background: map.get(m.$colors, "white");
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
   padding: map.get(m.$spaces, "lg");
   border-radius: map.get(m.$radius, "lg");
-  box-shadow: map.get(m.$shadows, "md");
+  box-shadow: var(--shadow-md);
   margin-bottom: map.get(m.$spaces, "md");
   position: relative;
 }
@@ -193,14 +196,14 @@
 
 .cart-item-details {
   h4 {
-    color: map.get(m.$colors, "secondary");
+    color: var(--text-primary);
     margin-bottom: map.get(m.$spaces, "sm");
     font-size: map.get(m.$font-sizes, "md");
   }
 }
 
 .cart-item-price {
-  color: map.get(m.$colors, "medium-gray");
+  color: var(--text-secondary);
   font-size: map.get(m.$font-sizes, "sm");
 }
 
@@ -208,7 +211,7 @@
   display: flex;
   align-items: center;
   gap: map.get(m.$spaces, "sm");
-  background: map.get(m.$colors, "light-gray");
+  background: var(--bg-secondary);
   border-radius: map.get(m.$radius, "3xl");
   padding: map.get(m.$spaces, "sm");
 }
@@ -217,8 +220,8 @@
   width: 30px;
   height: 30px;
   border: none;
-  background: map.get(m.$colors, "primary");
-  color: map.get(m.$colors, "white");
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
   border-radius: map.get(m.$radius, "pill");
   cursor: pointer;
   font-weight: map.get(m.$font-weights, "bold");
@@ -227,7 +230,7 @@
   justify-content: center;
 
   &:hover {
-    background: map.get(m.$colors, "accent");
+    background: var(--btn-primary-hover);
   }
 }
 
@@ -239,7 +242,7 @@
 
 .cart-item-total {
   font-weight: map.get(m.$font-weights, "bold");
-  color: map.get(m.$colors, "primary");
+  color: var(--price-text);
   font-size: map.get(m.$font-sizes, "md");
 }
 

@@ -3,6 +3,7 @@
 // Keyframe animations globales
 // ===========================================================================
 
+// Animacion para slide in de elementos desde la derecha
 @keyframes slideIn {
   from {
     transform: translateX(100%);
@@ -14,6 +15,7 @@
   }
 }
 
+// Animacion para slide out de elementos hacia la derecha
 @keyframes slideOut {
   from {
     transform: translateX(0);
@@ -25,6 +27,7 @@
   }
 }
 
+// Animacion de fade in simple
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -34,6 +37,7 @@
   }
 }
 
+// Animacion de fade out simple
 @keyframes fadeOut {
   from {
     opacity: 1;
@@ -43,6 +47,7 @@
   }
 }
 
+// Animacion para modales con scale centrado
 @keyframes slideInScale {
   from {
     transform: translate(-50%, -50%) scale(0.8);
@@ -54,6 +59,7 @@
   }
 }
 
+// Animacion de pulso para badges o elementos que requieren atencion
 @keyframes pulse {
   0%,
   100% {
@@ -66,6 +72,7 @@
   }
 }
 
+// Animacion de brillo con sombra para badges flash
 @keyframes flashGlow {
   0%,
   100% {
@@ -76,6 +83,7 @@
   }
 }
 
+// Animacion de shimmer para elementos de carga
 @keyframes shimmer {
   0% {
     left: -100%;
@@ -85,6 +93,7 @@
   }
 }
 
+// Animacion de parpadeo suave
 @keyframes flicker {
   0% {
     opacity: 1;
@@ -97,6 +106,7 @@
   }
 }
 
+// Animacion de sparkle para elementos destacados
 @keyframes sparkle {
   0%,
   100% {

@@ -468,26 +468,44 @@ function displayComments() {
     noComments.style.display = "none";
 
     const commentsHTML = productComments
-      .map(
-        (comment) => `
+      .map((comment) => {
+        // Obtener avatar del usuario desde localStorage
+        const userProfile = getUserProfile(comment.user);
+        let avatarHTML = "";
+
+        if (userProfile && userProfile.avatarDataUrl) {
+          // Si el usuario tiene avatar, mostrarlo
+          avatarHTML = `<img src="${userProfile.avatarDataUrl}" alt="${comment.user}" class="comment-avatar-img">`;
+        } else {
+          // Si no tiene avatar, mostrar iniciales con degradado
+          const initials = comment.user.substring(0, 2).toUpperCase();
+          avatarHTML = `<div class="comment-avatar-placeholder" data-initials="${initials}">${initials}</div>`;
+        }
+
+        return `
       <div class="comment">
-        <div class="comment-header">
-          <div class="comment-user">
-            <strong>${comment.user}</strong>
-            <div class="comment-rating">
-              ${"★".repeat(comment.score)}${"☆".repeat(5 - comment.score)}
-            </div>
-          </div>
-          <div class="comment-date">${new Date(
-            comment.dateTime
-          ).toLocaleDateString("es-UY")}</div>
+        <div class="comment-avatar">
+          ${avatarHTML}
         </div>
-        <div class="comment-text">
-          ${comment.description}
+        <div class="comment-content">
+          <div class="comment-header">
+            <div class="comment-user">
+              <strong>${comment.user}</strong>
+              <div class="comment-rating">
+                ${"★".repeat(comment.score)}${"☆".repeat(5 - comment.score)}
+              </div>
+            </div>
+            <div class="comment-date">${new Date(
+              comment.dateTime
+            ).toLocaleDateString("es-UY")}</div>
+          </div>
+          <div class="comment-text">
+            ${comment.description}
+          </div>
         </div>
       </div>
-    `
-      )
+    `;
+      })
       .join("");
 
     commentsContainer.innerHTML = commentsHTML;

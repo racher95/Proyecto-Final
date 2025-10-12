@@ -20,6 +20,9 @@ document.addEventListener("componentsLoaded", function () {
 
   // Configuro la navegación programática
   initGlobalNavigation();
+
+  // Inicializar tema del usuario
+  initializeTheme();
 });
 
 // Inicializar carruseles cuando el DOM esté listo (no dependen de header/footer)
@@ -95,8 +98,47 @@ function checkSession() {
 function updateUIForLoggedInUser(session) {
   const loginButtons = document.querySelectorAll('a[href*="login.html"]');
 
+  // Obtener perfil del usuario para acceder al avatar
+  const userProfile = getUserProfile(session.usuario);
+
   loginButtons.forEach((button) => {
-    button.innerHTML = `👤 ${session.usuario}`;
+    // Limpiar contenido previo
+    button.innerHTML = "";
+
+    // Crear contenedor para avatar + nombre
+    const userDisplay = document.createElement("span");
+    userDisplay.className = "nav-user-display";
+
+    // Crear avatar
+    const avatarElement = document.createElement("div");
+    avatarElement.className = "nav-avatar";
+
+    if (userProfile && userProfile.avatarDataUrl) {
+      // Si hay avatar, mostrar imagen
+      const avatarImg = document.createElement("img");
+      avatarImg.src = userProfile.avatarDataUrl;
+      avatarImg.alt = session.usuario;
+      avatarImg.className = "nav-avatar-img";
+      avatarElement.appendChild(avatarImg);
+    } else {
+      // Si no hay avatar, mostrar iniciales con degradado
+      avatarElement.classList.add("nav-avatar-placeholder");
+      const initials = session.usuario.substring(0, 2).toUpperCase();
+      avatarElement.setAttribute("data-initials", initials);
+      avatarElement.textContent = initials;
+    }
+
+    // Crear texto con nombre de usuario
+    const userName = document.createElement("span");
+    userName.className = "nav-user-name";
+    userName.textContent = session.usuario;
+
+    // Agregar elementos al contenedor
+    userDisplay.appendChild(avatarElement);
+    userDisplay.appendChild(userName);
+    button.appendChild(userDisplay);
+
+    // Configurar comportamiento
     button.href = "#";
     button.onclick = function (e) {
       e.preventDefault();
@@ -136,17 +178,59 @@ function showUserMenu() {
   const profileUrl = isInSubfolder ? "profile.html" : "pages/profile.html";
   const ordersUrl = isInSubfolder ? "orders.html" : "pages/orders.html";
 
-  // Agrego las opciones del menú con rutas dinámicas
+  // Obtener tema actual del usuario
+  const sessionData = checkSession();
+  const userProfile = sessionData ? getUserProfile(sessionData.usuario) : null;
+  const currentTheme = userProfile?.theme || "light";
+  const themeIcon = currentTheme === "light" ? "🌙" : "☀️";
+  const themeText = currentTheme === "light" ? "Modo Oscuro" : "Modo Claro";
+
+  // Crear HTML para el avatar del menú
+  let avatarHTML = "";
+  if (userProfile && userProfile.avatarDataUrl) {
+    avatarHTML = `<img src="${userProfile.avatarDataUrl}" alt="${sessionData.usuario}" class="user-menu-avatar-img">`;
+  } else {
+    const initials = sessionData.usuario.substring(0, 2).toUpperCase();
+    avatarHTML = `<div class="user-menu-avatar-placeholder" data-initials="${initials}">${initials}</div>`;
+  }
+
+  // Agrego las opciones del menú con rutas dinámicas e información del usuario
   menu.innerHTML = `
     <div class="user-menu-content">
-      <a href="${profileUrl}" class="user-menu-item">Mi Perfil</a>
-      <a href="${ordersUrl}" class="user-menu-item">Mis Pedidos</a>
+      <div class="user-menu-header">
+        <div class="user-menu-avatar">
+          ${avatarHTML}
+        </div>
+        <div class="user-menu-info">
+          <div class="user-menu-username">${sessionData.usuario}</div>
+          <div class="user-menu-email">${
+            userProfile?.email || "Sin email"
+          }</div>
+        </div>
+      </div>
       <hr class="user-menu-separator">
-      <a href="#" class="user-menu-item logout" id="logoutBtn">Cerrar Sesión</a>
+      <a href="${profileUrl}" class="user-menu-item">👤 Mi Perfil</a>
+      <a href="${ordersUrl}" class="user-menu-item">📦 Mis Pedidos</a>
+      <button id="themeToggleBtn" class="user-menu-item user-menu-button">
+        ${themeIcon} ${themeText}
+      </button>
+      <hr class="user-menu-separator">
+      <a href="#" class="user-menu-item logout" id="logoutBtn">🚪 Cerrar Sesión</a>
     </div>
   `;
 
   document.body.appendChild(menu);
+
+  // Configurar toggle de tema
+  const themeToggleBtn = menu.querySelector("#themeToggleBtn");
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      toggleTheme();
+      // Cerrar menú después de cambiar tema
+      closeUserMenu(menu);
+    });
+  }
 
   // Configurar logout
   const logoutBtn = menu.querySelector("#logoutBtn");
@@ -161,11 +245,124 @@ function showUserMenu() {
   setTimeout(() => {
     document.addEventListener("click", function closeMenu(e) {
       if (!menu.contains(e.target)) {
-        document.body.removeChild(menu);
+        closeUserMenu(menu);
         document.removeEventListener("click", closeMenu);
       }
     });
   }, 100);
+}
+
+/**
+ * Cierra el menú de usuario
+ * @param {HTMLElement} menu - Elemento del menú a cerrar
+ */
+function closeUserMenu(menu) {
+  if (menu && menu.parentNode) {
+    document.body.removeChild(menu);
+  }
+}
+
+/**
+ * Alterna entre tema claro y oscuro
+ * Persiste la preferencia en el perfil del usuario
+ */
+function toggleTheme() {
+  const sessionData = checkSession();
+  if (!sessionData || !sessionData.isLoggedIn) {
+    console.warn("No se puede cambiar tema: usuario no logueado");
+    return;
+  }
+
+  const username = sessionData.usuario;
+  const userProfile = getUserProfile(username);
+  const currentTheme = userProfile?.theme || "light";
+  const newTheme = currentTheme === "light" ? "dark" : "light";
+
+  // Actualizar perfil con nuevo tema
+  upsertUserProfile(username, { theme: newTheme });
+
+  // Aplicar tema al DOM
+  applyTheme(newTheme);
+
+  // Notificar al usuario
+  const themeEmoji = newTheme === "dark" ? "🌙" : "☀️";
+  const themeName = newTheme === "dark" ? "Oscuro" : "Claro";
+  showNotification(`${themeEmoji} Tema ${themeName} activado`, "success");
+
+  console.log(`Tema cambiado a: ${newTheme}`);
+}
+
+/**
+ * Aplica un tema al documento
+ * @param {string} theme - "light" o "dark"
+ */
+function applyTheme(theme) {
+  const validTheme = theme === "dark" ? "dark" : "light";
+  document.documentElement.setAttribute("data-theme", validTheme);
+
+  // Cambiar logo del footer segun el tema
+  updateLogo(validTheme);
+
+  // Cambiar favicon segun el tema
+  updateFavicon(validTheme);
+
+  console.log(`Tema aplicado: ${validTheme}`);
+}
+
+/**
+ * Actualiza el logo del footer segun el tema
+ * @param {string} theme - "light" o "dark"
+ */
+function updateLogo(theme) {
+  const logos = document.querySelectorAll(".jap-logo");
+  const logoPath = theme === "dark" ? "logojapdark.png" : "japlogo.png";
+
+  logos.forEach((logo) => {
+    // Detectar si estamos en una subcarpeta
+    const isInSubfolder = window.location.pathname.includes("/pages/");
+    const basePath = isInSubfolder ? "../img/" : "img/";
+
+    logo.src = basePath + logoPath;
+    logo.alt = theme === "dark" ? "JAP Logo (Dark)" : "JAP Logo";
+  });
+}
+
+/**
+ * Actualiza el favicon segun el tema
+ * @param {string} theme - "light" o "dark"
+ */
+function updateFavicon(theme) {
+  const faviconPath = theme === "dark" ? "faviconDark.ico" : "favicon.ico";
+
+  // Buscar el link del favicon
+  let faviconLink = document.querySelector("link[rel*='icon']");
+
+  if (faviconLink) {
+    // Detectar si estamos en una subcarpeta
+    const isInSubfolder = window.location.pathname.includes("/pages/");
+    const basePath = isInSubfolder ? "../img/" : "img/";
+
+    faviconLink.href = basePath + faviconPath;
+  }
+}
+
+/**
+ * Inicializa el tema al cargar la página
+ * Lee la preferencia del usuario y la aplica
+ */
+function initializeTheme() {
+  const sessionData = checkSession();
+
+  if (sessionData && sessionData.isLoggedIn) {
+    // Usuario logueado: aplicar su tema preferido
+    const username = sessionData.usuario;
+    const userProfile = getUserProfile(username);
+    const theme = userProfile?.theme || "light";
+    applyTheme(theme);
+  } else {
+    // Usuario no logueado: usar tema claro por defecto
+    applyTheme("light");
+  }
 }
 
 /**

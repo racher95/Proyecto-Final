@@ -1,6 +1,308 @@
 // ===========================================================================
 // CRAFTIVITY - PROFILE
-// Estilos de la página de perfil
+// Estilos de la página de perfil (usando Bootstrap + estilos personalizados)
 // ===========================================================================
 
-// Placeholder - estilos futuros de perfil
+@use "../abstracts/variables" as v;
+@use "sass:map";
+
+// === Avatar Section ===
+// Estilos personalizados que complementan Bootstrap
+
+// Sección del avatar con textos auxiliares
+.profile-avatar-section {
+  p,
+  small,
+  .text-muted {
+    color: #d0d0d0 !important;
+    opacity: 1 !important;
+  }
+
+  .text-danger {
+    color: map.get(v.$colors, "danger") !important;
+    font-weight: map.get(v.$font-weights, "semibold");
+  }
+}
+
+// Texto debajo del estado del perfil (✓ Tu perfil está completo...)
+#statusHint {
+  color: #6ef57e !important; // Verde neón brillante
+  font-weight: map.get(v.$font-weights, "semibold") !important;
+  font-size: 0.95rem !important;
+  opacity: 1 !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+}
+
+// Avatar wrapper positioning
+.avatar-preview-wrapper {
+  position: relative;
+}
+
+// Avatar placeholder con iniciales
+.avatar-preview.avatar-placeholder {
+  background: linear-gradient(
+    135deg,
+    map.get(v.$colors, "primary") 0%,
+    map.get(v.$colors, "accent-alt") 100%
+  );
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  color: map.get(v.$colors, "white");
+  font-size: 3rem;
+  font-weight: map.get(v.$font-weights, "bold");
+  border: 3px solid map.get(v.$colors, "white");
+  box-shadow: map.get(v.$shadows, "md");
+
+  &::before {
+    content: attr(data-initials);
+  }
+}
+
+// Hover solo en modo edición
+.avatar-preview-wrapper:not(.editable) .avatar-overlay {
+  display: none !important;
+}
+
+.avatar-preview-wrapper.editable:hover .avatar-overlay {
+  opacity: 1 !important;
+}
+
+.avatar-preview-wrapper.editable .avatar-preview {
+  cursor: pointer;
+}
+
+// Cursor zoom cuando hay imagen y NO está en modo edición
+.avatar-preview-wrapper:not(.editable)
+  .avatar-preview:not(.avatar-placeholder) {
+  cursor: zoom-in;
+}
+
+// Transición suave del avatar
+.avatar-preview-wrapper:hover {
+  transform: scale(1.05);
+  transition: map.get(v.$transitions, "normal");
+}
+
+// Botón "Cambiar Foto" oculto cuando disabled
+#changeAvatarBtn:disabled {
+  display: none;
+}
+
+// Validación de email con Bootstrap
+.form-control.is-invalid {
+  border-color: map.get(v.$colors, "danger");
+}
+
+// === Bootstrap Overrides para Dark Theme ===
+// Adaptamos componentes de Bootstrap para que funcionen con nuestros temas
+
+// Card del perfil
+.profile-card.card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-md);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+
+  .card-body {
+    background-color: var(--card-bg);
+  }
+}
+
+// Encabezado del perfil
+.profile-header {
+  h1 {
+    color: var(--brand-primary) !important;
+  }
+
+  .text-muted {
+    color: var(--text-primary) !important;
+    opacity: 0.8;
+    font-weight: map.get(v.$font-weights, "medium");
+  }
+}
+
+// Campos del formulario
+.profile-form {
+  .form-label {
+    color: var(--text-primary);
+    font-weight: map.get(v.$font-weights, "semibold");
+    opacity: 0.95;
+
+    i {
+      color: var(--brand-primary);
+    }
+  }
+
+  .form-control {
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--input-border);
+    transition: border-color 0.15s ease-in-out, background-color 0.3s ease;
+    font-weight: map.get(v.$font-weights, "medium");
+
+    &:focus {
+      background-color: var(--input-bg);
+      color: var(--text-primary);
+      border-color: var(--input-border-focus);
+      box-shadow: 0 0 0 0.2rem rgba(98, 0, 238, 0.25);
+    }
+
+    &:disabled,
+    &[readonly] {
+      background-color: var(--bg-info);
+      color: var(--text-primary);
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    &::placeholder {
+      color: var(--input-placeholder);
+      opacity: 0.7;
+    }
+
+    &.is-invalid:focus {
+      box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    }
+  }
+
+  .form-text {
+    color: #d0d0d0 !important;
+    font-size: 0.875rem;
+    font-weight: map.get(v.$font-weights, "regular");
+    opacity: 1 !important;
+  }
+
+  .invalid-feedback {
+    color: map.get(v.$colors, "danger");
+    font-weight: map.get(v.$font-weights, "medium");
+  }
+
+  small {
+    color: #d0d0d0 !important;
+    opacity: 1 !important;
+  }
+
+  // Textos auxiliares específicos
+  .text-muted {
+    color: #d0d0d0 !important;
+    opacity: 1 !important;
+  }
+
+  .border-bottom,
+  .border-top {
+    border-color: var(--card-border) !important;
+  }
+}
+
+// Botones de acción
+.profile-form {
+  .btn-primary {
+    background-color: var(--brand-primary);
+    border-color: var(--brand-primary);
+    color: var(--text-inverse);
+    transition: background-color 0.15s ease-in-out;
+
+    &:hover:not(:disabled) {
+      background-color: var(--brand-primary-dark);
+      border-color: var(--brand-primary-dark);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  .btn-outline-secondary {
+    background-color: transparent;
+    border-color: var(--card-border);
+    color: var(--text-primary);
+    transition: all 0.15s ease-in-out;
+
+    &:hover:not(:disabled) {
+      background-color: var(--bg-info);
+      border-color: var(--brand-primary);
+      color: var(--brand-primary);
+    }
+  }
+
+  .btn-secondary {
+    background-color: var(--bg-info);
+    border-color: var(--card-border);
+    color: var(--text-primary);
+
+    &:hover {
+      background-color: var(--bg-section);
+      border-color: var(--card-border);
+    }
+  }
+}
+
+// Textos auxiliares
+.text-danger {
+  color: map.get(v.$colors, "danger") !important;
+}
+
+.text-primary {
+  color: var(--brand-primary) !important;
+}
+
+.text-success {
+  color: var(--success) !important;
+  font-weight: map.get(v.$font-weights, "semibold");
+}
+
+// Mensaje de perfil completo - texto debajo del badge
+.profile-page {
+  .alert-success,
+  .text-success {
+    background-color: rgba(76, 217, 100, 0.15) !important;
+    border: 1px solid #5dde6b !important;
+    color: #6ef57e !important; // Verde neón muy brillante y visible
+    padding: map.get(v.$spaces, "md") map.get(v.$spaces, "lg") !important;
+    border-radius: map.get(v.$radius, "lg") !important;
+    font-weight: map.get(v.$font-weights, "bold") !important;
+    font-size: 1rem !important;
+    text-align: center !important;
+    margin-top: map.get(v.$spaces, "md") !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+  }
+
+  // También capturar cualquier párrafo o div con clase text-success
+  p.text-success,
+  div.text-success,
+  small.text-success {
+    background-color: rgba(76, 217, 100, 0.15) !important;
+    border: 1px solid #5dde6b !important;
+    color: #6ef57e !important; // Verde neón muy brillante
+    padding: map.get(v.$spaces, "md") !important;
+    border-radius: map.get(v.$radius, "lg") !important;
+    font-weight: map.get(v.$font-weights, "bold") !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+  }
+}
+
+// Badge de perfil completo
+.badge {
+  &.bg-success {
+    background-color: var(--success) !important;
+    color: map.get(v.$colors, "white") !important;
+    font-weight: map.get(v.$font-weights, "semibold") !important;
+    padding: map.get(v.$spaces, "sm") map.get(v.$spaces, "lg") !important;
+    border-radius: map.get(v.$radius, "2xl") !important;
+    border: 2px solid rgba(39, 174, 96, 0.3) !important;
+  }
+}
+
+// === Responsive Design ===
+@media (max-width: 768px) {
+  .avatar-preview-wrapper {
+    width: 120px !important;
+    height: 120px !important;
+  }
+
+  .avatar-preview.avatar-placeholder {
+    font-size: 2.5rem;
+  }
+}

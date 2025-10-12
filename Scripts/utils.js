@@ -422,3 +422,144 @@ async function getProductPromotionData(productId) {
     originalPrice: flashData?.cost || featuredData?.cost || null,
   };
 }
+
+// ==========================================
+// SISTEMA DE PERFILES DE USUARIO
+// ==========================================
+
+/**
+ * Lee todos los perfiles de usuario desde localStorage
+ * @returns {Object} Objeto indexado por username con datos de perfil
+ */
+function readUsers() {
+  try {
+    const usersData = localStorage.getItem("craftivityUsers");
+    return usersData ? JSON.parse(usersData) : {};
+  } catch (error) {
+    console.error("Error leyendo perfiles de usuario:", error);
+    return {};
+  }
+}
+
+/**
+ * Escribe todos los perfiles de usuario en localStorage
+ * @param {Object} users - Objeto con todos los perfiles indexados por username
+ */
+function writeUsers(users) {
+  try {
+    localStorage.setItem("craftivityUsers", JSON.stringify(users));
+  } catch (error) {
+    console.error("Error guardando perfiles de usuario:", error);
+    throw new Error("No se pudo guardar el perfil. Espacio insuficiente.");
+  }
+}
+
+/**
+ * Obtiene el perfil de un usuario específico
+ * @param {string} username - Nombre de usuario (ej: "Kevin", "Juan")
+ * @returns {Object|null} Datos del perfil o null si no existe
+ */
+function getUserProfile(username) {
+  if (!username) return null;
+  const users = readUsers();
+  return users[username] || null;
+}
+
+/**
+ * Crea o actualiza el perfil de un usuario
+ * @param {string} username - Nombre de usuario (ej: "Kevin", "Juan")
+ * @param {Object} patch - Datos a actualizar (parcial)
+ * @returns {Object} Perfil actualizado completo
+ */
+function upsertUserProfile(username, patch) {
+  if (!username) {
+    throw new Error("Username es requerido");
+  }
+
+  const users = readUsers();
+  const existingProfile = users[username] || {};
+  const now = new Date().toISOString();
+
+  // Crear o actualizar perfil
+  const updatedProfile = {
+    username: username,
+    email: existingProfile.email || "", // Email vacío por defecto
+    displayName: existingProfile.displayName || username, // Usar username como displayName inicial
+    avatarDataUrl: existingProfile.avatarDataUrl || null,
+    avatarFileName: existingProfile.avatarFileName || null,
+    avatarSize: existingProfile.avatarSize || null,
+    theme: existingProfile.theme || "light",
+    createdAt: existingProfile.createdAt || now,
+    updatedAt: now,
+    ...patch, // Aplicar cambios del patch
+  };
+
+  // Guardar en la colección
+  users[username] = updatedProfile;
+  writeUsers(users);
+
+  console.log(`Perfil actualizado para: ${username}`);
+  return updatedProfile;
+}
+
+/**
+ * Verifica si un perfil está completo (tiene email y avatar)
+ * @param {Object} profile - Objeto de perfil a verificar
+ * @returns {boolean} true si el perfil está completo
+ */
+function isProfileComplete(profile) {
+  if (!profile) return false;
+
+  // Validaciones mínimas requeridas
+  const hasEmail =
+    profile.email && profile.email.trim() !== "" && isValidEmail(profile.email);
+  const hasAvatar =
+    profile.avatarDataUrl && profile.avatarDataUrl.startsWith("data:image");
+
+  return hasEmail && hasAvatar;
+}
+
+/**
+ * Lee una imagen desde un archivo y la convierte a DataURL (base64)
+ * @param {File} file - Archivo de imagen seleccionado
+ * @returns {Promise<Object>} Objeto con { dataUrl, fileName, size }
+ */
+function readImageAsDataURL(file) {
+  return new Promise((resolve, reject) => {
+    // Validar que sea un archivo de imagen
+    if (!file.type.startsWith("image/")) {
+      reject(new Error("El archivo debe ser una imagen"));
+      return;
+    }
+
+    // Validar tamaño máximo: 2MB
+    const maxSize = 2 * 1024 * 1024; // 2MB en bytes
+    if (file.size > maxSize) {
+      reject(
+        new Error(
+          `La imagen es muy grande (${(file.size / 1024 / 1024).toFixed(
+            1
+          )}MB). Máximo permitido: 2MB`
+        )
+      );
+      return;
+    }
+
+    // Leer archivo como DataURL
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      resolve({
+        dataUrl: e.target.result,
+        fileName: file.name,
+        size: file.size,
+      });
+    };
+
+    reader.onerror = () => {
+      reject(new Error("Error al leer el archivo de imagen"));
+    };
+
+    reader.readAsDataURL(file);
+  });
+}

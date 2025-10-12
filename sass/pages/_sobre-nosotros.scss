@@ -59,7 +59,10 @@
 
 .our-story {
   padding: map.get(m.$spaces, "4xl") 0;
-  background-color: map.get(m.$colors, "white");
+  background-color: var(--bg-section);
+  border-radius: map.get(m.$radius, "2xl");
+  margin: map.get(m.$spaces, "3xl") 0;
+  transition: background-color 0.3s ease;
 }
 
 .story-content {
@@ -73,7 +76,7 @@
   padding: map.get(m.$spaces, "xl");
 
   h2 {
-    color: map.get(m.$colors, "secondary");
+    color: var(--text-primary);
     margin-bottom: map.get(m.$spaces, "xl");
     font-size: 2.2rem;
     font-weight: map.get(m.$font-weights, "bold");
@@ -82,7 +85,7 @@
   p {
     margin-bottom: 1.8rem;
     line-height: map.get(m.$line-heights, "relaxed");
-    color: map.get(m.$colors, "dark-gray");
+    color: var(--text-secondary);
     font-size: 1.1rem;
   }
 }
@@ -137,11 +140,14 @@
 
 .mission-vision {
   padding: map.get(m.$spaces, "4xl") 0;
-  background-color: map.get(m.$colors, "light-gray");
+  background-color: var(--bg-section);
+  border-radius: map.get(m.$radius, "2xl");
+  margin: map.get(m.$spaces, "3xl") 0;
+  transition: background-color 0.3s ease;
 
   h2 {
     text-align: center;
-    color: map.get(m.$colors, "secondary");
+    color: var(--text-primary);
     margin-bottom: map.get(m.$spaces, "3xl");
     font-size: 2.2rem;
     font-weight: map.get(m.$font-weights, "bold");
@@ -156,13 +162,13 @@
 }
 
 .mvv-card {
-  background-color: map.get(m.$colors, "white");
+  background-color: var(--card-bg);
   padding: map.get(m.$spaces, "3xl") map.get(m.$spaces, "2xl");
   border-radius: map.get(m.$radius, "2xl");
   text-align: center;
-  box-shadow: 0 8px 25px map.get(m.$colors, "shadow-base");
+  box-shadow: var(--shadow-md);
   transition: map.get(m.$transitions, "normal");
-  border: 2px solid transparent;
+  border: 2px solid var(--card-border);
   position: relative;
   overflow: hidden;
 
@@ -191,14 +197,14 @@
   }
 
   h3 {
-    color: map.get(m.$colors, "secondary");
+    color: var(--text-primary);
     margin-bottom: map.get(m.$spaces, "lg");
     font-size: map.get(m.$font-sizes, "lg");
     font-weight: map.get(m.$font-weights, "semibold");
   }
 
   p {
-    color: map.get(m.$colors, "dark-gray");
+    color: var(--text-secondary);
     line-height: map.get(m.$line-heights, "relaxed");
     font-size: 1.05rem;
     margin-bottom: map.get(m.$spaces, "md");
@@ -212,7 +218,7 @@
 
   li {
     padding: map.get(m.$spaces, "sm") 0;
-    color: map.get(m.$colors, "dark-gray");
+    color: var(--text-secondary);
     font-size: map.get(m.$font-sizes, "base");
     transition: map.get(m.$transitions, "normal");
   }
@@ -325,11 +331,14 @@
 // Our Team Section
 .our-team {
   padding: map.get(m.$spaces, "4xl") 0;
-  background-color: map.get(m.$colors, "light-gray");
+  background-color: var(--bg-section);
+  border-radius: map.get(m.$radius, "2xl");
+  margin: map.get(m.$spaces, "3xl") 0;
+  transition: background-color 0.3s ease;
 
   h2 {
     text-align: center;
-    color: map.get(m.$colors, "secondary");
+    color: var(--text-primary);
     margin-bottom: map.get(m.$spaces, "md");
     font-size: 2.2rem;
     font-weight: map.get(m.$font-weights, "bold");
@@ -339,7 +348,7 @@
 .team-intro {
   text-align: center;
   margin-bottom: map.get(m.$spaces, "3xl");
-  color: map.get(m.$colors, "dark-gray");
+  color: var(--text-secondary);
   font-size: 1.2rem;
   max-width: 600px;
   margin-left: auto;
@@ -354,27 +363,27 @@
 }
 
 .team-member {
-  background-color: map.get(m.$colors, "white");
+  background-color: var(--card-bg);
   padding: map.get(m.$spaces, "2xl");
   border-radius: map.get(m.$radius, "2xl");
   text-align: center;
-  box-shadow: 0 8px 25px map.get(m.$colors, "shadow-base");
+  box-shadow: var(--shadow-md);
   transition: map.get(m.$transitions, "normal");
-  border: 2px solid transparent;
+  border: 2px solid var(--card-border);
 
   &:hover {
     transform: translateY(-8px);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-    border-color: map.get(m.$colors, "primary");
+    box-shadow: var(--card-hover-shadow);
+    border-color: var(--brand-primary);
   }
 
   h3 {
-    color: map.get(m.$colors, "secondary");
+    color: var(--text-primary);
     margin-bottom: map.get(m.$spaces, "sm");
   }
 
   p {
-    color: map.get(m.$colors, "dark-gray");
+    color: var(--text-secondary);
     line-height: map.get(m.$line-heights, "relaxed");
   }
 }
@@ -385,7 +394,7 @@
 }
 
 .member-role {
-  color: map.get(m.$colors, "primary");
+  color: var(--brand-primary);
   font-weight: map.get(m.$font-weights, "semibold");
   margin-bottom: map.get(m.$spaces, "md");
 }
@@ -393,11 +402,14 @@
 // Why Choose Us Section
 .why-choose-us {
   padding: map.get(m.$spaces, "4xl") 0;
-  background-color: map.get(m.$colors, "white");
+  background-color: var(--bg-section);
+  border-radius: map.get(m.$radius, "2xl");
+  margin: map.get(m.$spaces, "3xl") 0;
+  transition: background-color 0.3s ease;
 
   h2 {
     text-align: center;
-    color: map.get(m.$colors, "secondary");
+    color: var(--text-primary);
     margin-bottom: map.get(m.$spaces, "3xl");
     font-size: 2.2rem;
     font-weight: map.get(m.$font-weights, "bold");
@@ -414,28 +426,30 @@
 .feature-card {
   text-align: center;
   padding: map.get(m.$spaces, "2xl");
-  background-color: map.get(m.$colors, "light-gray");
+  background-color: var(--card-bg);
   border-radius: map.get(m.$radius, "lg");
   transition: map.get(m.$transitions, "normal");
-  border: 2px solid transparent;
+  border: 2px solid var(--card-border);
 
   &:hover {
-    background-color: map.get(m.$colors, "primary");
-    color: map.get(m.$colors, "white");
+    background-color: var(--brand-primary);
+    color: var(--text-inverse);
     transform: translateY(-8px);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-    border-color: map.get(m.$colors, "accent");
+    box-shadow: var(--card-hover-shadow);
+    border-color: var(--brand-primary-dark);
   }
 
   h3 {
     margin-bottom: map.get(m.$spaces, "lg");
     font-size: 1.4rem;
     font-weight: map.get(m.$font-weights, "semibold");
+    color: inherit;
   }
 
   p {
     line-height: map.get(m.$line-heights, "relaxed");
     font-size: map.get(m.$font-sizes, "base");
+    color: inherit;
   }
 }
 

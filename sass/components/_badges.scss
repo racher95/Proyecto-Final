@@ -83,26 +83,29 @@
 .flash-price {
   font-size: map.get(m.$font-sizes, "lg") + 0.1rem;
   font-weight: map.get(m.$font-weights, "bold");
-  color: map.get(m.$colors, "danger");
+  color: var(--countdown-text);
   display: block;
+  transition: color 0.3s ease;
 }
 
 .countdown-container {
-  background: linear-gradient(135deg, #fff5f5, #ffeaea);
-  border: 1px solid map.get(m.$colors, "danger");
+  background: var(--countdown-bg);
+  border: 1px solid var(--countdown-border);
   border-radius: map.get(m.$radius, "md");
   padding: map.get(m.$spaces, "md");
   margin: 10px 0;
   text-align: center;
+  transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .countdown-label {
   font-size: map.get(m.$font-sizes, "xs");
   font-weight: map.get(m.$font-weights, "semibold");
-  color: map.get(m.$colors, "danger");
+  color: var(--countdown-text);
   margin-bottom: map.get(m.$spaces, "sm");
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  transition: color 0.3s ease;
 }
 
 .countdown-timer {
@@ -111,7 +114,8 @@
   gap: map.get(m.$spaces, "sm");
   font-size: map.get(m.$font-sizes, "sm");
   font-weight: map.get(m.$font-weights, "bold");
-  color: map.get(m.$colors, "danger");
+  color: var(--countdown-text);
+  transition: color 0.3s ease;
 }
 
 .badge-featured-detail,

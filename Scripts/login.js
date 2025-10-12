@@ -35,6 +35,19 @@ document.addEventListener("DOMContentLoaded", function () {
         isLoggedIn: true,
       };
 
+      // Inicializar perfil del usuario si no existe
+      let userProfile = getUserProfile(usuario);
+      if (!userProfile) {
+        // Crear perfil inicial con valores por defecto
+        userProfile = upsertUserProfile(usuario, {
+          displayName: usuario,
+          theme: "light",
+        });
+        console.log("Perfil inicial creado para:", usuario);
+      } else {
+        console.log("Perfil existente cargado para:", usuario);
+      }
+
       // Migrar carrito temporal al usuario antes de guardar sesión
       migrateCartToUser(usuario);
 

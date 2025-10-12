@@ -7,10 +7,14 @@
 @use "sass:map";
 
 footer {
-  background-color: map.get(m.$colors, "secondary");
-  color: map.get(m.$colors, "white");
+  background-color: var(--footer-bg);
+  color: var(--footer-text);
   padding: map.get(m.$spaces, "3xl") 0 map.get(m.$spaces, "md");
   margin-top: map.get(m.$spaces, "4xl");
+  border-top: 1px solid var(--footer-border);
+  box-shadow: var(--footer-shadow);
+  transition: background-color 0.3s ease, border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .footer-container {
@@ -25,19 +29,20 @@ footer {
 .footer-section {
   h3 {
     margin-bottom: map.get(m.$spaces, "md");
-    color: map.get(m.$colors, "primary");
+    color: var(--footer-heading);
   }
 
   p,
   a {
-    color: map.get(m.$colors, "light-gray");
+    color: var(--footer-text);
     text-decoration: none;
     margin-bottom: map.get(m.$spaces, "sm");
     display: block;
+    transition: color 0.3s ease;
   }
 
   a:hover {
-    color: map.get(m.$colors, "primary");
+    color: var(--brand-primary);
   }
 
   ul {
@@ -71,7 +76,7 @@ footer {
   p {
     font-size: map.get(m.$font-sizes, "sm");
     margin-top: map.get(m.$spaces, "md");
-    color: map.get(m.$colors, "medium-gray");
+    color: var(--footer-text);
     line-height: map.get(m.$line-heights, "base");
   }
 }
@@ -94,7 +99,7 @@ footer {
     transition: map.get(m.$transitions, "normal");
 
     &:hover {
-      background-color: map.get(m.$colors, "primary");
+      background-color: var(--brand-primary);
       transform: translateY(-3px);
     }
   }
@@ -109,13 +114,15 @@ footer {
   input {
     width: 100%;
     padding: map.get(m.$spaces, "sm") + 0.25rem;
-    border: 2px solid map.get(m.$colors, "light-gray");
+    border: 2px solid var(--input-border);
+    background-color: var(--input-bg);
+    color: var(--text-primary);
     border-radius: map.get(m.$radius, "md");
     font-size: map.get(m.$font-sizes, "base");
 
     &:focus {
       outline: none;
-      border-color: map.get(m.$colors, "primary");
+      border-color: var(--input-border-focus);
     }
   }
 
@@ -134,7 +141,7 @@ footer {
   text-align: center;
 
   p {
-    color: map.get(m.$colors, "medium-gray");
+    color: var(--footer-text);
     font-size: map.get(m.$font-sizes, "sm");
     margin: 0;
   }
