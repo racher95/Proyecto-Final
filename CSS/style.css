@@ -2804,11 +2804,11 @@ main {
 }
 
 #statusHint {
-  color: #6ef57e !important;
+  color: var(--text-secondary) !important;
   font-weight: 600 !important;
   font-size: 0.95rem !important;
   opacity: 1 !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+  text-shadow: var(--shadow-sm) !important;
 }
 
 .avatar-preview-wrapper {
@@ -3838,11 +3838,6 @@ main {
 @media (min-width: 480px) {
   .carousel-container {
     padding: 0 1.5rem;
-  }
-  .carousel-track .product-card {
-    flex: 0 0 calc(100% - 0rem);
-    min-width: calc(100vw - 4rem);
-    max-width: calc(100vw - 4rem);
   }
   .carousel-btn {
     width: 2rem;

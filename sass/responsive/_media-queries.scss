@@ -287,12 +287,6 @@
     padding: 0 map.get(m.$spaces, "lg");
   }
 
-  .carousel-track .product-card {
-    flex: 0 0 calc(100% - 0rem);
-    min-width: calc(100vw - 4rem);
-    max-width: calc(100vw - 4rem);
-  }
-
   .carousel-btn {
     width: 2rem;
     height: 2rem;

@@ -26,11 +26,11 @@
 
 // Texto debajo del estado del perfil (✓ Tu perfil está completo...)
 #statusHint {
-  color: #6ef57e !important; // Verde neón brillante
+  color: var(--text-secondary) !important; // Verde neón brillante
   font-weight: map.get(v.$font-weights, "semibold") !important;
   font-size: 0.95rem !important;
   opacity: 1 !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+  text-shadow: var(--shadow-sm) !important;
 }
 
 // Avatar wrapper positioning
