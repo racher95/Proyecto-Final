@@ -859,7 +859,9 @@ main {
   position: relative;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 3rem;
+  --carousel-inline-pad: 3rem;
+  padding: 0 var(--carousel-inline-pad);
+  scroll-padding-inline: var(--carousel-inline-pad);
   overflow: hidden;
 }
 
@@ -870,9 +872,9 @@ main {
   width: fit-content;
 }
 .carousel-track .product-card {
-  flex: 0 0 calc(25% - 0.75rem);
-  min-width: 250px;
-  max-width: 300px;
+  flex: 0 0 calc((100% - 3 * 1rem) / 4);
+  max-width: calc((100% - 3 * 1rem) / 4);
+  min-width: 0;
 }
 
 .carousel-btn {
@@ -3718,26 +3720,28 @@ main {
     max-width: 1400px;
   }
   .carousel-track .product-card {
-    flex: 0 0 calc(25% - 0.75rem);
-    min-width: 250px;
-    max-width: 300px;
+    flex: 0 0 calc((100% - 3 * 1rem) / 4);
+    max-width: calc((100% - 3 * 1rem) / 4);
+    min-width: 0;
   }
 }
 @media (min-width: 769px) and (max-width: 1200px) {
   .carousel-track .product-card {
-    flex: 0 0 calc(33.333% - 0.67rem);
-    min-width: 250px;
-    max-width: 300px;
+    flex: 0 0 calc((100% - 2 * 1rem) / 3);
+    max-width: calc((100% - 2 * 1rem) / 3);
+    min-width: 0;
   }
 }
 @media (min-width: 481px) and (max-width: 768px) {
   .carousel-container {
-    padding: 0 2.5rem;
+    --carousel-inline-pad: 2.5rem;
+    padding: 0 var(--carousel-inline-pad);
+    scroll-padding-inline: var(--carousel-inline-pad);
   }
   .carousel-track .product-card {
-    flex: 0 0 calc(50% - 0.5rem);
-    min-width: 280px;
-    max-width: 320px;
+    flex: 0 0 calc((100% - 1rem) / 2);
+    max-width: calc((100% - 1rem) / 2);
+    min-width: 0;
   }
   .section-title {
     font-size: 2rem;
@@ -3822,12 +3826,14 @@ main {
 }
 @media (max-width: 640px) {
   .carousel-container {
-    padding: 0 2rem;
+    --carousel-inline-pad: 1.5rem;
+    padding: 0 var(--carousel-inline-pad);
+    scroll-padding-inline: var(--carousel-inline-pad);
   }
   .carousel-track .product-card {
-    flex: 0 0 calc(100% - 0rem);
-    min-width: calc(100vw - 6rem);
-    max-width: calc(100vw - 6rem);
+    flex: 0 0 100%;
+    max-width: 100%;
+    min-width: 0;
   }
   .section-title {
     font-size: 1.8rem;
@@ -3837,7 +3843,9 @@ main {
 }
 @media (min-width: 480px) {
   .carousel-container {
-    padding: 0 1.5rem;
+    --carousel-inline-pad: 1.5rem;
+    padding: 0 var(--carousel-inline-pad);
+    scroll-padding-inline: var(--carousel-inline-pad);
   }
   .carousel-btn {
     width: 2rem;

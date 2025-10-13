@@ -36,7 +36,9 @@
   position: relative;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 map.get(m.$spaces, "3xl");
+  --carousel-inline-pad: #{map.get(m.$spaces, "3xl")};
+  padding: 0 var(--carousel-inline-pad);
+  scroll-padding-inline: var(--carousel-inline-pad);
   overflow: hidden;
 }
 
@@ -47,9 +49,11 @@
   width: fit-content;
 
   .product-card {
-    flex: 0 0 calc(25% - 0.75rem);
-    min-width: 250px;
-    max-width: 300px;
+    $gap: map.get(m.$spaces, "md");
+
+    flex: 0 0 calc((100% - (3 * #{$gap})) / 4);
+    max-width: calc((100% - (3 * #{$gap})) / 4);
+    min-width: 0;
   }
 }
 

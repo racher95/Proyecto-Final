@@ -132,31 +132,39 @@
   }
 
   .carousel-track .product-card {
-    flex: 0 0 calc(25% - 0.75rem);
-    min-width: 250px;
-    max-width: 300px;
+    $gap: map.get(m.$spaces, "md");
+
+    flex: 0 0 calc((100% - (3 * #{$gap})) / 4);
+    max-width: calc((100% - (3 * #{$gap})) / 4);
+    min-width: 0;
   }
 }
 
 // Desktop mediano (769px - 1200px) - 3 tarjetas por fila
 @media (min-width: 769px) and (max-width: 1200px) {
   .carousel-track .product-card {
-    flex: 0 0 calc(33.333% - 0.67rem);
-    min-width: 250px;
-    max-width: 300px;
+    $gap: map.get(m.$spaces, "md");
+
+    flex: 0 0 calc((100% - (2 * #{$gap})) / 3);
+    max-width: calc((100% - (2 * #{$gap})) / 3);
+    min-width: 0;
   }
 }
 
 // Tablet (481px - 768px) - 2 tarjetas por fila
 @media (min-width: 481px) and (max-width: 768px) {
   .carousel-container {
-    padding: 0 map.get(m.$spaces, "2xl");
+    --carousel-inline-pad: #{map.get(m.$spaces, "2xl")};
+    padding: 0 var(--carousel-inline-pad);
+    scroll-padding-inline: var(--carousel-inline-pad);
   }
 
   .carousel-track .product-card {
-    flex: 0 0 calc(50% - 0.5rem);
-    min-width: 280px;
-    max-width: 320px;
+    $gap: map.get(m.$spaces, "md");
+
+    flex: 0 0 calc((100% - #{$gap}) / 2);
+    max-width: calc((100% - #{$gap}) / 2);
+    min-width: 0;
   }
 
   .section-title {
@@ -266,13 +274,15 @@
 
 @media (max-width: 640px) {
   .carousel-container {
-    padding: 0 map.get(m.$spaces, "xl");
+    --carousel-inline-pad: #{map.get(m.$spaces, "lg")};
+    padding: 0 var(--carousel-inline-pad);
+    scroll-padding-inline: var(--carousel-inline-pad);
   }
 
   .carousel-track .product-card {
-    flex: 0 0 calc(100% - 0rem);
-    min-width: calc(100vw - 6rem);
-    max-width: calc(100vw - 6rem);
+    flex: 0 0 100%;
+    max-width: 100%;
+    min-width: 0;
   }
 
   .section-title {
@@ -284,7 +294,9 @@
 
 @include rmx.mq("xs") {
   .carousel-container {
-    padding: 0 map.get(m.$spaces, "lg");
+    --carousel-inline-pad: #{map.get(m.$spaces, "lg")};
+    padding: 0 var(--carousel-inline-pad);
+    scroll-padding-inline: var(--carousel-inline-pad);
   }
 
   .carousel-btn {

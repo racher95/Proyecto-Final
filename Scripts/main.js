@@ -645,6 +645,7 @@ function initCarouselNavigation(name, trackId, prevBtnId, nextBtnId) {
 
   if (!track || !prevBtn || !nextBtn) return;
 
+  const container = track.parentElement;
   let currentIndex = 0;
 
   function updateCarousel() {
@@ -655,28 +656,61 @@ function initCarouselNavigation(name, trackId, prevBtnId, nextBtnId) {
     // Asegurar que el índice esté dentro del rango válido
     currentIndex = Math.max(0, Math.min(currentIndex, maxIndex));
 
+    let atEnd = totalItems <= itemsToShow;
+
     // Calcular desplazamiento basado en el ancho real de las cards + gap
     if (totalItems > 0 && track.children[0]) {
       const firstCard = track.children[0];
-      const cardWidth = firstCard.offsetWidth;
-      const gap = 16; // 1rem = 16px (gap entre cards)
-      const moveDistance = currentIndex * (cardWidth + gap);
+      const cardRect = firstCard.getBoundingClientRect();
+      const styles = window.getComputedStyle(track);
+      const gapValue =
+        parseFloat(styles.gap || styles.columnGap || styles.rowGap || "0") || 0;
+      const step = cardRect.width + gapValue;
+      let containerInnerWidth = 0;
+
+      if (container) {
+        const containerStyles = window.getComputedStyle(container);
+        const paddingLeft =
+          parseFloat(containerStyles.paddingLeft || "0") || 0;
+        const paddingRight =
+          parseFloat(containerStyles.paddingRight || "0") || 0;
+        const containerWidth = container.getBoundingClientRect().width;
+        containerInnerWidth = Math.max(
+          0,
+          containerWidth - paddingLeft - paddingRight
+        );
+      }
+
+      const maxOffset = Math.max(
+        0,
+        track.scrollWidth -
+          (containerInnerWidth > 0
+            ? containerInnerWidth
+            : Math.ceil(cardRect.width))
+      );
+      const rawDistance = currentIndex * step;
+      let moveDistance = Math.min(rawDistance, maxOffset);
+
+      if (currentIndex === maxIndex) {
+        moveDistance = maxOffset;
+      }
 
       track.style.transform = `translateX(-${moveDistance}px)`;
+      atEnd = moveDistance >= maxOffset - 1 || totalItems <= itemsToShow;
     } else {
       track.style.transform = `translateX(0)`;
+      currentIndex = 0;
+      atEnd = true;
     }
 
-    // Actualizar estado de botones
-    prevBtn.disabled = currentIndex === 0;
-    nextBtn.disabled = currentIndex >= maxIndex || totalItems <= itemsToShow;
+    const atStart = currentIndex === 0 || totalItems <= itemsToShow;
+
+    prevBtn.disabled = atStart;
+    nextBtn.disabled = atEnd;
 
     // Añadir/remover clases para styling
-    prevBtn.classList.toggle("disabled", currentIndex === 0);
-    nextBtn.classList.toggle(
-      "disabled",
-      currentIndex >= maxIndex || totalItems <= itemsToShow
-    );
+    prevBtn.classList.toggle("disabled", prevBtn.disabled);
+    nextBtn.classList.toggle("disabled", nextBtn.disabled);
   }
 
   prevBtn.addEventListener("click", () => {

@@ -20,11 +20,11 @@
   "author": "Grupo 7 - JAP 2025",
   "license": "ISC",
   "devDependencies": {
-    "sass": "^1.71.0",
+    "autoprefixer": "^10.4.17",
     "postcss": "^8.4.33",
     "postcss-cli": "^11.0.0",
-    "autoprefixer": "^10.4.17",
-    "postcss-combine-media-query": "^1.0.1"
+    "postcss-combine-media-query": "2.1.0",
+    "sass": "^1.71.0"
   },
   "repository": {
     "type": "git",
