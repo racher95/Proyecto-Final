@@ -51,8 +51,8 @@
   .product-card {
     $gap: map.get(m.$spaces, "md");
 
-    flex: 0 0 calc((100% - (3 * #{$gap})) / 4);
-    max-width: calc((100% - (3 * #{$gap})) / 4);
+    flex: 0 0 calc((67% - (3 * #{$gap})) / 4);
+    max-width: calc((67% - (3 * #{$gap})) / 4);
     min-width: 0;
   }
 }

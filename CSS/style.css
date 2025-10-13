@@ -872,8 +872,8 @@ main {
   width: fit-content;
 }
 .carousel-track .product-card {
-  flex: 0 0 calc((100% - 3 * 1rem) / 4);
-  max-width: calc((100% - 3 * 1rem) / 4);
+  flex: 0 0 calc((67% - 3 * 1rem) / 4);
+  max-width: calc((67% - 3 * 1rem) / 4);
   min-width: 0;
 }
 
@@ -3727,20 +3727,23 @@ main {
 }
 @media (min-width: 769px) and (max-width: 1200px) {
   .carousel-track .product-card {
-    flex: 0 0 calc((100% - 2 * 1rem) / 3);
-    max-width: calc((100% - 2 * 1rem) / 3);
+    flex: 0 0 calc((100% - 2 * 1rem) / 4);
+    max-width: calc((100% - 2 * 1rem) / 4);
     min-width: 0;
   }
 }
 @media (min-width: 481px) and (max-width: 768px) {
   .carousel-container {
-    --carousel-inline-pad: 2.5rem;
+    --carousel-inline-pad: 2rem;
     padding: 0 var(--carousel-inline-pad);
     scroll-padding-inline: var(--carousel-inline-pad);
   }
+  .carousel-track {
+    gap: 0.5rem;
+  }
   .carousel-track .product-card {
-    flex: 0 0 calc((100% - 1rem) / 2);
-    max-width: calc((100% - 1rem) / 2);
+    flex: 0 0 calc((67% - 3 * 0.5rem) / 3);
+    max-width: calc((67% - 3 * 0.5rem) / 3);
     min-width: 0;
   }
   .section-title {
@@ -3826,14 +3829,12 @@ main {
 }
 @media (max-width: 640px) {
   .carousel-container {
-    --carousel-inline-pad: 1.5rem;
+    --carousel-inline-pad: 1rem;
     padding: 0 var(--carousel-inline-pad);
     scroll-padding-inline: var(--carousel-inline-pad);
   }
-  .carousel-track .product-card {
-    flex: 0 0 100%;
-    max-width: 100%;
-    min-width: 0;
+  .carousel-track {
+    gap: 0.5rem;
   }
   .section-title {
     font-size: 1.8rem;
