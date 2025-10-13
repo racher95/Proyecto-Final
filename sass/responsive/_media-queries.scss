@@ -292,6 +292,46 @@
   }
 }
 
+@media (max-width: 480px) {
+
+  .features-grid {
+    padding: 0 map.get(m.$spaces, "md");
+    grid-template-columns: 1fr;
+    gap: map.get(m.$spaces, "lg");
+  }
+
+  .feature {
+    padding: map.get(m.$spaces, "lg");
+  }
+
+  main {
+    padding: map.get(m.$spaces, "md");
+  }
+
+  .hero {
+    padding: map.get(m.$spaces, "xl") map.get(m.$spaces, "md");
+    border-radius: map.get(m.$radius, "xl");
+    text-align: center;
+    gap: map.get(m.$spaces, "md");
+  }
+
+  .hero h1 {
+    font-size: map.get(m.$font-sizes, "xl");
+    line-height: 1.2;
+    margin-bottom: map.get(m.$spaces, "sm");
+  }
+
+  .hero p {
+    font-size: map.get(m.$font-sizes, "sm");
+    margin-bottom: map.get(m.$spaces, "lg");
+  }
+
+  .hero .btn {
+    width: 100%;
+    padding: map.get(m.$spaces, "sm") map.get(m.$spaces, "md");
+  }
+}
+
 @include rmx.mq("xs") {
   .carousel-container {
     --carousel-inline-pad: #{map.get(m.$spaces, "lg")};
