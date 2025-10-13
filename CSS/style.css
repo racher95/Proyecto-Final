@@ -3974,6 +3974,40 @@ main {
     gap: 2rem;
   }
 }
+@media (min-width: 769px) and (max-width: 890px) {
+  .craftivity-nav {
+    gap: 1.5rem;
+  }
+  .nav-actions {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+  }
+  .nav-actions .btn {
+    min-height: 36px;
+    height: 36px;
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+  }
+  .nav-search .search-bar {
+    min-width: auto;
+    width: clamp(200px, 40vw, 260px);
+  }
+}
+@media (min-width: 769px) and (max-width: 1052px) {
+  .nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .nav-links a {
+    display: flex;
+    justify-content: flex-start;
+  }
+  .craftivity-nav {
+    gap: 2rem;
+  }
+}
 @media (max-width: 768px) {
   .header-container {
     flex-wrap: wrap;

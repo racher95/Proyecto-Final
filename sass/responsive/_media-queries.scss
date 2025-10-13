@@ -474,6 +474,47 @@
 
 // NAVEGACIÓN PRINCIPAL - RESPONSIVE
 
+@media (min-width: 769px) and (max-width: 890px) {
+  .craftivity-nav {
+    gap: map.get(m.$spaces, "lg");
+  }
+
+  .nav-actions {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: map.get(m.$spaces, "xs");
+
+    .btn {
+      min-height: 36px;
+      height: 36px;
+      padding: map.get(m.$spaces, "sm") map.get(m.$spaces, "md");
+      font-size: map.get(m.$font-sizes, "sm");
+    }
+  }
+
+  .nav-search .search-bar {
+    min-width: auto;
+    width: clamp(200px, 40vw, 260px);
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1052px) {
+  .nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: map.get(m.$spaces, "xs");
+
+    a {
+      display: flex;
+      justify-content: flex-start;
+    }
+  }
+
+  .craftivity-nav {
+    gap: map.get(m.$spaces, "xl");
+  }
+}
+
 // Breakpoint: Tablets y mobile - Máximo 768px
 // Menú hamburguesa con navegación colapsable
 @media (max-width: 768px) {
