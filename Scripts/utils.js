@@ -488,6 +488,8 @@ function upsertUserProfile(username, patch) {
     avatarDataUrl: existingProfile.avatarDataUrl || null,
     avatarFileName: existingProfile.avatarFileName || null,
     avatarSize: existingProfile.avatarSize || null,
+    avatarRemoteUrl: existingProfile.avatarRemoteUrl || null,
+    avatarHash: existingProfile.avatarHash || null,
     theme: existingProfile.theme || "light",
     createdAt: existingProfile.createdAt || now,
     updatedAt: now,
@@ -514,7 +516,11 @@ function isProfileComplete(profile) {
   const hasEmail =
     profile.email && profile.email.trim() !== "" && isValidEmail(profile.email);
   const hasAvatar =
-    profile.avatarDataUrl && profile.avatarDataUrl.startsWith("data:image");
+    (profile.avatarDataUrl &&
+      profile.avatarDataUrl.startsWith("data:image")) ||
+    (profile.avatarRemoteUrl &&
+      typeof profile.avatarRemoteUrl === "string" &&
+      profile.avatarRemoteUrl.startsWith("http"));
 
   return hasEmail && hasAvatar;
 }

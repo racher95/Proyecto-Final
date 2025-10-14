@@ -71,11 +71,15 @@ function populateForm() {
 
   // Avatar
   const avatarPreview = document.getElementById("avatarPreview");
-  if (
+  const hasDataUrl =
     currentProfile.avatarDataUrl &&
-    currentProfile.avatarDataUrl.startsWith("data:image")
-  ) {
-    avatarPreview.src = currentProfile.avatarDataUrl;
+    currentProfile.avatarDataUrl.startsWith("data:image");
+  const avatarSource = hasDataUrl
+    ? currentProfile.avatarDataUrl
+    : currentProfile.avatarRemoteUrl || null;
+
+  if (avatarSource) {
+    avatarPreview.src = avatarSource;
     avatarPreview.classList.remove("avatar-placeholder");
   } else {
     // Usar placeholder generado por CSS
@@ -131,10 +135,13 @@ function updateProfileStatus() {
     if (!currentProfile.email || currentProfile.email.trim() === "") {
       missing.push("email");
     }
-    if (
-      !currentProfile.avatarDataUrl ||
-      !currentProfile.avatarDataUrl.startsWith("data:image")
-    ) {
+    const hasAvatar =
+      (currentProfile.avatarDataUrl &&
+        currentProfile.avatarDataUrl.startsWith("data:image")) ||
+      (currentProfile.avatarRemoteUrl &&
+        currentProfile.avatarRemoteUrl.startsWith("http"));
+
+    if (!hasAvatar) {
       missing.push("foto de perfil");
     }
 
@@ -283,6 +290,8 @@ async function handleAvatarChange(event) {
     currentProfile.avatarDataUrl = imageData.dataUrl;
     currentProfile.avatarFileName = imageData.fileName;
     currentProfile.avatarSize = imageData.size;
+    currentProfile.avatarRemoteUrl = null;
+    currentProfile.avatarHash = null;
 
     showNotification(
       "Foto cargada. Haz clic en Guardar para confirmar.",
@@ -343,10 +352,14 @@ function validateAndSave() {
   }
 
   // Validar que tenga avatar
-  if (
-    !currentProfile.avatarDataUrl ||
-    !currentProfile.avatarDataUrl.startsWith("data:image")
-  ) {
+  const hasAvatarData =
+    currentProfile.avatarDataUrl &&
+    currentProfile.avatarDataUrl.startsWith("data:image");
+  const hasRemoteAvatar =
+    currentProfile.avatarRemoteUrl &&
+    currentProfile.avatarRemoteUrl.startsWith("http");
+
+  if (!hasAvatarData && !hasRemoteAvatar) {
     showNotification("Por favor, selecciona una foto de perfil", "error");
     return false;
   }
@@ -359,7 +372,7 @@ function validateAndSave() {
     username: currentUsername,
     displayName,
     email,
-    hasAvatar: !!currentProfile.avatarDataUrl,
+    hasAvatar: hasAvatarData || hasRemoteAvatar,
   });
 
   try {
@@ -370,6 +383,8 @@ function validateAndSave() {
       avatarDataUrl: currentProfile.avatarDataUrl,
       avatarFileName: currentProfile.avatarFileName,
       avatarSize: currentProfile.avatarSize,
+      avatarRemoteUrl: currentProfile.avatarRemoteUrl,
+      avatarHash: currentProfile.avatarHash,
     });
 
     console.log("Perfil guardado en localStorage:", updatedProfile);

@@ -469,18 +469,7 @@ function displayComments() {
 
     const commentsHTML = productComments
       .map((comment) => {
-        // Obtener avatar del usuario desde localStorage
-        const userProfile = getUserProfile(comment.user);
-        let avatarHTML = "";
-
-        if (userProfile && userProfile.avatarDataUrl) {
-          // Si el usuario tiene avatar, mostrarlo
-          avatarHTML = `<img src="${userProfile.avatarDataUrl}" alt="${comment.user}" class="comment-avatar-img">`;
-        } else {
-          // Si no tiene avatar, mostrar iniciales con degradado
-          const initials = comment.user.substring(0, 2).toUpperCase();
-          avatarHTML = `<div class="comment-avatar-placeholder" data-initials="${initials}">${initials}</div>`;
-        }
+        const avatarHTML = buildCommentAvatarHTML(comment);
 
         return `
       <div class="comment">
@@ -1238,6 +1227,12 @@ async function handleReviewSubmit(event) {
     user: username,
     dateTime: new Date().toISOString().replace("T", " ").substring(0, 19),
   };
+  const { attachment: avatarAttachment, remoteUrl: cachedAvatarUrl } =
+    prepareAvatarBundle(username);
+
+  if (cachedAvatarUrl) {
+    newComment.avatarUrl = cachedAvatarUrl;
+  }
 
   try {
     // 1. Guardar en localStorage (inmediato)
@@ -1247,7 +1242,7 @@ async function handleReviewSubmit(event) {
     addCommentToDisplay(newComment);
 
     // 3. Sincronizar con la API en background
-    syncCommentToAPI(newComment).catch((err) => {
+    syncCommentToAPI(newComment, avatarAttachment).catch((err) => {
       console.warn(
         "No se pudo sincronizar con la API, guardado solo localmente:",
         err
@@ -1277,7 +1272,7 @@ async function handleReviewSubmit(event) {
 /**
  * Sincroniza el comentario con la API a través del Cloudflare Worker
  */
-async function syncCommentToAPI(comment) {
+async function syncCommentToAPI(comment, avatarAttachment) {
   const workerUrl = API_CONFIG.COMMENTS_WORKER + "/sync-comment";
 
   console.log("Sincronizando comentario con la API...");
@@ -1291,6 +1286,7 @@ async function syncCommentToAPI(comment) {
       body: JSON.stringify({
         productId: comment.product.toString(),
         comment: comment,
+        avatar: avatarAttachment,
       }),
     });
 
@@ -1301,11 +1297,177 @@ async function syncCommentToAPI(comment) {
 
     const result = await response.json();
     console.log("Comentario sincronizado con la API:", result);
+
+    if (result.avatarUrl) {
+      comment.avatarUrl = result.avatarUrl;
+      updateLocalAvatarCache(comment, result);
+      persistRemoteAvatar(comment.user, result.avatarUrl, result.avatarHash);
+    }
+
     return result;
   } catch (error) {
     console.error("Error al sincronizar con la API:", error);
     throw error;
   }
+}
+
+/**
+ * Genera el HTML del avatar según el origen disponible (URL remota, base64, fallback).
+ * @param {Object} comment
+ * @returns {string}
+ */
+function buildCommentAvatarHTML(comment) {
+  const userProfile =
+    typeof getUserProfile === "function"
+      ? getUserProfile(comment.user)
+      : null;
+
+  const rawSource =
+    (comment && comment.avatarUrl) ||
+    (userProfile && userProfile.avatarRemoteUrl) ||
+    (userProfile && userProfile.avatarDataUrl);
+
+  let avatarSource = rawSource;
+  const cacheHash =
+    (comment && comment.avatarHash) ||
+    (userProfile && userProfile.avatarHash) ||
+    null;
+
+  if (
+    avatarSource &&
+    cacheHash &&
+    typeof avatarSource === "string" &&
+    avatarSource.startsWith("http")
+  ) {
+    avatarSource = appendCacheBustingParam(avatarSource, cacheHash);
+  }
+
+  if (avatarSource) {
+    const safeUser = (comment.user || "Usuario").replace(/"/g, "&quot;");
+    return `<img src="${avatarSource}" alt="Avatar de ${safeUser}" class="comment-avatar-img" loading="lazy" decoding="async">`;
+  }
+
+  const initials = (comment.user || "??").substring(0, 2).toUpperCase();
+  return `<div class="comment-avatar-placeholder" data-initials="${initials}">${initials}</div>`;
+}
+
+/**
+ * Prepara el payload de avatar para enviar al worker y reutiliza URL remota previa.
+ * @param {string} username
+ * @returns {{attachment: Object|null, remoteUrl: string|null}}
+ */
+function prepareAvatarBundle(username) {
+  if (typeof getUserProfile !== "function") {
+    return { attachment: null, remoteUrl: null };
+  }
+
+  const profile = getUserProfile(username);
+  if (!profile) {
+    return { attachment: null, remoteUrl: null };
+  }
+
+  const hasDataUrl =
+    profile.avatarDataUrl && profile.avatarDataUrl.startsWith("data:image/");
+
+  let attachment = null;
+  if (hasDataUrl) {
+    const mimeMatch = profile.avatarDataUrl.match(/^data:([^;]+);base64,/i);
+    attachment = {
+      userId: username,
+      dataUrl: profile.avatarDataUrl,
+      fileName:
+        profile.avatarFileName ||
+        `${username.toLowerCase().replace(/\s+/g, "-")}.png`,
+      size: profile.avatarSize || null,
+      contentType: mimeMatch ? mimeMatch[1] : null,
+      updatedAt: profile.updatedAt || new Date().toISOString(),
+    };
+  }
+
+  return {
+    attachment,
+    remoteUrl: profile.avatarRemoteUrl || null,
+  };
+}
+
+/**
+ * Actualiza la información de avatar en comentarios locales (memoria + localStorage).
+ * @param {Object} comment
+ * @param {{avatarUrl?: string, avatarHash?: string}} workerResult
+ */
+function updateLocalAvatarCache(comment, workerResult) {
+  if (!workerResult || !workerResult.avatarUrl) {
+    return;
+  }
+
+  const storageKey = `comments_${comment.product}`;
+  const stored = localStorage.getItem(storageKey);
+
+  if (stored) {
+    const parsed = JSON.parse(stored);
+    const target = parsed.find(
+      (item) =>
+        item.dateTime === comment.dateTime && item.user === comment.user
+    );
+
+    if (target) {
+      target.avatarUrl = workerResult.avatarUrl;
+      if (workerResult.avatarHash) {
+        target.avatarHash = workerResult.avatarHash;
+      }
+      localStorage.setItem(storageKey, JSON.stringify(parsed));
+    }
+  }
+
+  const inMemory = productComments.find(
+    (item) =>
+      item.dateTime === comment.dateTime && item.user === comment.user
+  );
+  if (inMemory) {
+    inMemory.avatarUrl = workerResult.avatarUrl;
+    if (workerResult.avatarHash) {
+      inMemory.avatarHash = workerResult.avatarHash;
+    }
+  }
+}
+
+/**
+ * Persiste la URL del avatar remoto en el perfil del usuario.
+ * @param {string} username
+ * @param {string} avatarUrl
+ * @param {string|null} avatarHash
+ */
+function persistRemoteAvatar(username, avatarUrl, avatarHash) {
+  if (
+    typeof upsertUserProfile !== "function" ||
+    !username ||
+    !avatarUrl
+  ) {
+    return;
+  }
+
+  try {
+    upsertUserProfile(username, {
+      avatarRemoteUrl: avatarUrl,
+      avatarHash: avatarHash || null,
+    });
+  } catch (error) {
+    console.warn("No se pudo persistir la URL remota del avatar:", error);
+  }
+}
+
+/**
+ * Agrega un parámetro de cache busting a la URL.
+ * @param {string} url
+ * @param {string} hash
+ * @returns {string}
+ */
+function appendCacheBustingParam(url, hash) {
+  if (!hash) {
+    return url;
+  }
+  const separator = url.includes("?") ? "&" : "?";
+  return `${url}${separator}v=${hash}`;
 }
 
 /**
@@ -1338,23 +1500,30 @@ function addCommentToDisplay(comment) {
   // Ocultar mensaje de "no hay comentarios"
   noComments.style.display = "none";
 
+  const avatarHTML = buildCommentAvatarHTML(comment);
+
   // Crear HTML del comentario
   const commentHTML = `
     <div class="comment new-comment">
-      <div class="comment-header">
-        <div class="comment-user">
-          <strong>${comment.user}</strong>
-          <div class="comment-rating">
-            ${"★".repeat(comment.score)}${"☆".repeat(5 - comment.score)}
+      <div class="comment-avatar">
+        ${avatarHTML}
+      </div>
+      <div class="comment-content">
+        <div class="comment-header">
+          <div class="comment-user">
+            <strong>${comment.user}</strong>
+            <div class="comment-rating">
+              ${"★".repeat(comment.score)}${"☆".repeat(5 - comment.score)}
+            </div>
+          </div>
+          <div class="comment-date">
+            ${new Date(comment.dateTime).toLocaleDateString("es-UY")}
+            <span class="badge bg-success ms-2">Nueva</span>
           </div>
         </div>
-        <div class="comment-date">
-          ${new Date(comment.dateTime).toLocaleDateString("es-UY")}
-          <span class="badge bg-success ms-2">Nueva</span>
+        <div class="comment-text">
+          ${comment.description}
         </div>
-      </div>
-      <div class="comment-text">
-        ${comment.description}
       </div>
     </div>
   `;
