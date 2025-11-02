@@ -705,12 +705,18 @@ function setupEventListeners() {
 
   // Botones de acción - Con cleanup para prevenir duplicados
   const addToCartBtn = document.getElementById("addToCartBtn");
+  const buyNowBtn = document.getElementById("buyNowBtn");
   const backToCatalogBtn = document.getElementById("backToCatalogBtn");
   const backBtn = document.getElementById("backBtn");
 
   if (addToCartBtn) {
     addToCartBtn.removeEventListener("click", addToCartHandler);
     addToCartBtn.addEventListener("click", addToCartHandler);
+  }
+
+  if (buyNowBtn) {
+    buyNowBtn.removeEventListener("click", buyNowHandler);
+    buyNowBtn.addEventListener("click", buyNowHandler);
   }
 
   if (backToCatalogBtn) {
@@ -731,6 +737,19 @@ function addToCartHandler() {
   if (currentProduct) {
     addToCart(currentProduct, 1);
     showNotification(`${currentProduct.name} agregado al carrito`, "success");
+  } else {
+    showNotification("Error: No se pudo agregar el producto", "error");
+  }
+}
+
+/**
+ * Handler para comprar ahora (añade al carrito y redirige)
+ */
+function buyNowHandler() {
+  if (currentProduct) {
+    addToCart(currentProduct, 1);
+    // Redirección inmediata al carrito sin notificación
+    window.location.href = "cart.html";
   } else {
     showNotification("Error: No se pudo agregar el producto", "error");
   }
@@ -1318,9 +1337,7 @@ async function syncCommentToAPI(comment, avatarAttachment) {
  */
 function buildCommentAvatarHTML(comment) {
   const userProfile =
-    typeof getUserProfile === "function"
-      ? getUserProfile(comment.user)
-      : null;
+    typeof getUserProfile === "function" ? getUserProfile(comment.user) : null;
 
   const rawSource =
     (comment && comment.avatarUrl) ||
@@ -1406,8 +1423,7 @@ function updateLocalAvatarCache(comment, workerResult) {
   if (stored) {
     const parsed = JSON.parse(stored);
     const target = parsed.find(
-      (item) =>
-        item.dateTime === comment.dateTime && item.user === comment.user
+      (item) => item.dateTime === comment.dateTime && item.user === comment.user
     );
 
     if (target) {
@@ -1420,8 +1436,7 @@ function updateLocalAvatarCache(comment, workerResult) {
   }
 
   const inMemory = productComments.find(
-    (item) =>
-      item.dateTime === comment.dateTime && item.user === comment.user
+    (item) => item.dateTime === comment.dateTime && item.user === comment.user
   );
   if (inMemory) {
     inMemory.avatarUrl = workerResult.avatarUrl;
@@ -1438,11 +1453,7 @@ function updateLocalAvatarCache(comment, workerResult) {
  * @param {string|null} avatarHash
  */
 function persistRemoteAvatar(username, avatarUrl, avatarHash) {
-  if (
-    typeof upsertUserProfile !== "function" ||
-    !username ||
-    !avatarUrl
-  ) {
+  if (typeof upsertUserProfile !== "function" || !username || !avatarUrl) {
     return;
   }
 

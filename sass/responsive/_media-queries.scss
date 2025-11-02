@@ -295,7 +295,6 @@
 }
 
 @media (max-width: 480px) {
-
   .features-grid {
     padding: 0 map.get(m.$spaces, "md");
     grid-template-columns: 1fr;
@@ -381,6 +380,27 @@
 @media (max-width: 480px) {
   .products-grid {
     grid-template-columns: 1fr;
+  }
+
+  // Botones de compra en product-details: mantener lado a lado pero optimizado
+  .product-actions-detail {
+    flex-direction: row !important; // Override del estilo de tablet
+    gap: map.get(m.$spaces, "sm");
+
+    .btn-lg {
+      font-size: map.get(m.$font-sizes, "sm");
+      padding: map.get(m.$spaces, "sm") map.get(m.$spaces, "md");
+    }
+
+    // Reducir gap en pantallas muy pequeñas (< 360px)
+    @media (max-width: 360px) {
+      gap: map.get(m.$spaces, "xs");
+
+      .btn-lg {
+        font-size: map.get(m.$font-sizes, "xs");
+        padding: map.get(m.$spaces, "xs") map.get(m.$spaces, "sm");
+      }
+    }
   }
 }
 

@@ -404,6 +404,23 @@
   margin-top: map.get(m.$spaces, "sm");
 }
 
+// Buy Now Button Styles
+#buyNowBtn {
+  white-space: nowrap;
+
+  // Asegurar que el botón tenga buen contraste
+  &.btn-secondary {
+    background-color: map.get(m.$colors, "secondary");
+    border-color: map.get(m.$colors, "secondary");
+    color: map.get(m.$colors, "white");
+
+    &:hover {
+      background-color: map.get(m.$colors, "dark-gray");
+      border-color: map.get(m.$colors, "dark-gray");
+    }
+  }
+}
+
 // Product Comments
 .product-comments {
   background: var(--bg-primary);
