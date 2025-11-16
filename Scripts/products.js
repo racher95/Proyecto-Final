@@ -229,13 +229,46 @@ function updateCategoryHeroImage(categoryId) {
   // Buscar la categoría en allCategories
   const category = allCategories.find((cat) => cat.id == categoryId);
 
-  if (category && category.imgSrc && category.imgSrc !== "") {
-    // Si la categoría tiene imagen, usarla
-    heroSection.style.backgroundImage = `url('${category.imgSrc}')`;
-    heroSection.style.backgroundSize = "cover";
-    heroSection.style.backgroundPosition = "center";
+  if (category) {
+    // Actualizar título del hero con el nombre de la categoría
+    const heroTitle = document.querySelector(".catalog-hero h1");
+    if (heroTitle) {
+      heroTitle.textContent = category.name;
+    }
+
+    // Actualizar descripción del hero
+    const heroDescription = document.querySelector(".catalog-hero p");
+    if (heroDescription) {
+      heroDescription.textContent =
+        category.description ||
+        `Descubre nuestra selección de ${category.name}`;
+    }
+
+    // Actualizar imagen de fondo
+    if (category.imgSrc && category.imgSrc !== "") {
+      // Si la categoría tiene imagen, usarla
+      heroSection.style.backgroundImage = `url('${category.imgSrc}')`;
+      heroSection.style.backgroundSize = "cover";
+      heroSection.style.backgroundPosition = "center";
+    } else {
+      // Si no tiene imagen, usar la imagen por defecto
+      heroSection.style.backgroundImage = "url('../img/cars_index.jpg')";
+      heroSection.style.backgroundSize = "cover";
+      heroSection.style.backgroundPosition = "center";
+    }
   } else {
-    // Si no tiene imagen, usar la imagen por defecto
+    // Si no se encuentra la categoría, usar valores por defecto
+    const heroTitle = document.querySelector(".catalog-hero h1");
+    if (heroTitle) {
+      heroTitle.textContent = "Nuestro Catálogo";
+    }
+
+    const heroDescription = document.querySelector(".catalog-hero p");
+    if (heroDescription) {
+      heroDescription.textContent =
+        "Descubre nuestra increíble selección de productos DIY";
+    }
+
     heroSection.style.backgroundImage = "url('../img/cars_index.jpg')";
     heroSection.style.backgroundSize = "cover";
     heroSection.style.backgroundPosition = "center";
@@ -336,7 +369,7 @@ async function loadProducts(categoryId = null) {
     // Renderizar productos
     await displayProducts(productsToShow);
 
-    // Actualizar imagen del hero según la categoría
+    // Actualizar hero (imagen, título y descripción) según la categoría
     updateCategoryHeroImage(currentCategory);
 
     // Ocultar loading después del render
@@ -760,7 +793,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
       if (selectedCategory && selectedCategory !== "search") {
         loadProducts(selectedCategory);
-        updateCategoryHeroImage(selectedCategory);
       } else if (selectedCategory === "") {
         // Si se selecciona "Todas las categorías", mostrar TODOS los productos
         displayAllProducts();

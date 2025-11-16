@@ -33,6 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
         usuario: usuario,
         loginTime: new Date().toISOString(), // Guardo cuándo se logeó
         isLoggedIn: true,
+        token: null, // Para JWT futuro (backend)
       };
 
       // Inicializar perfil del usuario si no existe

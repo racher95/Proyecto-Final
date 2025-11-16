@@ -33,3 +33,85 @@ header {
   text-decoration: none;
   transition: color 0.3s ease;
 }
+
+// Switch de tema para invitados (oculto por defecto, se muestra con JS)
+.theme-toggle-switch {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+
+  &.visible {
+    display: flex;
+  }
+
+  .switch-track {
+    position: relative;
+    width: 56px;
+    height: 28px;
+    background: var(--bg-section);
+    border: 2px solid var(--border-primary);
+    border-radius: 14px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  // Círculo que se desliza dentro del track
+  .switch-thumb {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(
+      135deg,
+      var(--brand-primary) 0%,
+      var(--brand-primary-dark) 100%
+    );
+    border-radius: 50%;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    left: 0px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .theme-icon {
+    font-size: 14px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &:hover .switch-track {
+    border-color: var(--brand-primary);
+    background: var(--brand-primary-light);
+  }
+
+  &:active .switch-thumb {
+    transform: translateY(-50%) scale(0.9);
+  }
+
+  // Cuando está en modo oscuro, el thumb se mueve a la derecha
+  &.dark-mode {
+    .switch-thumb {
+      left: 28px;
+      transform: translateY(-50%);
+    }
+
+    .switch-track {
+      background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+      border-color: var(--brand-primary);
+    }
+
+    &:active .switch-thumb {
+      transform: translateY(-50%) scale(0.9);
+    }
+  }
+}

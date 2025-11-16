@@ -32,25 +32,155 @@
 
         <div class="cart-summary">
           <h3>Resumen del Pedido</h3>
-          <div class="summary-line">
-            <span>Subtotal:</span>
-            <span id="subtotal">$0</span>
+
+          <!-- Tipo de envío -->
+          <div class="checkout-section">
+            <h4>Tipo de Envío</h4>
+            <div class="shipping-options">
+              <label class="radio-option">
+                <input
+                  type="radio"
+                  name="shippingType"
+                  value="premium"
+                  required
+                />
+                <span class="radio-label">
+                  <strong>Premium</strong> - 2 a 5 días (15%)
+                </span>
+              </label>
+              <label class="radio-option">
+                <input
+                  type="radio"
+                  name="shippingType"
+                  value="express"
+                  checked
+                />
+                <span class="radio-label">
+                  <strong>Express</strong> - 5 a 8 días (7%)
+                </span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="shippingType" value="standard" />
+                <span class="radio-label">
+                  <strong>Standard</strong> - 12 a 15 días (5%)
+                </span>
+              </label>
+            </div>
           </div>
-          <div class="summary-line">
-            <span>IVA (22%):</span>
-            <span id="iva">$0</span>
+
+          <!-- Dirección de envío -->
+          <div class="checkout-section">
+            <h4>Dirección de Envío</h4>
+            <div class="address-form">
+              <div class="form-row">
+                <input
+                  type="text"
+                  id="department"
+                  placeholder="Departamento"
+                  required
+                />
+                <input type="text" id="city" placeholder="Localidad" required />
+              </div>
+              <div class="form-row">
+                <input type="text" id="street" placeholder="Calle" required />
+                <input type="text" id="number" placeholder="Número" required />
+              </div>
+              <input type="text" id="corner" placeholder="Esquina" required />
+
+              <label class="checkbox-option">
+                <input type="checkbox" id="saveAddress" />
+                <span>Guardar dirección para futuras compras</span>
+              </label>
+            </div>
           </div>
-          <div class="summary-line">
-            <span>Envío:</span>
-            <span id="shipping">$350</span>
+
+          <!-- Forma de pago -->
+          <div class="checkout-section">
+            <h4>Forma de Pago</h4>
+            <div class="payment-options">
+              <label class="radio-option">
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="credit"
+                  required
+                />
+                <span class="radio-label">Tarjeta de Crédito</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="paymentMethod" value="transfer" />
+                <span class="radio-label">Transferencia Bancaria</span>
+              </label>
+            </div>
+
+            <!-- Campos para tarjeta de crédito -->
+            <div
+              id="creditCardFields"
+              class="payment-fields"
+              style="display: none"
+            >
+              <input
+                type="text"
+                id="cardNumber"
+                placeholder="Número de tarjeta"
+                maxlength="16"
+              />
+              <input
+                type="text"
+                id="cardHolder"
+                placeholder="Titular de la tarjeta"
+              />
+              <div class="form-row">
+                <input
+                  type="text"
+                  id="cardExpiry"
+                  placeholder="MM/AA"
+                  maxlength="5"
+                />
+                <input
+                  type="text"
+                  id="cardCVV"
+                  placeholder="CVV"
+                  maxlength="3"
+                />
+              </div>
+            </div>
+
+            <!-- Info para transferencia bancaria -->
+            <div id="transferInfo" class="payment-fields" style="display: none">
+              <p class="info-text">Realizá la transferencia a:</p>
+              <p class="bank-info">
+                <strong>BROU</strong> - Cuenta: 001-234567-89
+              </p>
+              <p class="info-text">
+                Una vez confirmado el pago, procesaremos tu pedido.
+              </p>
+            </div>
           </div>
-          <div class="summary-line total">
-            <span><strong>Total:</strong></span>
-            <span id="total"><strong>$0</strong></span>
+
+          <!-- Costos -->
+          <div class="checkout-section">
+            <h4>Costos</h4>
+            <div class="summary-line">
+              <span>Subtotal:</span>
+              <span id="subtotal">$0</span>
+            </div>
+            <div class="summary-line">
+              <span>IVA (22%):</span>
+              <span id="iva">$0</span>
+            </div>
+            <div class="summary-line">
+              <span>Envío:</span>
+              <span id="shipping">$0</span>
+            </div>
+            <div class="summary-line total">
+              <span><strong>Total:</strong></span>
+              <span id="total"><strong>$0</strong></span>
+            </div>
           </div>
 
           <button class="btn btn-primary checkout-button" id="checkoutButton">
-            Proceder al Pago
+            Finalizar Compra
           </button>
         </div>
       </div>

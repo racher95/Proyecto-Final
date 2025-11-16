@@ -23,6 +23,9 @@ document.addEventListener("componentsLoaded", function () {
 
   // Inicializar tema del usuario
   initializeTheme();
+
+  // Configurar botón de tema para usuarios no logueados
+  initGuestThemeToggle();
 });
 
 // Inicializar carruseles cuando el DOM esté listo (no dependen de header/footer)
@@ -360,9 +363,85 @@ function initializeTheme() {
     const theme = userProfile?.theme || "light";
     applyTheme(theme);
   } else {
-    // Usuario no logueado: usar tema claro por defecto
-    applyTheme("light");
+    // Usuario no logueado: usar preferencia de localStorage o tema claro por defecto
+    const guestTheme = localStorage.getItem("guestTheme") || "light";
+    applyTheme(guestTheme);
   }
+}
+
+/**
+ * Configura el botón de tema para usuarios no logueados
+ * Muestra/oculta el botón según el estado de sesión
+ */
+function initGuestThemeToggle() {
+  const themeToggleBtn = document.getElementById("guestThemeToggle");
+  if (!themeToggleBtn) return;
+
+  const sessionData = checkSession();
+
+  if (!sessionData || !sessionData.isLoggedIn) {
+    // Usuario NO logueado: mostrar botón y configurar evento
+    themeToggleBtn.classList.add("visible");
+
+    // Actualizar icono según tema actual
+    updateGuestThemeIcon();
+
+    // Evento de clic
+    themeToggleBtn.addEventListener("click", toggleGuestTheme);
+  } else {
+    // Usuario logueado: ocultar botón (ya tiene toggle en menú de usuario)
+    themeToggleBtn.classList.remove("visible");
+  }
+}
+
+/**
+ * Alterna el tema para usuarios no logueados
+ * Guarda la preferencia en localStorage
+ */
+function toggleGuestTheme() {
+  const currentTheme = localStorage.getItem("guestTheme") || "light";
+  const newTheme = currentTheme === "light" ? "dark" : "light";
+
+  // Guardar preferencia
+  localStorage.setItem("guestTheme", newTheme);
+
+  // Aplicar tema
+  applyTheme(newTheme);
+
+  // Actualizar icono del botón
+  updateGuestThemeIcon();
+
+  // Notificar
+  const themeEmoji = newTheme === "dark" ? "🌙" : "☀️";
+  const themeName = newTheme === "dark" ? "Oscuro" : "Claro";
+  showNotification(`${themeEmoji} Tema ${themeName} activado`, "success");
+}
+
+/**
+ * Actualiza el icono del botón de tema para invitados
+ */
+function updateGuestThemeIcon() {
+  const themeToggleBtn = document.getElementById("guestThemeToggle");
+  if (!themeToggleBtn) return;
+
+  const themeIcon = themeToggleBtn.querySelector(".theme-icon");
+  if (!themeIcon) return;
+
+  const currentTheme = localStorage.getItem("guestTheme") || "light";
+
+  // Actualizar icono
+  themeIcon.textContent = currentTheme === "light" ? "🌙" : "☀️";
+
+  // Actualizar clase del switch para animación
+  if (currentTheme === "dark") {
+    themeToggleBtn.classList.add("dark-mode");
+  } else {
+    themeToggleBtn.classList.remove("dark-mode");
+  }
+
+  // Actualizar título
+  themeToggleBtn.title =
+    currentTheme === "light" ? "Activar modo oscuro" : "Activar modo claro";
 }
 
 /**
@@ -670,8 +749,7 @@ function initCarouselNavigation(name, trackId, prevBtnId, nextBtnId) {
 
       if (container) {
         const containerStyles = window.getComputedStyle(container);
-        const paddingLeft =
-          parseFloat(containerStyles.paddingLeft || "0") || 0;
+        const paddingLeft = parseFloat(containerStyles.paddingLeft || "0") || 0;
         const paddingRight =
           parseFloat(containerStyles.paddingRight || "0") || 0;
         const containerWidth = container.getBoundingClientRect().width;

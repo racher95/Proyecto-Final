@@ -516,8 +516,7 @@ function isProfileComplete(profile) {
   const hasEmail =
     profile.email && profile.email.trim() !== "" && isValidEmail(profile.email);
   const hasAvatar =
-    (profile.avatarDataUrl &&
-      profile.avatarDataUrl.startsWith("data:image")) ||
+    (profile.avatarDataUrl && profile.avatarDataUrl.startsWith("data:image")) ||
     (profile.avatarRemoteUrl &&
       typeof profile.avatarRemoteUrl === "string" &&
       profile.avatarRemoteUrl.startsWith("http"));
@@ -568,4 +567,134 @@ function readImageAsDataURL(file) {
 
     reader.readAsDataURL(file);
   });
+}
+
+// ==========================================
+// SISTEMA DE PEDIDOS (ORDERS)
+// ==========================================
+
+/**
+ * Crea un objeto de pedido compatible con estructura SQL
+ * Preparado para envío futuro a backend
+ */
+function createOrder(
+  cart,
+  shippingType,
+  address,
+  paymentMethod,
+  paymentDetails
+) {
+  const session = checkSession();
+  // Calcula subtotal, impuesto y costo de envío para generar el total
+  const subtotal = cart.reduce(
+    (sum, item) => sum + item.cost * item.quantity,
+    0
+  );
+  const tax = subtotal * CART_CONFIG.TAX_RATE;
+  const shippingCost =
+    subtotal * CART_CONFIG.SHIPPING_OPTIONS[shippingType].percentage;
+
+  return {
+    // Datos principales del pedido (cuando tengamos BD, van a tabla "orders")
+    user_id: session.usuario,
+    date: new Date().toISOString(),
+    subtotal: subtotal,
+    tax: tax,
+    shipping_cost: shippingCost,
+    total: subtotal + tax + shippingCost,
+    status: ORDER_STATUS.PENDING,
+
+    // Productos del pedido (van a tabla "order_items" en BD)
+    items: cart.map((item) => ({
+      product_id: item.id,
+      name: item.name,
+      quantity: item.quantity,
+      unit_price: item.cost,
+      subtotal: item.cost * item.quantity,
+      image: item.image,
+    })),
+
+    // Info del envío (dirección y tipo de envío → tabla "order_shipping")
+    shipping: {
+      type: shippingType,
+      type_name: CART_CONFIG.SHIPPING_OPTIONS[shippingType].name,
+      department: address.department,
+      city: address.city,
+      street: address.street,
+      number: address.number,
+      corner: address.corner,
+    },
+
+    // Info del pago (NUNCA guardar CVV ni número completo, solo últimos 4 dígitos)
+    payment: {
+      method: paymentMethod,
+      // Solo si es tarjeta, guardar datos parciales (nunca CVV ni número completo)
+      ...(paymentMethod === "credit" && paymentDetails
+        ? {
+            card_last4: paymentDetails.cardNumber.slice(-4),
+            card_holder: paymentDetails.cardHolder,
+            card_expiry: paymentDetails.cardExpiry,
+          }
+        : {}),
+    },
+  };
+}
+
+/**
+ * Guarda un pedido en localStorage
+ * En el futuro, esto se reemplazará por fetch a POST /cart
+ */
+function saveOrder(order) {
+  const username = order.user_id;
+
+  // FUTURO: cuando tengamos backend, enviar con fetch
+  // const response = await fetch('/api/cart', {
+  //   method: 'POST',
+  //   headers: {
+  //     'Content-Type': 'application/json',
+  //     'Authorization': `Bearer ${getAuthToken()}`
+  //   },
+  //   body: JSON.stringify(order)
+  // });
+  // return response.json();
+
+  // POR AHORA: guardar en localStorage hasta que tengamos el backend listo
+  const ordersKey = `craftivityOrders_${username}`;
+  const orders = JSON.parse(localStorage.getItem(ordersKey)) || [];
+
+  // Genera un ID único usando timestamp
+  order.id = `ORD-${Date.now()}`;
+
+  orders.push(order);
+  localStorage.setItem(ordersKey, JSON.stringify(orders));
+
+  return { success: true, orderId: order.id };
+}
+
+/**
+ * Obtiene todos los pedidos de un usuario
+ * En el futuro, esto se reemplazará por fetch a GET /orders
+ */
+function getOrders(username) {
+  // FUTURO: cuando tengamos backend, traer con fetch
+  // const response = await fetch('/api/orders', {
+  //   headers: { 'Authorization': `Bearer ${getAuthToken()}` }
+  // });
+  // return response.json();
+
+  // POR AHORA: leer desde localStorage
+  const ordersKey = `craftivityOrders_${username}`;
+  const orders = JSON.parse(localStorage.getItem(ordersKey)) || [];
+
+  // Ordena de más reciente a más antiguo
+  return orders.sort((a, b) => new Date(b.date) - new Date(a.date));
+}
+
+/**
+ * Obtiene el token de autenticación
+ * Por ahora retorna null, se usará cuando implementen JWT
+ */
+function getAuthToken() {
+  const session = getSessionData();
+  return session?.token || null;
 }

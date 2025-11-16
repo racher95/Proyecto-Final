@@ -16,19 +16,21 @@
     <div id="header-placeholder"></div>
 
     <main>
-      <section class="container" style="padding: 4rem 1rem; text-align: center">
-        <!--mejorar estilos en futuras implementaciones y centralizar en css-->
-        <h1>Mis Pedidos</h1>
-        <p>Esta página estará disponible próximamente.</p>
-        <p>
-          Aquí podrás ver el historial de tus pedidos, estado de envíos y
-          descargar facturas.
-        </p>
-        <a href="../index.html" class="btn btn-primary" style="margin-top: 2rem"
-          >Volver al Inicio</a
-        >
-        <!-- mejorar estilos en futuras implementaciones y centralizar en css -->
-      </section>
+      <div class="orders-page">
+        <div class="container">
+          <h1>Mis Pedidos</h1>
+
+          <div id="ordersContainer" class="orders-container">
+            <!-- Los pedidos se cargarán aquí dinámicamente -->
+          </div>
+
+          <div id="emptyOrders" class="empty-orders" style="display: none">
+            <h3>No tienes pedidos aún</h3>
+            <p>Cuando realices tu primera compra, aparecerá aquí.</p>
+            <a href="products.html" class="btn btn-primary">Ver Productos</a>
+          </div>
+        </div>
+      </div>
     </main>
 
     <!-- Footer cargado dinámicamente desde components/footer.html -->
@@ -41,5 +43,6 @@
     <script src="../Scripts/init.js"></script>
     <script src="../Scripts/main.js"></script>
     <script src="../Scripts/session-handler.js"></script>
+    <script src="../Scripts/orders.js"></script>
   </body>
 </html>

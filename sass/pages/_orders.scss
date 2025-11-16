@@ -1,6 +1,240 @@
 // ===========================================================================
 // CRAFTIVITY - ORDERS
-// Estilos de la página de pedidos
+// Estilos para la página de historial de pedidos
 // ===========================================================================
 
-// Placeholder - estilos futuros de pedidos
+@use "../abstracts/variables" as m;
+@use "sass:map";
+
+.orders-page {
+  padding: map.get(m.$spaces, "3xl") 0;
+  min-height: 70vh;
+
+  h1 {
+    color: var(--brand-primary);
+    margin-bottom: map.get(m.$spaces, "xl");
+    font-size: map.get(m.$font-sizes, "2xl");
+  }
+}
+
+.orders-container {
+  display: flex;
+  flex-direction: column;
+  gap: map.get(m.$spaces, "lg");
+}
+
+.empty-orders {
+  text-align: center;
+  padding: map.get(m.$spaces, "4xl");
+  background: var(--card-bg);
+  border-radius: map.get(m.$radius, "lg");
+  box-shadow: var(--shadow-md);
+
+  h3 {
+    color: var(--text-primary);
+    margin-bottom: map.get(m.$spaces, "md");
+  }
+
+  p {
+    color: var(--text-secondary);
+    margin-bottom: map.get(m.$spaces, "lg");
+  }
+}
+
+.order-card {
+  background: var(--card-bg);
+  border-radius: map.get(m.$radius, "lg");
+  box-shadow: var(--shadow-md);
+  padding: map.get(m.$spaces, "xl");
+  transition: map.get(m.$transitions, "normal");
+
+  &:hover {
+    box-shadow: var(--shadow-lg);
+  }
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: map.get(m.$spaces, "lg");
+  padding-bottom: map.get(m.$spaces, "lg");
+  border-bottom: 1px solid var(--border-primary);
+
+  h3 {
+    color: var(--text-primary);
+    margin: 0;
+    font-size: map.get(m.$font-sizes, "lg");
+  }
+}
+
+.order-date {
+  color: var(--text-secondary);
+  font-size: map.get(m.$font-sizes, "sm");
+  margin: map.get(m.$spaces, "xs") 0 0;
+}
+
+.order-status {
+  padding: map.get(m.$spaces, "sm") map.get(m.$spaces, "md");
+  border-radius: map.get(m.$radius, "pill");
+  font-size: map.get(m.$font-sizes, "sm");
+  font-weight: map.get(m.$font-weights, "semibold");
+  text-transform: uppercase;
+
+  &.status-pending {
+    background: #fff3cd;
+    color: #856404;
+  }
+
+  &.status-processing {
+    background: #cfe2ff;
+    color: #084298;
+  }
+
+  &.status-shipped {
+    background: #d1ecf1;
+    color: #0c5460;
+  }
+
+  &.status-delivered {
+    background: #d4edda;
+    color: #155724;
+  }
+
+  &.status-cancelled {
+    background: #f8d7da;
+    color: #721c24;
+  }
+}
+
+.order-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: map.get(m.$spaces, "lg");
+
+  p {
+    margin: 0 0 map.get(m.$spaces, "xs");
+    color: var(--text-primary);
+  }
+}
+
+.order-items-preview {
+  flex: 1;
+}
+
+.order-total {
+  text-align: right;
+
+  .total-label {
+    font-size: map.get(m.$font-sizes, "sm");
+    color: var(--text-secondary);
+  }
+
+  .total-amount {
+    font-size: map.get(m.$font-sizes, "xl");
+    font-weight: map.get(m.$font-weights, "bold");
+    color: var(--brand-primary);
+  }
+}
+
+.toggle-details-btn {
+  width: 100%;
+  padding: map.get(m.$spaces, "md");
+  background: var(--bg-section);
+  border: none;
+  border-radius: map.get(m.$radius, "md");
+  color: var(--text-primary);
+  font-weight: map.get(m.$font-weights, "semibold");
+  cursor: pointer;
+  transition: map.get(m.$transitions, "normal");
+
+  &:hover {
+    background: var(--brand-primary);
+    color: var(--text-inverse);
+  }
+}
+
+.order-details {
+  margin-top: map.get(m.$spaces, "lg");
+  padding-top: map.get(m.$spaces, "lg");
+  border-top: 2px solid var(--border-primary);
+}
+
+.details-section {
+  margin-bottom: map.get(m.$spaces, "xl");
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  h4 {
+    color: var(--text-primary);
+    margin-bottom: map.get(m.$spaces, "md");
+    font-size: map.get(m.$font-sizes, "md");
+  }
+
+  p {
+    margin: map.get(m.$spaces, "xs") 0;
+    color: var(--text-secondary);
+  }
+}
+
+.order-items {
+  display: flex;
+  flex-direction: column;
+  gap: map.get(m.$spaces, "md");
+}
+
+.order-item {
+  display: flex;
+  align-items: center;
+  gap: map.get(m.$spaces, "md");
+  padding: map.get(m.$spaces, "md");
+  background: var(--bg-section);
+  border-radius: map.get(m.$radius, "md");
+
+  img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: map.get(m.$radius, "sm");
+  }
+
+  .item-info {
+    flex: 1;
+
+    .item-name {
+      font-weight: map.get(m.$font-weights, "semibold");
+      color: var(--text-primary);
+      margin: 0 0 map.get(m.$spaces, "xs");
+    }
+
+    .item-quantity {
+      font-size: map.get(m.$font-sizes, "sm");
+      color: var(--text-secondary);
+      margin: 0;
+    }
+  }
+
+  .item-price {
+    font-weight: map.get(m.$font-weights, "bold");
+    color: var(--brand-primary);
+    margin: 0;
+  }
+}
+
+.cost-breakdown {
+  .cost-line {
+    display: flex;
+    justify-content: space-between;
+    padding: map.get(m.$spaces, "sm") 0;
+
+    &.total {
+      border-top: 2px solid var(--border-primary);
+      margin-top: map.get(m.$spaces, "sm");
+      padding-top: map.get(m.$spaces, "md");
+      font-size: map.get(m.$font-sizes, "md");
+    }
+  }
+}

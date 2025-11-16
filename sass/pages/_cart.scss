@@ -39,20 +39,16 @@
   }
 }
 
-.cart-items {
-  // Columna de productos (no necesita margin-bottom porque está en grid)
-}
-
-// Cada producto en el carrito
+// Productos del carrito
 .cart-item {
   display: grid;
   grid-template-columns: 100px 1fr auto auto auto;
-  gap: map.get(m.$spaces, "lg"); // Aumentado de "md" a "lg" para más espacio
+  gap: map.get(m.$spaces, "lg");
   align-items: center;
-  background: map.get(m.$colors, "white");
+  background: var(--card-bg);
   padding: map.get(m.$spaces, "lg");
   border-radius: map.get(m.$radius, "lg");
-  box-shadow: map.get(m.$shadows, "md");
+  box-shadow: var(--shadow-md);
   margin-bottom: map.get(m.$spaces, "md");
   position: relative;
 }
@@ -65,40 +61,36 @@
 }
 
 .cart-item-details {
-  padding-left: map.get(
-    m.$spaces,
-    "sm"
-  ); // Espacio adicional entre imagen y texto
+  padding-left: map.get(m.$spaces, "sm");
 
   h4 {
-    color: map.get(m.$colors, "secondary");
+    color: var(--brand-primary);
     margin-bottom: map.get(m.$spaces, "sm");
     font-size: 1.1rem;
   }
 }
 
 .cart-item-price {
-  color: map.get(m.$colors, "medium-gray");
+  color: var(--text-secondary);
   font-size: map.get(m.$font-sizes, "sm");
 }
 
-// Controles de cantidad
+// Controles de cantidad (+/-)
 .cart-item-controls {
   display: flex;
   align-items: center;
   gap: map.get(m.$spaces, "sm");
-  background: map.get(m.$colors, "light-gray");
+  background: var(--bg-section);
   border-radius: map.get(m.$radius, "3xl");
   padding: map.get(m.$spaces, "sm");
 }
 
-// Botones + y -
 .quantity-btn {
   width: 30px;
   height: 30px;
   border: none;
-  background: map.get(m.$colors, "primary");
-  color: map.get(m.$colors, "white");
+  background: var(--brand-primary);
+  color: var(--text-inverse);
   border-radius: 50%;
   cursor: pointer;
   font-weight: map.get(m.$font-weights, "bold");
@@ -108,25 +100,23 @@
   transition: map.get(m.$transitions, "normal");
 
   &:hover {
-    background: map.get(m.$colors, "accent");
+    background: var(--brand-primary-dark);
   }
 }
 
-// Número de cantidad
 .quantity {
   min-width: 30px;
   text-align: center;
   font-weight: map.get(m.$font-weights, "semibold");
+  color: var(--text-primary);
 }
 
-// Total por producto
 .cart-item-total {
   font-weight: map.get(m.$font-weights, "bold");
-  color: map.get(m.$colors, "primary");
+  color: var(--brand-primary);
   font-size: 1.1rem;
 }
 
-// Botón eliminar
 .remove-btn {
   background: none;
   border: none;
@@ -135,37 +125,215 @@
   padding: map.get(m.$spaces, "sm");
   border-radius: map.get(m.$radius, "md");
   transition: map.get(m.$transitions, "normal");
+  color: var(--text-secondary);
 
   &:hover {
-    background: map.get(m.$colors, "danger");
-    color: map.get(m.$colors, "white");
+    background: var(--danger);
+    color: var(--text-inverse);
   }
 }
 
 .cart-summary {
-  background: map.get(m.$colors, "white");
+  background: var(--card-bg);
   padding: map.get(m.$spaces, "xl");
   border-radius: map.get(m.$radius, "lg");
-  box-shadow: map.get(m.$shadows, "md");
-  width: 100%; // Ocupa todo el ancho de su columna
-  position: sticky; // Se queda pegado al scroll
-  top: map.get(m.$spaces, "xl"); // Espacio desde el top al hacer scroll
+  box-shadow: var(--shadow-md);
+  width: 100%;
+  position: sticky;
+  top: map.get(m.$spaces, "xl");
 
   h3 {
-    color: map.get(m.$colors, "secondary");
+    color: var(--text-primary);
     margin-bottom: map.get(m.$spaces, "lg");
     font-size: map.get(m.$font-sizes, "lg");
   }
 }
 
+// Secciones del checkout (envío, dirección, pago)
+.checkout-section {
+  margin-bottom: map.get(m.$spaces, "xl");
+  padding-bottom: map.get(m.$spaces, "lg");
+  border-bottom: 1px solid var(--border-secondary);
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+
+  h4 {
+    color: var(--text-primary);
+    margin-bottom: map.get(m.$spaces, "md");
+    font-size: map.get(m.$font-sizes, "base");
+    font-weight: map.get(m.$font-weights, "semibold");
+  }
+}
+
+// Opciones de envío y pago
+.shipping-options,
+.payment-options {
+  display: flex;
+  flex-direction: column;
+  gap: map.get(m.$spaces, "sm");
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  padding: map.get(m.$spaces, "md");
+  border: 2px solid var(--border-primary);
+  border-radius: map.get(m.$radius, "md");
+  cursor: pointer;
+  transition: map.get(m.$transitions, "normal");
+  background: var(--card-bg);
+
+  &:hover {
+    border-color: var(--brand-primary);
+    background: var(--brand-primary-light);
+  }
+
+  input[type="radio"] {
+    margin-right: map.get(m.$spaces, "sm");
+    cursor: pointer;
+  }
+
+  .radio-label {
+    color: var(--text-primary);
+  }
+
+  input[type="radio"]:checked + .radio-label,
+  &:has(input[type="radio"]:checked) {
+    font-weight: map.get(m.$font-weights, "semibold");
+  }
+
+  &:has(input[type="radio"]:checked) {
+    border-color: var(--brand-primary);
+    background: var(--brand-primary-light);
+  }
+}
+
+// Formulario de dirección de envío
+.address-form {
+  display: flex;
+  flex-direction: column;
+  gap: map.get(m.$spaces, "md");
+
+  input[type="text"] {
+    width: 100%;
+    padding: map.get(m.$spaces, "sm") map.get(m.$spaces, "md");
+    border: 1px solid var(--input-border);
+    border-radius: map.get(m.$radius, "sm");
+    font-size: map.get(m.$font-sizes, "base");
+    background: var(--input-bg);
+    color: var(--input-text);
+    transition: map.get(m.$transitions, "normal");
+
+    &:focus {
+      outline: none;
+      border-color: var(--input-border-focus);
+      box-shadow: 0 0 0 3px var(--brand-primary-light);
+    }
+
+    &::placeholder {
+      color: var(--input-placeholder);
+    }
+  }
+}
+
+// Fila con dos campos (departamento y número)
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: map.get(m.$spaces, "md");
+
+  input[type="text"] {
+    min-width: 0;
+  }
+}
+
+.checkbox-option {
+  display: flex;
+  align-items: center;
+  gap: map.get(m.$spaces, "sm");
+  margin-top: map.get(m.$spaces, "sm");
+  cursor: pointer;
+  font-size: map.get(m.$font-sizes, "sm");
+  color: var(--text-secondary);
+
+  input[type="checkbox"] {
+    cursor: pointer;
+  }
+}
+
+// Campos de tarjeta (se muestran solo si elige pago con tarjeta)
+.payment-fields {
+  margin-top: map.get(m.$spaces, "md");
+  padding: map.get(m.$spaces, "md");
+  background: var(--bg-section);
+  border-radius: map.get(m.$radius, "md");
+
+  input[type="text"] {
+    width: 100%;
+    min-width: 0;
+    padding: map.get(m.$spaces, "sm") map.get(m.$spaces, "md");
+    border: 1px solid var(--input-border);
+    border-radius: map.get(m.$radius, "sm");
+    font-size: map.get(m.$font-sizes, "base");
+    background: var(--input-bg);
+    color: var(--input-text);
+    margin-bottom: map.get(m.$spaces, "sm");
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--input-border-focus);
+    }
+
+    &::placeholder {
+      color: var(--input-placeholder);
+    }
+  }
+
+  .form-row {
+    input[type="text"] {
+      margin-bottom: 0;
+      min-width: 0;
+    }
+  }
+}
+
+.info-text {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: map.get(m.$font-sizes, "sm");
+  line-height: 1.5;
+
+  &:not(:last-child) {
+    margin-bottom: map.get(m.$spaces, "sm");
+  }
+}
+
+.bank-info {
+  padding: map.get(m.$spaces, "md");
+  background: var(--card-bg);
+  border-left: 3px solid var(--brand-primary);
+  border-radius: map.get(m.$radius, "sm");
+  font-size: map.get(m.$font-sizes, "base");
+  color: var(--text-primary);
+  margin: map.get(m.$spaces, "md") 0;
+}
+
+// Líneas del resumen (subtotal, envío, IVA, total)
 .summary-line {
   display: flex;
   justify-content: space-between;
   margin-bottom: map.get(m.$spaces, "md");
   padding-bottom: map.get(m.$spaces, "sm");
+  color: var(--text-primary);
 
   &.total {
-    border-top: 2px solid map.get(m.$colors, "light-gray");
+    border-top: 2px solid var(--border-primary);
     padding-top: map.get(m.$spaces, "md");
     font-size: map.get(m.$font-sizes, "md");
   }
