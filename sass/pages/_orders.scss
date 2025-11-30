@@ -201,6 +201,22 @@
     border-radius: map.get(m.$radius, "sm");
   }
 
+  .no-image {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-info);
+    border-radius: map.get(m.$radius, "sm");
+    border: 2px dashed var(--border-primary);
+
+    i {
+      font-size: map.get(m.$font-sizes, "xl");
+      color: var(--text-tertiary);
+    }
+  }
+
   .item-info {
     flex: 1;
 

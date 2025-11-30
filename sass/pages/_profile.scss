@@ -295,6 +295,506 @@
   }
 }
 
+// === Sección de Cambiar Contraseña ===
+.change-password-section {
+  margin-top: map.get(v.$spaces, "3xl");
+
+  h3 {
+    color: var(--text-primary);
+    font-weight: map.get(v.$font-weights, "bold");
+    margin-bottom: map.get(v.$spaces, "xl");
+    display: flex;
+    align-items: center;
+    gap: map.get(v.$spaces, "sm");
+
+    i {
+      color: var(--brand-primary);
+      font-size: map.get(v.$font-sizes, "lg");
+    }
+  }
+
+  #changePasswordForm {
+    .form-label {
+      color: var(--text-primary) !important;
+      font-weight: map.get(v.$font-weights, "semibold");
+      margin-bottom: map.get(v.$spaces, "sm");
+
+      .text-danger {
+        color: map.get(v.$colors, "danger") !important;
+      }
+    }
+
+    .form-control {
+      background-color: var(--input-bg);
+      color: var(--text-primary);
+      border: 1px solid var(--input-border);
+      transition: border-color 0.15s ease-in-out, background-color 0.3s ease;
+
+      &:focus {
+        background-color: var(--input-bg);
+        color: var(--text-primary);
+        border-color: var(--input-border-focus);
+        box-shadow: 0 0 0 0.2rem rgba(98, 0, 238, 0.25);
+      }
+
+      &::placeholder {
+        color: var(--input-placeholder);
+        opacity: 0.7;
+      }
+    }
+
+    .input-group {
+      .btn-outline-secondary {
+        background-color: var(--input-bg);
+        border-color: var(--input-border);
+        color: var(--text-primary);
+
+        &:hover {
+          background-color: var(--bg-info);
+          border-color: var(--brand-primary);
+          color: var(--brand-primary);
+        }
+
+        i {
+          color: var(--text-primary);
+        }
+      }
+    }
+
+    .form-text {
+      color: var(--text-secondary) !important;
+      font-size: 0.875rem;
+      font-weight: map.get(v.$font-weights, "regular");
+      margin-top: map.get(v.$spaces, "xs");
+    }
+
+    small.form-text {
+      color: var(--text-secondary) !important;
+      opacity: 1 !important;
+    }
+
+    .invalid-feedback {
+      color: map.get(v.$colors, "danger");
+      font-weight: map.get(v.$font-weights, "medium");
+    }
+
+    .btn-primary {
+      margin-top: map.get(v.$spaces, "md");
+    }
+  }
+}
+
+// === Sección de Eliminar Cuenta ===
+.delete-account-section {
+  margin-top: map.get(v.$spaces, "3xl");
+
+  h3 {
+    color: var(--danger);
+    font-weight: map.get(v.$font-weights, "bold");
+    margin-bottom: map.get(v.$spaces, "lg");
+    display: flex;
+    align-items: center;
+    gap: map.get(v.$spaces, "sm");
+
+    i {
+      font-size: map.get(v.$font-sizes, "lg");
+    }
+  }
+
+  p {
+    color: var(--text-primary) !important;
+    opacity: 0.9;
+  }
+
+  .text-muted {
+    color: var(--text-secondary) !important;
+    opacity: 1 !important;
+  }
+
+  .btn-outline-danger {
+    background-color: transparent;
+    border-color: var(--danger);
+    color: var(--danger);
+    transition: all 0.15s ease-in-out;
+
+    &:hover:not(:disabled) {
+      background-color: var(--danger);
+      border-color: var(--danger);
+      color: var(--text-inverse);
+    }
+  }
+}
+
+// === Sección de Direcciones de Envío ===
+.shipping-addresses-section {
+  margin-top: map.get(v.$spaces, "3xl");
+
+  h3 {
+    color: var(--text-primary);
+    font-weight: map.get(v.$font-weights, "bold");
+    margin-bottom: map.get(v.$spaces, "xl");
+    display: flex;
+    align-items: center;
+    gap: map.get(v.$spaces, "sm");
+
+    i {
+      color: var(--brand-primary);
+      font-size: map.get(v.$font-sizes, "lg");
+    }
+  }
+
+  // Loading state
+  .text-center {
+    .text-muted {
+      color: var(--text-secondary) !important;
+    }
+  }
+
+  #addressesList {
+    .text-muted {
+      color: var(--text-secondary) !important;
+    }
+
+    // Estilos para las tarjetas de direcciones
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-primary);
+
+      &.border-primary {
+        border-color: var(--brand-primary) !important;
+        border-width: 2px;
+      }
+
+      .card-body {
+        background-color: var(--card-bg);
+
+        h6 {
+          color: var(--text-secondary) !important;
+          font-weight: map.get(v.$font-weights, "regular");
+          font-size: 0.875rem !important;
+        }
+
+        p {
+          color: var(--text-secondary) !important;
+
+          &.text-muted {
+            color: var(--text-secondary) !important;
+            opacity: 1 !important;
+          }
+
+          &.small {
+            font-size: 0.875rem !important;
+          }
+        }
+
+        .badge {
+          &.bg-primary {
+            background-color: var(--brand-primary) !important;
+            color: var(--text-inverse) !important;
+          }
+        }
+
+        .btn-group {
+          .btn {
+            border-color: var(--card-border);
+            color: var(--text-primary);
+
+            &.btn-outline-primary {
+              border-color: var(--brand-primary);
+              color: var(--brand-primary);
+
+              &:hover {
+                background-color: var(--brand-primary);
+                color: var(--text-inverse);
+              }
+            }
+
+            &.btn-outline-secondary {
+              border-color: var(--card-border);
+              color: var(--text-primary);
+
+              &:hover {
+                background-color: var(--bg-info);
+                border-color: var(--brand-primary);
+                color: var(--brand-primary);
+              }
+            }
+
+            &.btn-outline-danger {
+              border-color: var(--danger);
+              color: var(--danger);
+
+              &:hover {
+                background-color: var(--danger);
+                color: var(--text-inverse);
+              }
+            }
+
+            i {
+              color: inherit;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .btn-outline-primary {
+    background-color: transparent;
+    border-color: var(--brand-primary);
+    color: var(--brand-primary);
+    transition: all 0.15s ease-in-out;
+
+    &:hover:not(:disabled) {
+      background-color: var(--brand-primary);
+      border-color: var(--brand-primary);
+      color: var(--text-inverse);
+    }
+  }
+
+  .addresses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: map.get(v.$spaces, "lg");
+    margin-bottom: map.get(v.$spaces, "xl");
+  }
+
+  .address-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: map.get(v.$radius, "lg");
+    padding: map.get(v.$spaces, "lg");
+    transition: all 0.3s ease;
+    position: relative;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+
+    &.default-address {
+      border-color: var(--brand-primary);
+      border-width: 2px;
+
+      &::before {
+        content: "✓ Predeterminada";
+        position: absolute;
+        top: -12px;
+        right: map.get(v.$spaces, "md");
+        background: var(--brand-primary);
+        color: var(--text-inverse);
+        padding: map.get(v.$spaces, "xs") map.get(v.$spaces, "md");
+        border-radius: map.get(v.$radius, "md");
+        font-size: map.get(v.$font-sizes, "xs");
+        font-weight: map.get(v.$font-weights, "semibold");
+      }
+    }
+
+    .address-info {
+      margin-bottom: map.get(v.$spaces, "md");
+
+      p {
+        color: var(--text-primary);
+        margin: map.get(v.$spaces, "xs") 0;
+        font-weight: map.get(v.$font-weights, "medium");
+        font-size: map.get(v.$font-sizes, "sm");
+
+        &.text-muted {
+          color: var(--text-secondary) !important;
+          font-size: map.get(v.$font-sizes, "xs");
+        }
+
+        strong {
+          color: var(--text-primary);
+          font-weight: map.get(v.$font-weights, "semibold");
+        }
+      }
+    }
+
+    .address-actions {
+      display: flex;
+      gap: map.get(v.$spaces, "sm");
+      margin-top: map.get(v.$spaces, "md");
+      padding-top: map.get(v.$spaces, "md");
+      border-top: 1px solid var(--card-border);
+
+      button {
+        flex: 1;
+        padding: map.get(v.$spaces, "sm") map.get(v.$spaces, "md");
+        border: 1px solid var(--card-border);
+        background: transparent;
+        color: var(--text-primary);
+        border-radius: map.get(v.$radius, "md");
+        font-size: map.get(v.$font-sizes, "sm");
+        font-weight: map.get(v.$font-weights, "medium");
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        i {
+          margin-right: map.get(v.$spaces, "xs");
+        }
+
+        &:hover {
+          background: var(--bg-info);
+          border-color: var(--brand-primary);
+          color: var(--brand-primary);
+        }
+
+        &.btn-danger {
+          &:hover {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: var(--text-inverse);
+          }
+        }
+
+        &.btn-success {
+          &:hover {
+            background: var(--success);
+            border-color: var(--success);
+            color: var(--text-inverse);
+          }
+        }
+      }
+    }
+  }
+
+  .btn-add-address {
+    width: 100%;
+    padding: map.get(v.$spaces, "lg");
+    background: var(--card-bg);
+    border: 2px dashed var(--card-border);
+    border-radius: map.get(v.$radius, "lg");
+    color: var(--text-primary);
+    font-size: map.get(v.$font-sizes, "md");
+    font-weight: map.get(v.$font-weights, "semibold");
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: map.get(v.$spaces, "sm");
+
+    i {
+      font-size: map.get(v.$font-sizes, "lg");
+      color: var(--brand-primary);
+    }
+
+    &:hover {
+      background: var(--bg-info);
+      border-color: var(--brand-primary);
+      color: var(--brand-primary);
+      transform: translateY(-2px);
+    }
+  }
+
+  .empty-addresses {
+    text-align: center;
+    padding: map.get(v.$spaces, "3xl");
+    background: var(--bg-info);
+    border-radius: map.get(v.$radius, "lg");
+    border: 1px solid var(--card-border);
+
+    i {
+      font-size: 4rem;
+      color: var(--text-tertiary);
+      margin-bottom: map.get(v.$spaces, "lg");
+    }
+
+    p {
+      color: var(--text-secondary);
+      font-size: map.get(v.$font-sizes, "md");
+      margin: 0;
+    }
+  }
+}
+
+// Modal de dirección
+.modal {
+  .modal-content {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+
+    .modal-header {
+      border-bottom-color: var(--card-border);
+
+      .modal-title {
+        color: var(--text-primary);
+        font-weight: map.get(v.$font-weights, "bold");
+
+        i {
+          color: var(--brand-primary);
+        }
+      }
+
+      .btn-close {
+        filter: var(--bs-btn-close-filter, invert(1));
+      }
+    }
+
+    .modal-body {
+      .form-label {
+        color: var(--text-primary);
+        font-weight: map.get(v.$font-weights, "semibold");
+
+        i {
+          color: var(--brand-primary);
+        }
+      }
+
+      .form-control,
+      .form-select {
+        background-color: var(--input-bg);
+        color: var(--text-primary);
+        border: 1px solid var(--input-border);
+
+        &:focus {
+          background-color: var(--input-bg);
+          color: var(--text-primary);
+          border-color: var(--input-border-focus);
+          box-shadow: 0 0 0 0.2rem rgba(230, 126, 34, 0.25);
+        }
+
+        &::placeholder {
+          color: var(--input-placeholder);
+        }
+      }
+
+      .form-check-input {
+        background-color: var(--input-bg);
+        border-color: var(--input-border);
+
+        &:checked {
+          background-color: var(--brand-primary);
+          border-color: var(--brand-primary);
+        }
+
+        &:focus {
+          border-color: var(--input-border-focus);
+          box-shadow: 0 0 0 0.2rem rgba(230, 126, 34, 0.25);
+        }
+      }
+
+      .form-check-label {
+        color: var(--text-primary);
+      }
+
+      .text-muted {
+        color: var(--text-tertiary) !important;
+      }
+    }
+
+    .modal-footer {
+      border-top-color: var(--card-border);
+
+      .btn {
+        font-weight: map.get(v.$font-weights, "semibold");
+      }
+    }
+  }
+}
+
 // === Responsive Design ===
 @media (max-width: 768px) {
   .avatar-preview-wrapper {
@@ -304,5 +804,11 @@
 
   .avatar-preview.avatar-placeholder {
     font-size: 2.5rem;
+  }
+
+  .shipping-addresses-section {
+    .addresses-grid {
+      grid-template-columns: 1fr;
+    }
   }
 }

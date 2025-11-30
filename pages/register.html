@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Crear cuenta en Craftivity - Únete a nuestra comunidad"
+    />
+    <title>Crear Cuenta - Craftivity</title>
+    <link rel="stylesheet" href="../CSS/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="icon" type="image/x-icon" href="../img/favicon.ico" />
+  </head>
+  <body>
+    <!-- Header cargado dinámicamente desde components/header.html -->
+    <div id="header-placeholder"></div>
+
+    <main>
+      <div class="login-container">
+        <form class="login-form register-form" id="registerForm" novalidate>
+          <h2>Crear Cuenta</h2>
+          <p class="form-subtitle">Únete a Craftivity y comienza a comprar</p>
+
+          <!-- Avatar Preview -->
+          <div class="avatar-upload-container">
+            <div class="avatar-preview" id="avatarPreview">
+              <i class="fas fa-user"></i>
+            </div>
+            <label for="avatar" class="btn-upload-avatar">
+              <i class="fas fa-camera"></i>
+              Subir foto de perfil
+            </label>
+            <input
+              type="file"
+              id="avatar"
+              name="avatar"
+              accept="image/*"
+              style="display: none"
+            />
+            <small class="help-text">Opcional - JPEG, PNG o GIF (máx 5MB)</small>
+          </div>
+
+          <!-- Nombre para mostrar -->
+          <div class="form-group">
+            <label for="displayName">
+          <!-- Nombre -->
+          <div class="form-group">
+            <label for="firstName">
+              <i class="fas fa-user"></i> Nombre
+            </label>
+            <input
+              type="text"
+              id="firstName"
+              name="firstName"
+              placeholder="Ej: Juan"
+              required
+            />
+            <div class="error-message" id="firstNameError"></div>
+          </div>
+
+          <!-- Apellido -->
+          <div class="form-group">
+            <label for="lastName">
+              <i class="fas fa-user"></i> Apellido
+            </label>
+            <input
+              type="text"
+              id="lastName"
+              name="lastName"
+              placeholder="Ej: Pérez"
+              required
+            />
+            <div class="error-message" id="lastNameError"></div>
+          </div>
+
+          <!-- Username -->
+          <div class="form-group">
+            <label for="username">
+              <i class="fas fa-user"></i> Nombre de Usuario
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="Ej: test01"
+              maxlength="20"
+              required
+            />
+            <small class="form-text text-muted">Con este nombre iniciarás sesión</small>
+            <div class="error-message" id="usernameError"></div>
+          </div>
+
+          <!-- Email -->
+          <div class="form-group">
+            <label for="email">
+              <i class="fas fa-envelope"></i> Correo electrónico
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="tu@email.com"
+              required
+            />
+            <div class="error-message" id="emailError"></div>
+          </div>
+
+          <!-- Contraseña -->
+          <div class="form-group">
+            <label for="password">
+              <i class="fas fa-lock"></i> Contraseña
+            </label>
+            <div style="position: relative;">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Mínimo 6 caracteres"
+                required
+                style="padding-right: 40px;"
+              />
+              <button
+                type="button"
+                class="toggle-password"
+                data-target="password"
+                style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; z-index: 10;"
+              >
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+            <div class="password-strength" id="passwordStrength"></div>
+            <div class="error-message" id="passwordError"></div>
+          </div>
+
+          <!-- Confirmar Contraseña -->
+          <div class="form-group">
+            <label for="confirmPassword">
+              <i class="fas fa-lock"></i> Confirmar contraseña
+            </label>
+            <div style="position: relative;">
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                placeholder="Repite tu contraseña"
+                required
+                style="padding-right: 40px;"
+              />
+              <button
+                type="button"
+                class="toggle-password"
+                data-target="confirmPassword"
+                style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; z-index: 10;"
+              >
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+            <div class="error-message" id="confirmPasswordError"></div>
+          </div>
+
+          <!-- Términos y Condiciones -->
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="terms" name="terms" required />
+              <span>
+                Acepto los
+                <a href="#" class="link-inline">términos y condiciones</a>
+              </span>
+            </label>
+            <div class="error-message" id="termsError"></div>
+          </div>
+
+          <button type="submit" class="btn btn-primary form-button-primary">
+            <i class="fas fa-user-plus"></i> Crear cuenta
+          </button>
+
+          <div class="form-footer">
+            <p>
+              ¿Ya tienes cuenta?
+              <a href="login.html" class="link-primary">Inicia sesión</a>
+            </p>
+          </div>
+        </form>
+      </div>
+    </main>
+
+    <!-- Footer cargado dinámicamente desde components/footer.html -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Scripts del sitio -->
+    <script src="../Scripts/component-loader.js"></script>
+    <script src="../Scripts/utils.js"></script>
+    <script src="../Scripts/config.js"></script>
+    <script src="../Scripts/init.js"></script>
+    <script src="../Scripts/register.js"></script>
+    <script src="../Scripts/main.js"></script>
+  </body>
+</html>

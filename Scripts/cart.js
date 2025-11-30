@@ -1,7 +1,6 @@
 /**
  * Gestión del carrito de compras de Craftivity
  * Maneja visualización, modificación y cálculos del carrito
- * Autor: Grupo 7 - Proyecto Final JAP 2025
  *
  * Nota: Utiliza showNotification() y updateCartCounter() de main.js
  * para mantener consistencia y evitar duplicación de código.
@@ -11,7 +10,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   loadCart();
   setupCheckoutListeners();
-  loadSavedAddress();
+  loadShippingAddresses(); // Cargar direcciones desde backend
 });
 
 // Configurar listeners del checkout
@@ -81,37 +80,175 @@ function togglePaymentFields() {
   }
 }
 
-// Cargar dirección guardada si existe
-// Si el usuario tiene una dirección guardada de compras anteriores, la autocompleta
-function loadSavedAddress() {
-  const session = checkSession();
-  if (!session || !session.isLoggedIn) return;
+// Cargar direcciones guardadas desde el backend
+let userAddresses = [];
+let selectedAddressId = null;
 
-  const userProfile = getUserProfile(session.usuario);
-  if (userProfile && userProfile.shippingAddress) {
-    const addr = userProfile.shippingAddress;
-    document.getElementById("department").value = addr.department || "";
-    document.getElementById("city").value = addr.city || "";
-    document.getElementById("street").value = addr.street || "";
-    document.getElementById("number").value = addr.number || "";
-    document.getElementById("corner").value = addr.corner || "";
+async function loadShippingAddresses() {
+  if (!AUTH_UTILS.isAuthenticated()) {
+    // Usuario no logueado: mostrar solo formulario manual
+    document.getElementById("saveAddressOption").style.display = "block";
+    return;
   }
+
+  try {
+    const response = await fetch(API_CONFIG.SHIPPING_ADDRESSES, {
+      headers: AUTH_UTILS.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      // Si falla, mostrar formulario manual
+      document.getElementById("saveAddressOption").style.display = "block";
+      return;
+    }
+
+    userAddresses = await response.json();
+
+    if (userAddresses && userAddresses.length > 0) {
+      // Mostrar selector de direcciones
+      document.getElementById("savedAddressesSection").style.display = "block";
+
+      // Poblar selector
+      const selector = document.getElementById("addressSelector");
+      selector.innerHTML =
+        '<option value="">Selecciona una dirección...</option>';
+
+      userAddresses.forEach((addr) => {
+        const option = document.createElement("option");
+        option.value = addr.id;
+        option.textContent = `${addr.street} ${addr.number}, ${addr.city}${
+          addr.is_default ? " (Predeterminada)" : ""
+        }`;
+        selector.appendChild(option);
+      });
+
+      selector.innerHTML += '<option value="new">+ Nueva dirección</option>';
+
+      // Listener para cambio de dirección
+      selector.addEventListener("change", handleAddressSelection);
+
+      // Auto-seleccionar dirección predeterminada
+      const defaultAddr = userAddresses.find((a) => a.is_default);
+      if (defaultAddr) {
+        selector.value = defaultAddr.id;
+        populateAddressForm(defaultAddr);
+        selectedAddressId = defaultAddr.id;
+        document.getElementById("addressFormSection").style.display = "none";
+      }
+    } else {
+      // No tiene direcciones: mostrar formulario con opción de guardar
+      document.getElementById("saveAddressOption").style.display = "block";
+    }
+  } catch (error) {
+    console.error("Error al cargar direcciones:", error);
+    // Mostrar formulario manual si falla
+    document.getElementById("saveAddressOption").style.display = "block";
+  }
+}
+
+function handleAddressSelection(event) {
+  const addressId = event.target.value;
+
+  if (addressId === "new") {
+    // Nueva dirección: mostrar formulario vacío
+    selectedAddressId = null;
+    document.getElementById("addressFormSection").style.display = "block";
+    document.getElementById("saveAddressOption").style.display = "block";
+    clearAddressForm();
+  } else if (addressId) {
+    // Dirección existente: ocultar formulario y marcar como seleccionada
+    const address = userAddresses.find((a) => a.id == addressId);
+    if (address) {
+      selectedAddressId = address.id;
+      populateAddressForm(address);
+      document.getElementById("addressFormSection").style.display = "none";
+      document.getElementById("saveAddressOption").style.display = "none";
+    }
+  } else {
+    // No seleccionó nada: mostrar formulario vacío
+    selectedAddressId = null;
+    document.getElementById("addressFormSection").style.display = "block";
+    document.getElementById("saveAddressOption").style.display = "block";
+    clearAddressForm();
+  }
+}
+
+function populateAddressForm(address) {
+  document.getElementById("state").value = address.state || "";
+  document.getElementById("city").value = address.city || "";
+  document.getElementById("street").value = address.street || "";
+  document.getElementById("number").value = address.number || "";
+  document.getElementById("corner").value = address.corner || "";
+  document.getElementById("department").value = address.department || "";
+  document.getElementById("postalCode").value = address.postal_code || "";
+}
+
+function clearAddressForm() {
+  document.getElementById("state").value = "";
+  document.getElementById("city").value = "";
+  document.getElementById("street").value = "";
+  document.getElementById("number").value = "";
+  document.getElementById("corner").value = "";
+  document.getElementById("department").value = "";
+  document.getElementById("postalCode").value = "";
+  document.getElementById("saveAddress").checked = false;
 }
 
 /**
  * Carga y muestra el contenido del carrito desde localStorage
  */
-function loadCart() {
-  // Obtengo el carrito usando función utilitaria
-  const cart = getCart();
+/**
+ * Carga el carrito desde el backend (si hay sesión) o localStorage
+ * Si el usuario está logueado, obtiene el carrito del backend
+ * Si no, usa el carrito temporal de localStorage
+ */
+async function loadCart() {
   const emptyCart = document.getElementById("emptyCart");
   const cartContent = document.getElementById("cartContent");
-  // Si hay productos, muestro mensaje de carrito vacio
+
+  let cart = [];
+
+  // Verificar si hay sesión activa
+  if (AUTH_UTILS.isAuthenticated()) {
+    // Usuario logueado: cargar desde backend
+    try {
+      const response = await fetch(API_CONFIG.CART, {
+        headers: AUTH_UTILS.getAuthHeaders(),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+
+        // Backend devuelve {cartId, items, total, itemCount}
+        // Adaptar estructura: backend usa 'price' y 'productId', frontend espera 'cost' e 'id'
+        cart = (data.items || []).map((item) => ({
+          id: item.productId || item.id, // ID del producto
+          cartItemId: item.id, // ID del item en cart_items
+          name: item.name,
+          cost: item.price || item.cost,
+          currency: item.currency,
+          quantity: item.quantity,
+          image: item.image,
+          subtotal: item.subtotal,
+        }));
+      } else {
+        console.error("Error cargando carrito del backend");
+        showNotification("Error al cargar el carrito", "error");
+      }
+    } catch (error) {
+      console.error("Error conectando con el backend:", error);
+      showNotification("Error de conexión con el servidor", "error");
+    }
+  } else {
+    // Sin sesión: usar carrito local
+    cart = getCart();
+  }
+
+  // Mostrar carrito vacío o contenido
   if (cart.length === 0) {
     if (emptyCart) emptyCart.classList.add("show");
     if (cartContent) cartContent.classList.remove("show");
   } else {
-    // Si hay productos, muestro el contenido del carrito
     if (emptyCart) emptyCart.classList.remove("show");
     if (cartContent) cartContent.classList.add("show");
     displayCartItems(cart);
@@ -125,9 +262,11 @@ function displayCartItems(cart) {
 
   // Genero el HTML para cada producto en el carrito
   const itemsHTML = cart
-    .map(
-      (item) => `
-        <div class="cart-item" data-item-id="${item.id}">
+    .map((item) => {
+      // Para backend usamos cartItemId, para localStorage usamos id
+      const itemIdentifier = item.cartItemId || item.id;
+      return `
+        <div class="cart-item" data-item-id="${itemIdentifier}">
             <img src="${item.image}" alt="${
         item.name
       }" class="cart-item-image" onerror="this.src='../img/placeholder.jpg'">
@@ -139,13 +278,13 @@ function displayCartItems(cart) {
                 )}</p>
             </div>
             <div class="cart-item-controls">
-                <button class="quantity-btn decrease" data-item-id="${
-                  item.id
-                }" data-quantity="${item.quantity - 1}">-</button>
+                <button class="quantity-btn decrease" data-item-id="${itemIdentifier}" data-quantity="${
+        item.quantity - 1
+      }">-</button>
                 <span class="quantity">${item.quantity}</span>
-                <button class="quantity-btn increase" data-item-id="${
-                  item.id
-                }" data-quantity="${item.quantity + 1}">+</button>
+                <button class="quantity-btn increase" data-item-id="${itemIdentifier}" data-quantity="${
+        item.quantity + 1
+      }">+</button>
             </div>
             <div class="cart-item-total">
                 ${formatCurrency(
@@ -153,12 +292,10 @@ function displayCartItems(cart) {
                   item.currency || "UYU"
                 )}
             </div>
-            <button class="remove-btn" data-item-id="${
-              item.id
-            }" title="Eliminar producto">🗑️</button>
+            <button class="remove-btn" data-item-id="${itemIdentifier}" title="Eliminar producto">🗑️</button>
         </div>
-    `
-    )
+    `;
+    })
     .join("");
 
   // Inserto el HTML en el contenedor
@@ -166,44 +303,86 @@ function displayCartItems(cart) {
 }
 
 /**
- * Actualiza la cantidad de un producto
+ * Actualiza la cantidad de un producto en el carrito
  * Si la cantidad es menor a 1, elimina el producto del carrito
+ * @param {number} itemId - Para backend: cartItemId, para localStorage: productId
  */
-function updateQuantity(productId, newQuantity) {
+async function updateQuantity(itemId, newQuantity) {
   if (newQuantity < 1) {
-    // Si la cantidad es 0 o negativa, elimino el producto
-    removeFromCart(productId);
+    removeFromCart(itemId);
     return;
   }
 
-  // Obtengo el carrito actual
-  let cart = getCart();
-  const itemIndex = cart.findIndex((item) => item.id === productId);
+  if (AUTH_UTILS.isAuthenticated()) {
+    // Usuario logueado: actualizar en backend usando cartItemId
+    try {
+      const response = await fetch(`${API_CONFIG.CART_ITEMS}/${itemId}`, {
+        method: "PUT",
+        headers: AUTH_UTILS.getAuthHeaders(),
+        body: JSON.stringify({ quantity: newQuantity }),
+      });
 
-  if (itemIndex !== -1) {
-    // Actualizo la cantidad del producto
-    cart[itemIndex].quantity = newQuantity;
-    saveCart(cart);
+      if (response.ok) {
+        await loadCart(); // Recargar carrito
+        updateCartCounter();
+        showNotification("Cantidad actualizada", "success");
+      } else {
+        showNotification("Error al actualizar cantidad", "error");
+      }
+    } catch (error) {
+      console.error("Error actualizando cantidad:", error);
+      showNotification("Error de conexión", "error");
+    }
+  } else {
+    // Sin sesión: actualizar carrito local usando productId
+    let cart = getCart();
+    const itemIndex = cart.findIndex((item) => item.id === itemId);
 
-    // Recargo la vista del carrito
-    loadCart();
-    updateCartCounter(); // Actualizo el contador en el header
+    if (itemIndex !== -1) {
+      cart[itemIndex].quantity = newQuantity;
+      saveCart(cart);
+      loadCart();
+      updateCartCounter();
+    }
   }
 }
 
-// Elimina un producto del carrito
-function removeFromCart(productId) {
-  // Filtro el carrito para excluir el producto seleccionado
-  let cart = getCart();
-  cart = cart.filter((item) => item.id !== productId);
+/**
+ * Elimina un producto del carrito
+ */
+/**
+ * Elimina un producto del carrito
+ * @param {number} itemId - Para backend: cartItemId, para localStorage: productId
+ */
+async function removeFromCart(itemId) {
+  if (AUTH_UTILS.isAuthenticated()) {
+    // Usuario logueado: eliminar del backend usando cartItemId
+    try {
+      const response = await fetch(`${API_CONFIG.CART_ITEMS}/${itemId}`, {
+        method: "DELETE",
+        headers: AUTH_UTILS.getAuthHeaders(),
+      });
 
-  // Guardo el carrito actualizado
-  saveCart(cart);
-
-  // Recargo la vista y muestro confirmación
-  loadCart();
-  updateCartCounter();
-  showNotification("Producto eliminado del carrito", "success");
+      if (response.ok) {
+        await loadCart();
+        updateCartCounter();
+        showNotification("Producto eliminado del carrito", "success");
+      } else {
+        showNotification("Error al eliminar producto", "error");
+      }
+    } catch (error) {
+      console.error("Error eliminando producto:", error);
+      showNotification("Error de conexión", "error");
+    }
+  } else {
+    // Sin sesión: eliminar de carrito local usando productId
+    let cart = getCart();
+    cart = cart.filter((item) => item.id !== itemId);
+    saveCart(cart);
+    loadCart();
+    updateCartCounter();
+    showNotification("Producto eliminado del carrito", "success");
+  }
 }
 
 /**
@@ -258,10 +437,12 @@ function updateCartSummary(cart) {
  * Inicia el proceso de checkout
  * Valida todos los campos y procesa la compra
  */
-function checkout() {
+/**
+ * Finaliza la compra creando una orden en el backend
+ */
+async function checkout() {
   // Validar que el usuario esté logueado
-  const session = checkSession();
-  if (!session || !session.isLoggedIn) {
+  if (!AUTH_UTILS.isAuthenticated()) {
     showNotification("Debes iniciar sesión para finalizar la compra", "error");
     setTimeout(() => {
       window.location.href = "login.html";
@@ -269,42 +450,64 @@ function checkout() {
     return;
   }
 
-  // Valida que haya productos en el carrito
-  const cart = getCart();
-  if (cart.length === 0) {
-    showNotification("Tu carrito está vacío", "error");
-    return;
-  }
+  // Obtener datos de dirección
+  const state = document.getElementById("state").value.trim();
+  const city = document.getElementById("city").value.trim();
+  const street = document.getElementById("street").value.trim();
+  const number = document.getElementById("number").value.trim();
+  const corner = document.getElementById("corner").value.trim();
+  const department = document.getElementById("department").value.trim();
+  const postalCode = document.getElementById("postalCode").value.trim();
 
-  // Validar cantidades mayores a 0
-  const invalidQuantity = cart.some((item) => item.quantity <= 0);
-  if (invalidQuantity) {
+  // Validar campos requeridos
+  if (!state || !city || !street || !number) {
     showNotification(
-      "Todos los productos deben tener cantidad mayor a 0",
+      "Debes completar los campos de dirección (departamento, ciudad, calle, número)",
       "error"
     );
     return;
   }
 
-  // Validar tipo de envío seleccionado
-  const shippingType = document.querySelector(
-    'input[name="shippingType"]:checked'
-  );
-  if (!shippingType) {
-    showNotification("Debes seleccionar un tipo de envío", "error");
-    return;
-  }
+  // Si seleccionó "guardar dirección" y es una dirección nueva
+  if (
+    AUTH_UTILS.isAuthenticated() &&
+    document.getElementById("saveAddress")?.checked &&
+    !selectedAddressId
+  ) {
+    try {
+      const addressData = {
+        street,
+        number,
+        corner: corner || null,
+        department: department || null,
+        city,
+        state,
+        country: "Uruguay",
+        postal_code: postalCode || null,
+        is_default: userAddresses.length === 0, // Primera dirección es default
+      };
 
-  // Validar dirección completa
-  const department = document.getElementById("department").value.trim();
-  const city = document.getElementById("city").value.trim();
-  const street = document.getElementById("street").value.trim();
-  const number = document.getElementById("number").value.trim();
-  const corner = document.getElementById("corner").value.trim();
+      const response = await fetch(API_CONFIG.SHIPPING_ADDRESSES, {
+        method: "POST",
+        headers: {
+          ...AUTH_UTILS.getAuthHeaders(),
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(addressData),
+      });
 
-  if (!department || !city || !street || !number || !corner) {
-    showNotification("Debes completar todos los campos de dirección", "error");
-    return;
+      if (response.ok) {
+        const result = await response.json();
+        selectedAddressId = result.addressId || result.id || result.data?.id;
+      } else {
+        const errorData = await response.json();
+        console.error("Error al guardar dirección:", errorData);
+        // Continuar con el checkout aunque falle guardar la dirección
+      }
+    } catch (error) {
+      console.error("Error al guardar dirección:", error);
+      // Continuar con el checkout aunque falle guardar la dirección
+    }
   }
 
   // Validar forma de pago seleccionada
@@ -316,7 +519,7 @@ function checkout() {
     return;
   }
 
-  // Si elige pago con tarjeta, valida todos los campos (número, titular, vencimiento, CVV)
+  // Si elige pago con tarjeta, validar campos
   if (paymentMethod.value === "credit") {
     const cardNumber = document.getElementById("cardNumber").value.trim();
     const cardHolder = document.getElementById("cardHolder").value.trim();
@@ -331,7 +534,6 @@ function checkout() {
       return;
     }
 
-    // Verifica que el número de tarjeta tenga entre 13 y 16 dígitos
     if (
       cardNumber.length < 13 ||
       cardNumber.length > 16 ||
@@ -341,57 +543,73 @@ function checkout() {
       return;
     }
 
-    // Validar formato de vencimiento MM/AA
     if (!/^\d{2}\/\d{2}$/.test(cardExpiry)) {
       showNotification("Formato de vencimiento inválido (usar MM/AA)", "error");
       return;
     }
 
-    // Validar CVV
     if (cardCVV.length < 3 || cardCVV.length > 4 || !/^\d+$/.test(cardCVV)) {
       showNotification("CVV inválido", "error");
       return;
     }
   }
 
-  // Si pasó todas las validaciones, crear el pedido
-  const address = { department, city, street, number, corner };
-  const paymentDetails =
-    paymentMethod.value === "credit"
-      ? {
-          cardNumber: document.getElementById("cardNumber").value.trim(),
-          cardHolder: document.getElementById("cardHolder").value.trim(),
-          cardExpiry: document.getElementById("cardExpiry").value.trim(),
-        }
-      : null;
+  // Deshabilitar botón durante la creación
+  const checkoutButton = document.getElementById("checkoutButton");
+  const originalText = checkoutButton.textContent;
+  checkoutButton.disabled = true;
+  checkoutButton.textContent = "Procesando...";
 
-  const order = createOrder(
-    cart,
-    shippingType.value,
-    address,
-    paymentMethod.value,
-    paymentDetails
-  );
+  try {
+    // Crear orden en el backend
+    const orderData = {
+      shippingAddress: {
+        department: state, // Mapear state -> department
+        locality: city, // Mapear city -> locality
+        street,
+        number,
+        corner: corner || "",
+        apartment: department || "", // Apartamento
+      },
+      paymentMethod: paymentMethod.value,
+    };
 
-  // Guardar pedido
-  saveOrder(order);
+    // Si se seleccionó una dirección guardada, incluir su ID
+    if (selectedAddressId) {
+      orderData.shippingAddressId = selectedAddressId;
+    }
 
-  // Si marcó "guardar dirección", la guarda en su perfil para próximas compras
-  if (document.getElementById("saveAddress").checked) {
-    upsertUserProfile(session.usuario, {
-      shippingAddress: address,
+    const response = await fetch(API_CONFIG.ORDERS, {
+      method: "POST",
+      headers: {
+        ...AUTH_UTILS.getAuthHeaders(),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(orderData),
     });
+
+    const result = await response.json();
+
+    if (response.ok && result.success) {
+      // Orden creada exitosamente
+      showNotification("¡Compra realizada con éxito!", "success");
+
+      // Actualizar contador del carrito (ahora vacío)
+      updateCartCounter();
+
+      // Redirigir a órdenes
+      setTimeout(() => {
+        window.location.href = "orders.html";
+      }, 2000);
+    } else {
+      showNotification(result.message || "Error al crear la orden", "error");
+      checkoutButton.disabled = false;
+      checkoutButton.textContent = originalText;
+    }
+  } catch (error) {
+    console.error("Error en checkout:", error);
+    showNotification("Error de conexión con el servidor", "error");
+    checkoutButton.disabled = false;
+    checkoutButton.textContent = originalText;
   }
-
-  // Vaciar carrito
-  saveCart([]);
-  updateCartCounter();
-
-  // Mostrar notificación de éxito
-  showNotification("Compra realizada con éxito", "success");
-
-  // Redirigir a historial de pedidos
-  setTimeout(() => {
-    window.location.href = "orders.html";
-  }, 2000);
 }

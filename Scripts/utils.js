@@ -1,41 +1,23 @@
 /**
  * Funciones utilitarias compartidas
- * Evita duplicación de código en el proyecto
- * Autor: Grupo 7 - Proyecto Final JAP 2025
  */
 
-/**
- * Obtiene el carrito del localStorage
- * Maneja carritos por usuario y carrito temporal
- * @returns {Array} Array de productos en el carrito
- */
 function getCart() {
-  const session = getSessionData();
+  const isLoggedIn = AUTH_UTILS.isAuthenticated();
 
-  if (session && session.isLoggedIn) {
-    // Usuario logueado: usar carrito personalizado
-    const userCartKey = `craftivityCart_${session.usuario}`;
-    return JSON.parse(localStorage.getItem(userCartKey)) || [];
+  if (isLoggedIn) {
+    return [];
   } else {
-    // Usuario no logueado: usar carrito temporal
     return JSON.parse(localStorage.getItem("craftivityCart")) || [];
   }
 }
 
-/**
- * Guarda el carrito en localStorage
- * Maneja carritos por usuario y carrito temporal
- * @param {Array} cart - Array de productos del carrito
- */
 function saveCart(cart) {
-  const session = getSessionData();
+  const isLoggedIn = AUTH_UTILS.isAuthenticated();
 
-  if (session && session.isLoggedIn) {
-    // Usuario logueado: guardar en carrito personalizado
-    const userCartKey = `craftivityCart_${session.usuario}`;
-    localStorage.setItem(userCartKey, JSON.stringify(cart));
+  if (isLoggedIn) {
+    return;
   } else {
-    // Usuario no logueado: guardar en carrito temporal
     localStorage.setItem("craftivityCart", JSON.stringify(cart));
   }
 }
@@ -70,44 +52,60 @@ function migrateCartToUser(username) {
       }
     });
 
-    // Guardar carrito combinado
     localStorage.setItem(userCartKey, JSON.stringify(combinedCart));
 
-    // Limpiar carrito temporal
     localStorage.removeItem("craftivityCart");
-
-    console.log(`Carrito migrado para usuario: ${username}`, combinedCart);
   }
 }
 
-/**
- * Limpia el carrito temporal al hacer logout
- * Mantiene el carrito del usuario para futuras sesiones
- */
 function clearTempCart() {
   localStorage.removeItem("craftivityCart");
 }
 
-/**
- * Agrega un producto al carrito
- * @param {Object} product - Producto a agregar
- * @param {number} quantity - Cantidad a agregar (default: 1)
- */
-function addToCart(product, quantity = 1) {
+async function addToCart(product, quantity = 1) {
+  const token = AUTH_UTILS.getToken();
+
+  if (token) {
+    try {
+      const response = await fetch(`${API_CONFIG.CART_ITEMS}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          productId: product.id,
+          quantity: quantity,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al agregar al carrito");
+      }
+
+      const result = await response.json();
+
+      if (typeof updateCartCounter === "function") {
+        updateCartCounter();
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Error agregando al backend:", error);
+    }
+  }
+
   const cart = getCart();
 
-  // Buscar si el producto ya existe en el carrito
   const existingIndex = cart.findIndex((item) => item.id === product.id);
 
   if (existingIndex >= 0) {
-    // Si existe, aumentar cantidad
     cart[existingIndex].quantity += quantity;
   } else {
-    // Si no existe, agregar nuevo item
     cart.push({
       id: product.id,
       name: product.name,
-      cost: product.cost, // Usar 'cost' para mantener consistencia
+      cost: product.cost,
       currency: product.currency || "UYU",
       image:
         product.images && product.images[0] ? product.images[0] : product.image,
@@ -118,38 +116,25 @@ function addToCart(product, quantity = 1) {
 
   saveCart(cart);
 
-  // Actualizar contador del carrito en la UI
   if (typeof updateCartCounter === "function") {
     updateCartCounter();
   }
 
-  console.log(`Producto agregado al carrito:`, product.name, `x${quantity}`);
   return cart;
 }
 
-/**
- * Remueve un producto del carrito
- * @param {number} productId - ID del producto a remover
- */
 function removeFromCart(productId) {
   const cart = getCart();
   const filteredCart = cart.filter((item) => item.id !== productId);
   saveCart(filteredCart);
 
-  // Actualizar contador del carrito en la UI
   if (typeof updateCartCounter === "function") {
     updateCartCounter();
   }
 
-  console.log(`Producto removido del carrito:`, productId);
   return filteredCart;
 }
 
-/**
- * Actualiza la cantidad de un producto en el carrito
- * @param {number} productId - ID del producto
- * @param {number} newQuantity - Nueva cantidad
- */
 function updateCartQuantity(productId, newQuantity) {
   const cart = getCart();
   const itemIndex = cart.findIndex((item) => item.id === productId);
@@ -206,37 +191,25 @@ function showNotification(message, type = "info") {
   const notification = document.createElement("div");
   notification.className = `notification notification-${type}`;
   notification.textContent = message;
-  notification.style.cssText = `
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 1rem 1.5rem;
-    background: ${
-      type === "success"
-        ? "var(--success-color)"
-        : type === "error"
-        ? "var(--danger-color)"
-        : "var(--primary-color)"
-    };
-    color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    z-index: 9999;
-    animation: slideIn 0.3s ease;
-  `;
 
   // Agregar al body
   document.body.appendChild(notification);
 
-  // Remover después de 3 segundos
+  // Mostrar con animación
   setTimeout(() => {
-    notification.style.animation = "slideOut 0.3s ease";
+    notification.classList.add("show");
+  }, 10);
+
+  // Remover después de 5 segundos
+  setTimeout(() => {
+    notification.classList.remove("show");
+    notification.classList.add("hide");
     setTimeout(() => {
       if (notification.parentNode) {
         notification.parentNode.removeChild(notification);
       }
     }, 300);
-  }, 3000);
+  }, 5000);
 }
 
 // ==========================================
@@ -261,7 +234,6 @@ async function isProductFlashSale(productId) {
     const flashData = await getFlashSaleData(productId);
     return flashData && flashData.flashSale && flashData.flashSale.active;
   } catch (error) {
-    console.log("No se pudo verificar flash sale para producto:", productId);
     return false;
   }
 }
@@ -296,7 +268,6 @@ async function getFlashSaleData(productId) {
 
     return null;
   } catch (error) {
-    console.log("Error obteniendo datos de flash sale:", error.message);
     return null;
   }
 }
@@ -311,7 +282,6 @@ async function isProductFeatured(productId) {
     const featuredData = await getFeaturedData(productId);
     return featuredData && featuredData.featured === true;
   } catch (error) {
-    console.log("No se pudo verificar featured para producto:", productId);
     return false;
   }
 }
@@ -330,7 +300,6 @@ async function getFeaturedData(productId) {
       featuredCache.products.find((p) => p.id === parseInt(productId)) || null
     );
   } catch (error) {
-    console.log("Error obteniendo datos de producto destacado:", error.message);
     return null;
   }
 }
@@ -357,8 +326,6 @@ async function loadFlashSalesCache() {
 
     flashSalesCache = await response.json();
     cacheTimestamp = now;
-
-    console.log("Cache de flash sales actualizado");
   } catch (error) {
     console.error("Error cargando flash sales:", error);
     flashSalesCache = { products: [] };
@@ -386,9 +353,7 @@ async function loadFeaturedCache() {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
     featuredCache = await response.json();
-    if (!cacheTimestamp) cacheTimestamp = now; // Solo actualizar si no se ha hecho antes
-
-    console.log("Cache de productos destacados actualizado");
+    if (!cacheTimestamp) cacheTimestamp = now;
   } catch (error) {
     console.error("Error cargando productos destacados:", error);
     featuredCache = { products: [] };
@@ -500,7 +465,6 @@ function upsertUserProfile(username, patch) {
   users[username] = updatedProfile;
   writeUsers(users);
 
-  console.log(`Perfil actualizado para: ${username}`);
   return updatedProfile;
 }
 
@@ -515,11 +479,14 @@ function isProfileComplete(profile) {
   // Validaciones mínimas requeridas
   const hasEmail =
     profile.email && profile.email.trim() !== "" && isValidEmail(profile.email);
+
+  // Verificar avatar en cualquier formato posible
   const hasAvatar =
+    (profile.avatar && profile.avatar.startsWith("http")) ||
+    (profile.avatarUrl && profile.avatarUrl.startsWith("http")) ||
+    (profile.avatar_url && profile.avatar_url.startsWith("http")) ||
     (profile.avatarDataUrl && profile.avatarDataUrl.startsWith("data:image")) ||
-    (profile.avatarRemoteUrl &&
-      typeof profile.avatarRemoteUrl === "string" &&
-      profile.avatarRemoteUrl.startsWith("http"));
+    (profile.avatarRemoteUrl && profile.avatarRemoteUrl.startsWith("http"));
 
   return hasEmail && hasAvatar;
 }
@@ -638,63 +605,4 @@ function createOrder(
         : {}),
     },
   };
-}
-
-/**
- * Guarda un pedido en localStorage
- * En el futuro, esto se reemplazará por fetch a POST /cart
- */
-function saveOrder(order) {
-  const username = order.user_id;
-
-  // FUTURO: cuando tengamos backend, enviar con fetch
-  // const response = await fetch('/api/cart', {
-  //   method: 'POST',
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //     'Authorization': `Bearer ${getAuthToken()}`
-  //   },
-  //   body: JSON.stringify(order)
-  // });
-  // return response.json();
-
-  // POR AHORA: guardar en localStorage hasta que tengamos el backend listo
-  const ordersKey = `craftivityOrders_${username}`;
-  const orders = JSON.parse(localStorage.getItem(ordersKey)) || [];
-
-  // Genera un ID único usando timestamp
-  order.id = `ORD-${Date.now()}`;
-
-  orders.push(order);
-  localStorage.setItem(ordersKey, JSON.stringify(orders));
-
-  return { success: true, orderId: order.id };
-}
-
-/**
- * Obtiene todos los pedidos de un usuario
- * En el futuro, esto se reemplazará por fetch a GET /orders
- */
-function getOrders(username) {
-  // FUTURO: cuando tengamos backend, traer con fetch
-  // const response = await fetch('/api/orders', {
-  //   headers: { 'Authorization': `Bearer ${getAuthToken()}` }
-  // });
-  // return response.json();
-
-  // POR AHORA: leer desde localStorage
-  const ordersKey = `craftivityOrders_${username}`;
-  const orders = JSON.parse(localStorage.getItem(ordersKey)) || [];
-
-  // Ordena de más reciente a más antiguo
-  return orders.sort((a, b) => new Date(b.date) - new Date(a.date));
-}
-
-/**
- * Obtiene el token de autenticación
- * Por ahora retorna null, se usará cuando implementen JWT
- */
-function getAuthToken() {
-  const session = getSessionData();
-  return session?.token || null;
 }

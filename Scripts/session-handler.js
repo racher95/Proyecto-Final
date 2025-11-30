@@ -1,50 +1,29 @@
 /**
- * Manejador de sesiones para Craftivity
- * Este script se carga en todas las páginas EXCEPTO login
- * Maneja la verificación de sesión y muestra el prompt de login
+ * Manejo de sesiones y verificación de estado de login
  */
 
-// Esperar a que los componentes (header/footer) se carguen antes de verificar sesión
 document.addEventListener("componentsLoaded", function () {
-  // Verifico si el usuario está logueado y actualizo la UI
   checkSessionStatus();
-
-  // Aplicar guard de perfil (redirige si falta completar perfil)
   enforceProfileGuard();
 });
 
-/**
- * DESAFÍO IMPLEMENTADO: Verificación automática de sesión
- * Muestra un aviso elegante para invitar a usuarios no logueados a iniciar sesión
- * Solo aplica redirección forzada para páginas verdaderamente privadas
- */
 function checkSessionStatus() {
-  // Obtengo datos de sesión validando expiración (24 horas)
   const sessionData = checkSession();
 
   if (sessionData && sessionData.isLoggedIn) {
-    // Usuario logueado - actualizar interfaz
     updateUIForLoggedInUser(sessionData);
   } else {
-    // Usuario NO logueado - mostrar prompt elegante
     showLoginPrompt();
   }
 }
 
-/**
- * Muestra un aviso centrado para invitar al usuario a iniciar sesión.
- * Este aviso aparece en páginas públicas cuando el usuario no está logueado.
- */
 function showLoginPrompt() {
-  // Evito mostrar el prompt si ya existe uno
   if (document.getElementById("loginPrompt")) return;
 
-  // Crear overlay de fondo
   const overlay = document.createElement("div");
   overlay.id = "loginPromptOverlay";
   overlay.className = "modal-overlay";
 
-  // Crear el modal principal
   const prompt = document.createElement("div");
   prompt.id = "loginPrompt";
   prompt.className = "login-prompt";
@@ -73,10 +52,8 @@ function showLoginPrompt() {
     </button>
   `;
 
-  // Agregar el prompt al overlay
   overlay.appendChild(prompt);
 
-  // Configurar event listeners para cerrar
   const closePromptBtn = prompt.querySelector("#closePromptBtn");
   const closePromptX = prompt.querySelector("#closePromptX");
 
@@ -88,10 +65,8 @@ function showLoginPrompt() {
     closePromptX.addEventListener("click", closeLoginPrompt);
   }
 
-  // Agregar todo al body
   document.body.appendChild(overlay);
 
-  // Cerrar con ESC
   const handleEscape = (e) => {
     if (e.key === "Escape") {
       closeLoginPrompt();
@@ -100,7 +75,6 @@ function showLoginPrompt() {
   };
   document.addEventListener("keydown", handleEscape);
 
-  // Cerrar al hacer clic en el overlay (fondo)
   overlay.addEventListener("click", (e) => {
     if (e.target === overlay) {
       closeLoginPrompt();
@@ -108,9 +82,6 @@ function showLoginPrompt() {
   });
 }
 
-/**
- * Cierra el aviso de inicio de sesión
- */
 function closeLoginPrompt() {
   const overlay = document.getElementById("loginPromptOverlay");
   if (overlay) {
@@ -123,34 +94,20 @@ function closeLoginPrompt() {
   }
 }
 
-/**
- * Verifica si el usuario tiene su perfil completo (email y avatar).
- * Redirige a profile.html si el perfil está incompleto.
- */
 function enforceProfileGuard() {
-  // 1. Verificar si el usuario está logueado
   const sessionData = checkSession();
   if (!sessionData || !sessionData.isLoggedIn) {
     return;
   }
 
-  // 2. Verificar si ya estamos en profile.html (evitar bucle infinito)
   const currentPath = window.location.pathname;
   if (currentPath.includes("/profile.html")) {
     return;
   }
 
-  // 3. Obtener el perfil del usuario actual
-  const username = sessionData.usuario;
-  const userProfile = getUserProfile(username);
+  const userData = AUTH_UTILS.getUserData();
 
-  // 4. Verificar si el perfil está completo
-  if (!isProfileComplete(userProfile)) {
-    // Perfil incompleto → redirigir a profile.html
-    console.warn(
-      `🚧 Perfil incompleto para usuario "${username}". Redirigiendo a profile.html...`
-    );
-
+  if (!isProfileComplete(userData)) {
     const profilePath = currentPath.includes("/pages/")
       ? "./profile.html"
       : "./pages/profile.html";

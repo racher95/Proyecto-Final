@@ -1,7 +1,6 @@
 /**
  * Script principal de Craftivity
  * Maneja funcionalidades globales como carrito, sesiones, búsqueda y navegación
- * Autor: Grupo 7 - Proyecto Final JAP 2025
  */
 
 // M1 FIX: Esperar a que los componentes (header/footer) se carguen antes de inicializar
@@ -43,12 +42,35 @@ document.addEventListener("DOMContentLoaded", function () {
  * Actualiza el contador de productos en el botón del carrito
  * Lee el localStorage y muestra la cantidad total de items
  */
-function updateCartCounter() {
-  // Obtengo el carrito usando la función utilitaria
-  const cart = getCart();
+async function updateCartCounter() {
+  let totalItems = 0;
 
-  // Calculo el total de items sumando las cantidades de cada producto
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+  // Verificar si el usuario está logueado
+  const token = AUTH_UTILS.getToken();
+
+  if (token) {
+    // Usuario logueado: obtener del backend
+    try {
+      const response = await fetch(API_CONFIG.CART, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        totalItems = data.itemCount || 0;
+      }
+    } catch (error) {
+      console.error("Error obteniendo contador del carrito:", error);
+      // Fallback a localStorage
+      const cart = getCart();
+      totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    }
+  } else {
+    const cart = getCart();
+    totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+  }
 
   // Busco todos los botones de carrito en la página
   const cartButtons = document.querySelectorAll('a[href*="cart.html"]');
@@ -65,27 +87,48 @@ function updateCartCounter() {
  * Verifica si el usuario tiene una sesión activa
  * @returns {object|null} datos de la sesión si está activa, null si no
  */
+/**
+ * Verifica si el usuario tiene una sesión activa
+ * @returns {object|null} datos de la sesión si está activa, null si no
+ */
 function checkSession() {
-  const sessionData = localStorage.getItem("craftivitySession");
+  // Verificar si hay token JWT activo
+  if (!AUTH_UTILS.isAuthenticated()) {
+    return null;
+  }
 
-  if (sessionData) {
+  // Obtener datos del usuario desde sessionStorage
+  const userData = AUTH_UTILS.getUserData();
+
+  if (userData) {
     try {
-      const session = JSON.parse(sessionData);
-      const loginTime = new Date(session.loginTime);
+      const loginTime = new Date(userData.loginTime);
       const now = new Date();
-      const hoursDiff = (now - loginTime) / (1000 * 60 * 60); // Calculo horas transcurridas
+      const hoursDiff = (now - loginTime) / (1000 * 60 * 60);
 
-      // La sesión es válida por 24 horas
-      if (session.isLoggedIn && hoursDiff < 24) {
-        return session;
+      // Token JWT válido por 24 horas (configurado en backend)
+      if (hoursDiff < 24) {
+        return {
+          usuario: userData.username,
+          isLoggedIn: true,
+          loginTime: userData.loginTime,
+          userId: userData.userId,
+          email: userData.email,
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          avatar: userData.avatar,
+          theme: userData.theme,
+        };
       } else {
-        // La sesión expiró, la elimino
-        localStorage.removeItem("craftivitySession");
+        // Sesión expirada
+        AUTH_UTILS.removeToken();
+        AUTH_UTILS.clearUserData();
         return null;
       }
     } catch (e) {
-      // Si hay error al leer los datos, limpio la sesión corrupta
-      localStorage.removeItem("craftivitySession");
+      // Error al procesar datos
+      AUTH_UTILS.removeToken();
+      AUTH_UTILS.clearUserData();
       return null;
     }
   }
@@ -101,47 +144,44 @@ function checkSession() {
 function updateUIForLoggedInUser(session) {
   const loginButtons = document.querySelectorAll('a[href*="login.html"]');
 
-  // Obtener perfil del usuario para acceder al avatar
-  const userProfile = getUserProfile(session.usuario);
+  // Obtener datos del usuario desde sessionStorage/localStorage
+  const userData = AUTH_UTILS.getUserData();
 
   loginButtons.forEach((button) => {
-    // Limpiar contenido previo
     button.innerHTML = "";
 
-    // Crear contenedor para avatar + nombre
     const userDisplay = document.createElement("span");
     userDisplay.className = "nav-user-display";
 
-    // Crear avatar
     const avatarElement = document.createElement("div");
     avatarElement.className = "nav-avatar";
 
-    if (userProfile && userProfile.avatarDataUrl) {
-      // Si hay avatar, mostrar imagen
+    const avatarUrl =
+      userData?.avatar ||
+      userData?.avatarUrl ||
+      userData?.avatar_url ||
+      session.avatar;
+
+    if (avatarUrl) {
       const avatarImg = document.createElement("img");
-      avatarImg.src = userProfile.avatarDataUrl;
+      avatarImg.src = avatarUrl;
       avatarImg.alt = session.usuario;
       avatarImg.className = "nav-avatar-img";
       avatarElement.appendChild(avatarImg);
     } else {
-      // Si no hay avatar, mostrar iniciales con degradado
       avatarElement.classList.add("nav-avatar-placeholder");
       const initials = session.usuario.substring(0, 2).toUpperCase();
       avatarElement.setAttribute("data-initials", initials);
       avatarElement.textContent = initials;
     }
 
-    // Crear texto con nombre de usuario
     const userName = document.createElement("span");
     userName.className = "nav-user-name";
     userName.textContent = session.usuario;
 
-    // Agregar elementos al contenedor
     userDisplay.appendChild(avatarElement);
     userDisplay.appendChild(userName);
     button.appendChild(userDisplay);
-
-    // Configurar comportamiento
     button.href = "#";
     button.onclick = function (e) {
       e.preventDefault();
@@ -181,17 +221,20 @@ function showUserMenu() {
   const profileUrl = isInSubfolder ? "profile.html" : "pages/profile.html";
   const ordersUrl = isInSubfolder ? "orders.html" : "pages/orders.html";
 
-  // Obtener tema actual del usuario
+  // Obtener datos del usuario desde sessionStorage (backend)
   const sessionData = checkSession();
-  const userProfile = sessionData ? getUserProfile(sessionData.usuario) : null;
-  const currentTheme = userProfile?.theme || "light";
+  const userData = AUTH_UTILS.getUserData();
+  const currentTheme = userData?.theme || sessionData?.theme || "light";
   const themeIcon = currentTheme === "light" ? "🌙" : "☀️";
   const themeText = currentTheme === "light" ? "Modo Oscuro" : "Modo Claro";
 
   // Crear HTML para el avatar del menú
   let avatarHTML = "";
-  if (userProfile && userProfile.avatarDataUrl) {
-    avatarHTML = `<img src="${userProfile.avatarDataUrl}" alt="${sessionData.usuario}" class="user-menu-avatar-img">`;
+  const avatarUrl =
+    userData?.avatar || userData?.avatarUrl || userData?.avatar_url;
+
+  if (avatarUrl) {
+    avatarHTML = `<img src="${avatarUrl}" alt="${sessionData.usuario}" class="user-menu-avatar-img">`;
   } else {
     const initials = sessionData.usuario.substring(0, 2).toUpperCase();
     avatarHTML = `<div class="user-menu-avatar-placeholder" data-initials="${initials}">${initials}</div>`;
@@ -207,7 +250,7 @@ function showUserMenu() {
         <div class="user-menu-info">
           <div class="user-menu-username">${sessionData.usuario}</div>
           <div class="user-menu-email">${
-            userProfile?.email || "Sin email"
+            userData?.email || sessionData?.email || "Sin email"
           }</div>
         </div>
       </div>
@@ -272,7 +315,6 @@ function closeUserMenu(menu) {
 function toggleTheme() {
   const sessionData = checkSession();
   if (!sessionData || !sessionData.isLoggedIn) {
-    console.warn("No se puede cambiar tema: usuario no logueado");
     return;
   }
 
@@ -291,8 +333,6 @@ function toggleTheme() {
   const themeEmoji = newTheme === "dark" ? "🌙" : "☀️";
   const themeName = newTheme === "dark" ? "Oscuro" : "Claro";
   showNotification(`${themeEmoji} Tema ${themeName} activado`, "success");
-
-  console.log(`Tema cambiado a: ${newTheme}`);
 }
 
 /**
@@ -308,8 +348,6 @@ function applyTheme(theme) {
 
   // Cambiar favicon segun el tema
   updateFavicon(validTheme);
-
-  console.log(`Tema aplicado: ${validTheme}`);
 }
 
 /**
@@ -447,10 +485,38 @@ function updateGuestThemeIcon() {
 /**
  * Cierra la sesión del usuario y recarga la página
  */
-function logout() {
+/**
+ * Cierra la sesión del usuario
+ * Limpia token JWT y datos de usuario
+ */
+async function logout() {
+  try {
+    // Intentar notificar al backend (opcional, el token se invalida localmente)
+    const token = AUTH_UTILS.getToken();
+    if (token) {
+      await fetch(API_CONFIG.AUTH_LOGOUT, {
+        method: "POST",
+        headers: AUTH_UTILS.getAuthHeaders(),
+      }).catch(() => {
+        // Ignorar errores del backend, el logout es local
+      });
+    }
+  } catch (error) {
+    console.log("Error notificando logout al backend:", error);
+  }
+
+  // Limpiar token y datos de usuario
+  AUTH_UTILS.removeToken();
+  AUTH_UTILS.clearUserData();
+
+  // Limpiar carrito temporal
+  clearTempCart();
+
+  // Limpiar sesión antigua (compatibilidad)
   clearSessionData();
-  clearTempCart(); // Limpiar carrito temporal para próximo usuario
-  window.location.reload(); // Recargo para actualizar la interfaz
+
+  // Recargar página para actualizar interfaz
+  window.location.reload();
 }
 
 /**
@@ -661,20 +727,25 @@ function initGlobalNavigation() {
  */
 async function initializeCarousels() {
   try {
-    console.log("Cargando carruseles...");
-
-    // Cargar datos de APIs con fetch simple
+    // Cargar datos desde el backend REST
     const [flashSalesResponse, featuredResponse] = await Promise.all([
-      fetch(API_CONFIG.HOT_SALES),
-      fetch(API_CONFIG.FEATURED),
+      fetch(API_CONFIG.PRODUCTS_FLASH_SALES),
+      fetch(API_CONFIG.PRODUCTS_FEATURED),
     ]);
 
     const flashSalesData = await flashSalesResponse.json();
     const featuredData = await featuredResponse.json();
 
+    // El backend devuelve {products: [...]} para flash-sales
+    // y directamente el array para featured
+    const flashProducts = flashSalesData.products || flashSalesData;
+    const featuredProducts = Array.isArray(featuredData)
+      ? featuredData
+      : featuredData.products;
+
     // Renderizar carruseles
-    renderCarousel("flashGrid", flashSalesData.products, "flash-sale");
-    renderCarousel("featuredGrid", featuredData.products, "featured");
+    renderCarousel("flashGrid", flashProducts, "flash-sale");
+    renderCarousel("featuredGrid", featuredProducts, "featured");
 
     // Inicializar navegación
     initCarouselNavigation(
@@ -692,8 +763,6 @@ async function initializeCarousels() {
 
     // Inicializar countdowns
     initializeCountdowns();
-
-    console.log("Carruseles cargados correctamente");
   } catch (error) {
     console.error("Error al cargar carruseles:", error);
   }

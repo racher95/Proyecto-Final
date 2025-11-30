@@ -1,33 +1,35 @@
 // ===========================================================================
-// CRAFTIVITY - LOGIN
-// Estilos de la página de login
+// CRAFTIVITY - REGISTER
+// Estilos de la página de registro
 // ===========================================================================
 
 @use "../abstracts/variables" as v;
 @use "sass:map";
 
-.login-container {
+// Contenedor principal de registro
+.register-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 80vh;
+  min-height: 85vh;
   padding: map.get(v.$spaces, "xl") map.get(v.$spaces, "md");
 }
 
-.login-form {
+// Formulario de registro
+.register-form {
   background-color: var(--card-bg);
   padding: map.get(v.$spaces, "3xl");
   border-radius: map.get(v.$radius, "xl");
   box-shadow: var(--shadow-lg);
   border: 1px solid var(--card-border);
   width: 100%;
-  max-width: 420px;
+  max-width: 550px;
   text-align: center;
   transition: background-color 0.3s ease, border-color 0.3s ease;
 
   h2 {
     color: var(--brand-primary);
-    margin-bottom: map.get(v.$spaces, "xl");
+    margin-bottom: map.get(v.$spaces, "md");
     font-size: map.get(v.$font-sizes, "2xl");
     font-weight: map.get(v.$font-weights, "bold");
   }
@@ -39,6 +41,76 @@
     font-weight: map.get(v.$font-weights, "regular");
   }
 
+  // Sección de avatar upload
+  .avatar-upload-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: map.get(v.$spaces, "2xl");
+
+    .avatar-preview {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      border: 3px solid var(--brand-primary);
+      background: var(--bg-info);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin-bottom: map.get(v.$spaces, "md");
+      position: relative;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+
+      &:hover {
+        transform: scale(1.05);
+        border-color: var(--brand-primary-dark);
+      }
+
+      i {
+        font-size: 3.5rem;
+        color: var(--text-tertiary);
+      }
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    .btn-upload-avatar {
+      display: inline-flex;
+      align-items: center;
+      gap: map.get(v.$spaces, "sm");
+      padding: map.get(v.$spaces, "sm") map.get(v.$spaces, "lg");
+      background: var(--brand-primary);
+      color: var(--text-inverse);
+      border-radius: map.get(v.$radius, "md");
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+      font-size: map.get(v.$font-sizes, "sm");
+      font-weight: map.get(v.$font-weights, "semibold");
+      border: none;
+
+      &:hover {
+        background: var(--brand-primary-dark);
+        transform: translateY(-2px);
+      }
+
+      i {
+        font-size: map.get(v.$font-sizes, "md");
+      }
+    }
+
+    .help-text {
+      color: var(--text-tertiary);
+      font-size: map.get(v.$font-sizes, "xs");
+      margin-top: map.get(v.$spaces, "xs");
+    }
+  }
+
+  // Grupos de formulario
   .form-group {
     margin-bottom: map.get(v.$spaces, "lg");
     text-align: left;
@@ -82,6 +154,32 @@
         opacity: 0.7;
       }
     }
+
+    // Feedback de validación
+    .invalid-feedback {
+      color: var(--danger);
+      font-size: map.get(v.$font-sizes, "xs");
+      margin-top: map.get(v.$spaces, "xs");
+      font-weight: map.get(v.$font-weights, "medium");
+    }
+
+    .form-text {
+      color: var(--text-tertiary);
+      font-size: map.get(v.$font-sizes, "xs");
+      margin-top: map.get(v.$spaces, "xs");
+    }
+  }
+
+  // Fila con dos columnas (nombre y apellido)
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: map.get(v.$spaces, "md");
+    margin-bottom: map.get(v.$spaces, "lg");
+
+    .form-group {
+      margin-bottom: 0;
+    }
   }
 
   // Contenedor de password con toggle
@@ -114,6 +212,35 @@
     }
   }
 
+  // Indicador de fortaleza de contraseña
+  .password-strength {
+    margin-top: map.get(v.$spaces, "xs");
+    font-size: map.get(v.$font-sizes, "xs");
+    font-weight: map.get(v.$font-weights, "semibold");
+    transition: color 0.3s ease;
+
+    &.very-weak {
+      color: #dc2626;
+    }
+
+    &.weak {
+      color: #ea580c;
+    }
+
+    &.fair {
+      color: #eab308;
+    }
+
+    &.good {
+      color: #65a30d;
+    }
+
+    &.strong {
+      color: #16a34a;
+    }
+  }
+
+  // Botón principal de registro
   .btn-primary {
     width: 100%;
     padding: map.get(v.$spaces, "md") map.get(v.$spaces, "xl");
@@ -141,8 +268,13 @@
       opacity: 0.6;
       cursor: not-allowed;
     }
+
+    i {
+      margin-right: map.get(v.$spaces, "sm");
+    }
   }
 
+  // Footer del formulario
   .form-footer {
     margin-top: map.get(v.$spaces, "xl");
     text-align: center;
@@ -169,16 +301,34 @@
 
 // === Responsive Design ===
 @media (max-width: 768px) {
-  .login-container {
+  .register-container {
     padding: map.get(v.$spaces, "lg") map.get(v.$spaces, "sm");
   }
 
-  .login-form {
+  .register-form {
     padding: map.get(v.$spaces, "2xl") map.get(v.$spaces, "lg");
     max-width: 100%;
 
     h2 {
       font-size: map.get(v.$font-sizes, "xl");
+    }
+
+    .avatar-upload-container .avatar-preview {
+      width: 120px;
+      height: 120px;
+
+      i {
+        font-size: 3rem;
+      }
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+      gap: 0;
+
+      .form-group {
+        margin-bottom: map.get(v.$spaces, "lg");
+      }
     }
   }
 }

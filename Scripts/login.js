@@ -1,20 +1,21 @@
 /**
- * Sistema de autenticación para Craftivity
- * Maneja el login, validaciones y gestión de sesiones
- * Autor: Grupo 7 - Proyecto Final JAP 2025
+ * Sistema de autenticación
  */
 
-// Espera a que el DOM esté completamente cargado antes de ejecutar el código
 document.addEventListener("DOMContentLoaded", function () {
-  // Obtengo las referencias a los elementos del formulario
   const loginForm = document.getElementById("loginForm");
+
+  if (!loginForm) {
+    return;
+  }
+
   const usuarioInput = document.getElementById("usuario");
   const contraseñaInput = document.getElementById("contraseña");
   const usuarioError = document.getElementById("usuarioError");
   const contraseñaError = document.getElementById("contraseñaError");
 
   // Evento que se ejecuta cuando el usuario envía el formulario
-  loginForm.addEventListener("submit", function (e) {
+  loginForm.addEventListener("submit", async function (e) {
     e.preventDefault(); // Evito que la página se recargue
 
     // Limpio cualquier mensaje de error anterior
@@ -24,44 +25,84 @@ document.addEventListener("DOMContentLoaded", function () {
     const isValid = validateForm();
 
     if (isValid) {
-      // Como es un proyecto educativo, acepta cualquier credencial válida
       const usuario = usuarioInput.value.trim();
       const contraseña = contraseñaInput.value.trim();
+      const rememberMe =
+        document.getElementById("rememberMe")?.checked || false;
 
-      // Creo un objeto con los datos de la sesión
-      const sessionData = {
-        usuario: usuario,
-        loginTime: new Date().toISOString(), // Guardo cuándo se logeó
-        isLoggedIn: true,
-        token: null, // Para JWT futuro (backend)
-      };
+      // Deshabilitar botón durante la petición
+      const submitBtn = loginForm.querySelector('button[type="submit"]');
+      const originalBtnText = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Iniciando sesión...";
 
-      // Inicializar perfil del usuario si no existe
-      let userProfile = getUserProfile(usuario);
-      if (!userProfile) {
-        // Crear perfil inicial con valores por defecto
-        userProfile = upsertUserProfile(usuario, {
-          displayName: usuario,
-          theme: "light",
+      try {
+        // Llamar al backend para autenticación
+        const response = await fetch(API_CONFIG.AUTH_LOGIN, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: usuario,
+            password: contraseña,
+          }),
         });
-        console.log("Perfil inicial creado para:", usuario);
-      } else {
-        console.log("Perfil existente cargado para:", usuario);
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          // Guardar token JWT (sessionStorage o localStorage según "recordarme")
+          AUTH_UTILS.saveToken(data.data.token, rememberMe);
+
+          // Guardar datos del usuario en sessionStorage
+          AUTH_UTILS.saveUserData({
+            userId: data.data.userId,
+            username: data.data.username,
+            email: data.data.email,
+            firstName: data.data.firstName,
+            lastName: data.data.lastName,
+            avatar: data.data.avatar,
+            theme: data.data.theme || "light",
+            loginTime: new Date().toISOString(),
+          });
+
+          // Migrar carrito temporal al usuario autenticado
+          await migrateCartToBackend(data.data.userId);
+
+          // Mensaje de éxito
+          showSuccessMessage("¡Inicio de sesión exitoso! Redirigiendo...");
+
+          // Redirigir a la página principal
+          setTimeout(() => {
+            window.location.href = "../index.html";
+          }, 1500);
+        } else {
+          // Error de credenciales
+          showFieldError(
+            "contraseña",
+            data.message || "Usuario o contraseña incorrectos"
+          );
+          showNotification(
+            data.message || "Usuario o contraseña incorrectos",
+            "error"
+          );
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalBtnText;
+        }
+      } catch (error) {
+        console.error("Error en login:", error);
+        showFieldError(
+          "contraseña",
+          "Error de conexión. Verifica que el servidor esté activo."
+        );
+        showNotification(
+          "Error de conexión con el servidor. Verifica que esté activo en el puerto 3000.",
+          "error"
+        );
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalBtnText;
       }
-
-      // Migrar carrito temporal al usuario antes de guardar sesión
-      migrateCartToUser(usuario);
-
-      // Guardo la sesión en el navegador para que persista
-      saveSessionData(sessionData);
-
-      // Muestro un mensaje de éxito al usuario
-      showSuccessMessage("¡Inicio de sesión exitoso! Redirigiendo...");
-
-      // Redirijo a la página principal después de 1.5 segundos
-      setTimeout(() => {
-        window.location.href = "../index.html";
-      }, 1500);
     }
   });
 
@@ -185,5 +226,61 @@ document.addEventListener("DOMContentLoaded", function () {
         document.body.removeChild(successDiv);
       }
     }, 3000);
+  }
+
+  async function migrateCartToBackend(userId) {
+    try {
+      const localCart = localStorage.getItem("craftivityCart");
+
+      if (!localCart) {
+        return;
+      }
+
+      const cartItems = JSON.parse(localCart);
+
+      if (cartItems.length === 0) {
+        return;
+      }
+
+      const token = AUTH_UTILS.getToken();
+
+      for (const item of cartItems) {
+        const response = await fetch(API_CONFIG.CART_ITEMS, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            productId: item.id,
+            quantity: item.quantity,
+          }),
+        });
+
+        await response.json();
+      }
+
+      localStorage.removeItem("craftivityCart");
+    } catch (error) {
+      console.error("Error migrando carrito:", error);
+    }
+  }
+
+  // Configurar toggle de contraseña
+  const togglePasswordBtn = document.querySelector(".toggle-password");
+  if (togglePasswordBtn) {
+    togglePasswordBtn.addEventListener("click", function () {
+      const targetId = this.dataset.target;
+      const input = document.getElementById(targetId);
+      const icon = this.querySelector("i");
+
+      if (input.type === "password") {
+        input.type = "text";
+        icon.classList.replace("fa-eye", "fa-eye-slash");
+      } else {
+        input.type = "password";
+        icon.classList.replace("fa-eye-slash", "fa-eye");
+      }
+    });
   }
 });

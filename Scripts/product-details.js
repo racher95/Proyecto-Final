@@ -1,7 +1,6 @@
 /**
  * Script para la página de detalles del producto
  * Maneja la carga de información completa, galería de imágenes y comentarios
- * Autor: Grupo 7 - Proyecto Final JAP 2025
  */
 
 // Variables globales
@@ -14,9 +13,9 @@ let productComments = [];
 let imageModal = null;
 let modalImageIndex = 0;
 
-// URLs de la API para detalles y comentarios
-const PRODUCT_DETAIL_BASE_URL = API_CONFIG.PRODUCTS_DETAIL;
-const PRODUCT_COMMENTS_BASE_URL = API_CONFIG.COMMENTS_BASE;
+// URLs del backend REST
+const PRODUCT_DETAIL_BASE_URL = API_CONFIG.PRODUCT_DETAIL; // http://localhost:3000/api/products
+const PRODUCT_COMMENTS_BASE_URL = API_CONFIG.PRODUCT_COMMENTS; // http://localhost:3000/api/products
 
 /**
  * Inicialización cuando carga la página
@@ -68,32 +67,15 @@ async function loadProductDetails(productId) {
     errorMessage.style.display = "none";
     productSection.style.display = "none";
 
-    // Fetch del producto específico
-    const response = await fetch(`${PRODUCT_DETAIL_BASE_URL}${productId}.json`);
+    // Fetch del producto específico desde backend REST
+    const response = await fetch(`${PRODUCT_DETAIL_BASE_URL}/${productId}`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const productData = await response.json();
 
-    // Cargar datos de promoción
-    try {
-      const promotionData = await getProductPromotionData(productId);
-      productData.flashSale = promotionData.flashSale;
-      productData.featured = promotionData.featured;
-      productData.flashPrice = promotionData.flashPrice;
-      productData.originalPrice =
-        promotionData.originalPrice || productData.cost;
-    } catch (error) {
-      console.log(
-        `ℹ️ No se pudieron cargar datos de promoción para producto ${productId}`
-      );
-      productData.flashSale = { active: false };
-      productData.featured = false;
-      productData.flashPrice = null;
-      productData.originalPrice = productData.cost;
-    }
-
+    // El backend ya incluye flashSale y featured en la respuesta
     currentProduct = productData;
 
     // Procesar imágenes
@@ -129,9 +111,9 @@ async function displayProductDetails() {
   // Título
   document.getElementById("productTitle").textContent = product.name;
 
-  // Verificar si es flash sale y si es producto destacado
-  const flashSaleData = await checkFlashSaleStatus(product.id);
-  const featuredData = await checkFeaturedStatus(product.id);
+  // El backend ya devuelve flashSale y featured en el producto
+  const flashSaleData = product.flashSale || product.flash_sale;
+  const featuredData = product.featured ? { isFeatured: true } : null;
 
   // Mostrar badges
   displayProductBadges(flashSaleData, featuredData);
@@ -164,62 +146,9 @@ async function displayProductDetails() {
   document.getElementById("productDescription").textContent =
     product.description;
 
-  // Actualizar breadcrumb
   document.getElementById("productBreadcrumb").textContent = product.name;
 }
 
-/**
- * Verifica el estado de flash sale de un producto
- */
-async function checkFlashSaleStatus(productId) {
-  try {
-    const response = await fetch(API_CONFIG.HOT_SALES);
-    const flashSalesData = await response.json();
-
-    const flashProduct = flashSalesData.products.find(
-      (p) => p.id === productId
-    );
-    if (!flashProduct) return null;
-
-    const now = new Date();
-    const endsAt = new Date(flashProduct.flashSale.endsAt);
-    const startsAt = new Date(flashProduct.flashSale.startsAt);
-
-    return {
-      isActive: now >= startsAt && now <= endsAt,
-      flashPrice: flashProduct.flashPrice,
-      originalPrice: flashProduct.cost,
-      discount: flashProduct.discount,
-      endsAt: flashProduct.flashSale.endsAt,
-      startsAt: flashProduct.flashSale.startsAt,
-    };
-  } catch (error) {
-    console.log("No hay datos de flash sale para este producto");
-    return null;
-  }
-}
-
-/**
- * Verifica si un producto es destacado
- */
-async function checkFeaturedStatus(productId) {
-  try {
-    const response = await fetch(API_CONFIG.FEATURED);
-    const featuredData = await response.json();
-
-    const featuredProduct = featuredData.products.find(
-      (p) => p.id === productId
-    );
-    return featuredProduct ? { isFeatured: true } : null;
-  } catch (error) {
-    console.log("No hay datos de productos destacados");
-    return null;
-  }
-}
-
-/**
- * Muestra los badges del producto (destacado, oferta, etc.)
- */
 function displayProductBadges(flashSaleData, featuredData) {
   const badgesContainer = document.getElementById("productBadges");
   let badgesHTML = "";
@@ -389,67 +318,28 @@ function removeDuplicateComments(localComments, apiComments) {
  */
 async function loadProductComments(productId) {
   try {
-    // 1. Cargar comentarios de la API
-    let apiComments = [];
-    try {
-      const response = await fetch(
-        `${PRODUCT_COMMENTS_BASE_URL}${productId}.json`
-      );
-      if (response.ok) {
-        apiComments = await response.json();
-      }
-    } catch (error) {
-      console.log("No hay comentarios en API para este producto");
-    }
+    // Cargar comentarios desde el backend REST
+    const response = await fetch(
+      `${PRODUCT_COMMENTS_BASE_URL}/${productId}/comments`
+    );
 
-    // 2. Cargar comentarios de localStorage
-    const storageKey = `comments_${productId}`;
-    let localComments = [];
-    const stored = localStorage.getItem(storageKey);
-    if (stored) {
-      localComments = JSON.parse(stored);
-    }
+    if (response.ok) {
+      productComments = await response.json();
 
-    // 3. Limpiar duplicados: eliminar de localStorage los que ya están en API
-    if (apiComments.length > 0 && localComments.length > 0) {
-      const cleanedLocalComments = removeDuplicateComments(
-        localComments,
-        apiComments
+      // Ordenar por fecha (más recientes primero)
+      productComments.sort(
+        (a, b) => new Date(b.dateTime) - new Date(a.dateTime)
       );
 
-      // Si hay cambios, actualizar localStorage
-      if (cleanedLocalComments.length !== localComments.length) {
-        if (cleanedLocalComments.length > 0) {
-          localStorage.setItem(
-            storageKey,
-            JSON.stringify(cleanedLocalComments)
-          );
-        } else {
-          localStorage.removeItem(storageKey);
-        }
-        localComments = cleanedLocalComments;
-        console.log("Comentarios locales sincronizados con API");
-      }
-    }
-
-    // 4. Combinar ambos (ya sin duplicados)
-    productComments = [...apiComments, ...localComments];
-
-    // 5. Ordenar por fecha (más recientes primero)
-    productComments.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
-
-    displayComments();
-  } catch (error) {
-    console.error("Error loading comments:", error);
-    // Si hay error, intentar mostrar solo los locales
-    const storageKey = `comments_${productId}`;
-    const stored = localStorage.getItem(storageKey);
-    if (stored) {
-      productComments = JSON.parse(stored);
       displayComments();
     } else {
-      document.getElementById("commentsSection").style.display = "none";
+      productComments = [];
+      displayComments();
     }
+  } catch (error) {
+    console.error("Error loading comments:", error);
+    productComments = [];
+    document.getElementById("commentsSection").style.display = "none";
   }
 }
 
@@ -536,12 +426,12 @@ async function loadRelatedProducts() {
   // Obtener datos de flash sales para verificar ofertas
   let flashSalesData = null;
   try {
-    const response = await fetch(API_CONFIG.HOT_SALES);
+    const response = await fetch(API_CONFIG.PRODUCTS_FLASH_SALES);
     if (response.ok) {
       flashSalesData = await response.json();
     }
   } catch (error) {
-    console.log("No se pudieron cargar datos de flash sales");
+    // Ignorar errores de flash sales
   }
 
   // Determinar cantidad de productos por slide según el ancho de pantalla
@@ -895,7 +785,6 @@ function updateCountdown(endTime) {
 function initializeImageModal() {
   // Verificar que Bootstrap esté disponible
   if (typeof bootstrap === "undefined") {
-    console.log("Bootstrap aún no está disponible, esperando...");
     return false;
   }
 
@@ -927,7 +816,6 @@ function initializeImageModal() {
       modalElement.removeEventListener("hidden.bs.modal", modalHiddenHandler);
       modalElement.addEventListener("hidden.bs.modal", modalHiddenHandler);
 
-      console.log("Modal inicializado correctamente");
       return true;
     } catch (error) {
       console.error("Error inicializando modal:", error);
@@ -957,7 +845,7 @@ function modalNextHandler() {
  * Handler para cuando el modal se oculta
  */
 function modalHiddenHandler() {
-  console.log("Modal cerrado");
+  // Modal cerrado
 }
 
 /**
@@ -965,12 +853,8 @@ function modalHiddenHandler() {
  * @param {number} imageIndex - Índice de la imagen a mostrar
  */
 function openImageModal(imageIndex) {
-  console.log("Intentando abrir modal con imagen:", imageIndex);
-
   if (!imageModal) {
-    console.log("Modal no inicializado, intentando inicializar...");
     if (!initializeImageModal()) {
-      console.log("No se pudo inicializar el modal");
       return;
     }
   }
@@ -985,7 +869,6 @@ function openImageModal(imageIndex) {
 
   try {
     imageModal.show();
-    console.log("Modal abierto exitosamente");
   } catch (error) {
     console.error("Error abriendo modal:", error);
   }
@@ -1078,8 +961,6 @@ function openImageModalHandler() {
  * Usa el sistema de sesión existente (checkSession de main.js)
  */
 function initReviewForm() {
-  console.log("Inicializando formulario de reseñas...");
-
   const reviewFormSection = document.getElementById("reviewFormSection");
   const reviewForm = document.getElementById("reviewForm");
   const loginRequired = document.getElementById("loginRequired");
@@ -1092,16 +973,13 @@ function initReviewForm() {
   // Usar checkSession() del sistema existente (main.js)
   const sessionData =
     typeof checkSession === "function" ? checkSession() : null;
-  console.log("Datos de sesión:", sessionData);
 
   if (!sessionData || !sessionData.isLoggedIn) {
     // Usuario no logueado - mostrar mensaje
-    console.log("Usuario no logueado, mostrando mensaje de login");
     if (loginRequired) loginRequired.style.display = "block";
     if (reviewForm) reviewForm.style.display = "none";
   } else {
     // Usuario logueado - mostrar formulario
-    console.log("Usuario logueado:", sessionData.usuario);
     if (loginRequired) loginRequired.style.display = "none";
     if (reviewForm) reviewForm.style.display = "block";
 
@@ -1123,7 +1001,6 @@ function initReviewForm() {
 
   // Mostrar la sección
   reviewFormSection.style.display = "block";
-  console.log("Formulario de reseñas inicializado correctamente");
 }
 
 /**
@@ -1216,11 +1093,11 @@ async function handleReviewSubmit(event) {
   const reviewText = document.getElementById("reviewText").value.trim();
   const ratingError = document.getElementById("ratingError");
 
-  // Obtener datos de sesión para el nombre de usuario
-  const sessionData =
-    typeof checkSession === "function" ? checkSession() : null;
-  const username =
-    sessionData && sessionData.usuario ? sessionData.usuario : "Usuario";
+  // Validar que el usuario esté logueado
+  if (!AUTH_UTILS.isAuthenticated()) {
+    showNotification("Debes iniciar sesión para dejar una reseña", "error");
+    return;
+  }
 
   // Validar rating
   if (!ratingValue || ratingValue < 1 || ratingValue > 5) {
@@ -1238,43 +1115,38 @@ async function handleReviewSubmit(event) {
     return;
   }
 
-  // Crear objeto de comentario (username ya obtenido arriba)
-  const newComment = {
-    product: currentProduct.id,
-    score: parseInt(ratingValue),
-    description: reviewText,
-    user: username,
-    dateTime: new Date().toISOString().replace("T", " ").substring(0, 19),
-  };
-  const { attachment: avatarAttachment, remoteUrl: cachedAvatarUrl } =
-    prepareAvatarBundle(username);
-
-  if (cachedAvatarUrl) {
-    newComment.avatarUrl = cachedAvatarUrl;
-  }
-
   try {
-    // 1. Guardar en localStorage (inmediato)
-    saveCommentToLocalStorage(newComment);
+    // POST directo al backend
+    const response = await fetch(
+      `${PRODUCT_COMMENTS_BASE_URL}/${currentProduct.id}/comments`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${AUTH_UTILS.getToken()}`,
+        },
+        body: JSON.stringify({
+          rating: parseInt(ratingValue),
+          comment: reviewText,
+        }),
+      }
+    );
 
-    // 2. Agregar a la lista visual inmediatamente
-    addCommentToDisplay(newComment);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Error al enviar comentario");
+    }
 
-    // 3. Sincronizar con la API en background
-    syncCommentToAPI(newComment, avatarAttachment).catch((err) => {
-      console.warn(
-        "No se pudo sincronizar con la API, guardado solo localmente:",
-        err
-      );
-    });
+    // Recargar comentarios del backend
+    await loadProductComments(currentProduct.id);
 
-    // 4. Resetear formulario
+    // Resetear formulario
     resetReviewForm();
 
-    // 5. Mostrar notificación de éxito
+    // Mostrar notificación de éxito
     showNotification("¡Reseña publicada correctamente!", "success");
 
-    // 6. Scroll a la sección de comentarios
+    // Scroll a la sección de comentarios
     document.getElementById("commentsSection").scrollIntoView({
       behavior: "smooth",
       block: "start",
@@ -1282,7 +1154,7 @@ async function handleReviewSubmit(event) {
   } catch (error) {
     console.error("Error al guardar reseña:", error);
     showNotification(
-      "Error al publicar la reseña. Intenta nuevamente.",
+      error.message || "Error al publicar la reseña. Intenta nuevamente.",
       "error"
     );
   }
@@ -1293,8 +1165,6 @@ async function handleReviewSubmit(event) {
  */
 async function syncCommentToAPI(comment, avatarAttachment) {
   const workerUrl = API_CONFIG.COMMENTS_WORKER + "/sync-comment";
-
-  console.log("Sincronizando comentario con la API...");
 
   try {
     const response = await fetch(workerUrl, {
@@ -1315,7 +1185,6 @@ async function syncCommentToAPI(comment, avatarAttachment) {
     }
 
     const result = await response.json();
-    console.log("Comentario sincronizado con la API:", result);
 
     if (result.avatarUrl) {
       comment.avatarUrl = result.avatarUrl;
@@ -1336,34 +1205,15 @@ async function syncCommentToAPI(comment, avatarAttachment) {
  * @returns {string}
  */
 function buildCommentAvatarHTML(comment) {
-  const userProfile =
-    typeof getUserProfile === "function" ? getUserProfile(comment.user) : null;
-
-  const rawSource =
-    (comment && comment.avatarUrl) ||
-    (userProfile && userProfile.avatarRemoteUrl) ||
-    (userProfile && userProfile.avatarDataUrl);
-
-  let avatarSource = rawSource;
-  const cacheHash =
-    (comment && comment.avatarHash) ||
-    (userProfile && userProfile.avatarHash) ||
-    null;
-
-  if (
-    avatarSource &&
-    cacheHash &&
-    typeof avatarSource === "string" &&
-    avatarSource.startsWith("http")
-  ) {
-    avatarSource = appendCacheBustingParam(avatarSource, cacheHash);
-  }
+  // Backend devuelve avatar_url (snake_case)
+  const avatarSource = comment.avatar_url || comment.avatarUrl;
 
   if (avatarSource) {
     const safeUser = (comment.user || "Usuario").replace(/"/g, "&quot;");
     return `<img src="${avatarSource}" alt="Avatar de ${safeUser}" class="comment-avatar-img" loading="lazy" decoding="async">`;
   }
 
+  // Fallback: iniciales del usuario
   const initials = (comment.user || "??").substring(0, 2).toUpperCase();
   return `<div class="comment-avatar-placeholder" data-initials="${initials}">${initials}</div>`;
 }
@@ -1463,7 +1313,7 @@ function persistRemoteAvatar(username, avatarUrl, avatarHash) {
       avatarHash: avatarHash || null,
     });
   } catch (error) {
-    console.warn("No se pudo persistir la URL remota del avatar:", error);
+    // Ignorar error de persistencia de avatar
   }
 }
 

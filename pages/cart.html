@@ -71,11 +71,22 @@
           <!-- Dirección de envío -->
           <div class="checkout-section">
             <h4>Dirección de Envío</h4>
-            <div class="address-form">
+
+            <!-- Direcciones guardadas (solo si está logueado) -->
+            <div id="savedAddressesSection" style="display: none">
+              <label class="form-label">Selecciona una dirección:</label>
+              <select id="addressSelector" class="form-control mb-3">
+                <option value="">Selecciona una dirección...</option>
+                <option value="new">+ Nueva dirección</option>
+              </select>
+            </div>
+
+            <!-- Formulario de dirección -->
+            <div class="address-form" id="addressFormSection">
               <div class="form-row">
                 <input
                   type="text"
-                  id="department"
+                  id="state"
                   placeholder="Departamento"
                   required
                 />
@@ -85,9 +96,19 @@
                 <input type="text" id="street" placeholder="Calle" required />
                 <input type="text" id="number" placeholder="Número" required />
               </div>
-              <input type="text" id="corner" placeholder="Esquina" required />
+              <input type="text" id="corner" placeholder="Esquina" />
+              <input
+                type="text"
+                id="department"
+                placeholder="Apartamento/Depto"
+              />
+              <input type="text" id="postalCode" placeholder="Código Postal" />
 
-              <label class="checkbox-option">
+              <label
+                class="checkbox-option"
+                id="saveAddressOption"
+                style="display: none"
+              >
                 <input type="checkbox" id="saveAddress" />
                 <span>Guardar dirección para futuras compras</span>
               </label>

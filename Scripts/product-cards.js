@@ -1,7 +1,6 @@
 /**
  * Sistema Universal de Tarjetas de Producto
  * Funciones compartidas para crear tarjetas consistentes en toda la aplicación
- * Autor: Grupo 7 - Proyecto Final JAP 2025
  */
 
 /**

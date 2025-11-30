@@ -1392,7 +1392,17 @@ main {
   font-weight: 600;
   z-index: 9999;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  animation: slideIn 0.3s ease;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.notification.show, .show.notification-info, .show.notification-warning, .show.notification-error, .show.notification-success {
+  opacity: 1;
+  transform: translateX(0);
+}
+.notification.hide, .hide.notification-info, .hide.notification-warning, .hide.notification-error, .hide.notification-success {
+  opacity: 0;
+  transform: translateX(100%);
 }
 .notification.success, .success.notification-info, .success.notification-warning, .success.notification-error, .success.notification-success {
   background-color: #27ae60;
@@ -1672,7 +1682,7 @@ main {
 }
 
 .hero {
-  background: url("../img/heroIndex.jpg");
+  background: url("https://res.cloudinary.com/dcdfqlivp/image/upload/v1764126557/ui/heroIndex.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -3005,23 +3015,424 @@ main {
   justify-content: center;
   align-items: center;
   min-height: 80vh;
+  padding: 2rem 1rem;
 }
 
 .login-form {
-  background-color: #ffffff;
+  background-color: var(--card-bg);
   padding: 3rem;
   border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--card-border);
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   text-align: center;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 .login-form h2 {
-  color: #2c3e50;
+  color: var(--brand-primary);
   margin-bottom: 2rem;
-  font-size: 2rem;
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+.login-form .form-subtitle {
+  color: var(--text-secondary);
+  margin-bottom: 2.5rem;
+  font-size: 0.8rem;
+}
+.login-form .form-group {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+.login-form .form-group label {
+  display: block;
+  color: var(--text-primary);
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  font-size: 0.8rem;
+}
+.login-form .form-group label i {
+  color: var(--brand-primary);
+  margin-right: 0.25rem;
+}
+.login-form .form-group input[type=text],
+.login-form .form-group input[type=email],
+.login-form .form-group input[type=password] {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  font-size: 1.2rem;
+  background: var(--input-bg);
+  color: var(--text-primary);
+  transition: border-color 0.15s ease-in-out, background-color 0.3s ease, box-shadow 0.15s ease;
+  font-weight: 500;
+}
+.login-form .form-group input[type=text]:focus,
+.login-form .form-group input[type=email]:focus,
+.login-form .form-group input[type=password]:focus {
+  outline: none;
+  border-color: var(--input-border-focus);
+  background-color: var(--input-bg);
+  box-shadow: 0 0 0 0.2rem rgba(230, 126, 34, 0.25);
+}
+.login-form .form-group input[type=text]::placeholder,
+.login-form .form-group input[type=email]::placeholder,
+.login-form .form-group input[type=password]::placeholder {
+  color: var(--input-placeholder);
+  opacity: 0.7;
+}
+.login-form .password-container {
+  position: relative;
+}
+.login-form .password-container input {
+  padding-right: 3rem;
+}
+.login-form .password-container .toggle-password {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 0.25rem;
+  transition: color 0.2s ease;
+}
+.login-form .password-container .toggle-password:hover {
+  color: var(--brand-primary);
+}
+.login-form .password-container .toggle-password i {
+  font-size: 1.2rem;
+}
+.login-form .btn-primary {
+  width: 100%;
+  padding: 1rem 2rem;
+  background: var(--brand-primary);
+  color: var(--text-inverse);
+  border: none;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  margin-top: 1.5rem;
+}
+.login-form .btn-primary:hover:not(:disabled) {
+  background: var(--brand-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+.login-form .btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+.login-form .btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.login-form .form-footer {
+  margin-top: 2rem;
+  text-align: center;
+}
+.login-form .form-footer p {
+  color: var(--text-secondary);
+  margin: 0;
+  font-size: 0.8rem;
+}
+.login-form .form-footer .link-primary {
+  color: var(--brand-primary);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.login-form .form-footer .link-primary:hover {
+  color: var(--brand-primary-dark);
+  text-decoration: underline;
 }
 
+@media (max-width: 768px) {
+  .login-container {
+    padding: 1.5rem 0.5rem;
+  }
+  .login-form {
+    padding: 2.5rem 1.5rem;
+    max-width: 100%;
+  }
+  .login-form h2 {
+    font-size: 2rem;
+  }
+}
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 85vh;
+  padding: 2rem 1rem;
+}
+
+.register-form {
+  background-color: var(--card-bg);
+  padding: 3rem;
+  border-radius: 15px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--card-border);
+  width: 100%;
+  max-width: 550px;
+  text-align: center;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+.register-form h2 {
+  color: var(--brand-primary);
+  margin-bottom: 1rem;
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+.register-form .form-subtitle {
+  color: var(--text-secondary);
+  margin-bottom: 2.5rem;
+  font-size: 0.8rem;
+}
+.register-form .avatar-upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2.5rem;
+}
+.register-form .avatar-upload-container .avatar-preview {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 3px solid var(--brand-primary);
+  background: var(--bg-info);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  position: relative;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+.register-form .avatar-upload-container .avatar-preview:hover {
+  transform: scale(1.05);
+  border-color: var(--brand-primary-dark);
+}
+.register-form .avatar-upload-container .avatar-preview i {
+  font-size: 3.5rem;
+  color: var(--text-tertiary);
+}
+.register-form .avatar-upload-container .avatar-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.register-form .avatar-upload-container .btn-upload-avatar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.5rem;
+  background: var(--brand-primary);
+  color: var(--text-inverse);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: none;
+}
+.register-form .avatar-upload-container .btn-upload-avatar:hover {
+  background: var(--brand-primary-dark);
+  transform: translateY(-2px);
+}
+.register-form .avatar-upload-container .btn-upload-avatar i {
+  font-size: 1.2rem;
+}
+.register-form .avatar-upload-container .help-text {
+  color: var(--text-tertiary);
+  font-size: 0.7rem;
+  margin-top: 0.25rem;
+}
+.register-form .form-group {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+.register-form .form-group label {
+  display: block;
+  color: var(--text-primary);
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  font-size: 0.8rem;
+}
+.register-form .form-group label i {
+  color: var(--brand-primary);
+  margin-right: 0.25rem;
+}
+.register-form .form-group input[type=text],
+.register-form .form-group input[type=email],
+.register-form .form-group input[type=password] {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  font-size: 1.2rem;
+  background: var(--input-bg);
+  color: var(--text-primary);
+  transition: border-color 0.15s ease-in-out, background-color 0.3s ease, box-shadow 0.15s ease;
+  font-weight: 500;
+}
+.register-form .form-group input[type=text]:focus,
+.register-form .form-group input[type=email]:focus,
+.register-form .form-group input[type=password]:focus {
+  outline: none;
+  border-color: var(--input-border-focus);
+  background-color: var(--input-bg);
+  box-shadow: 0 0 0 0.2rem rgba(230, 126, 34, 0.25);
+}
+.register-form .form-group input[type=text]::placeholder,
+.register-form .form-group input[type=email]::placeholder,
+.register-form .form-group input[type=password]::placeholder {
+  color: var(--input-placeholder);
+  opacity: 0.7;
+}
+.register-form .form-group .invalid-feedback {
+  color: var(--danger);
+  font-size: 0.7rem;
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+.register-form .form-group .form-text {
+  color: var(--text-tertiary);
+  font-size: 0.7rem;
+  margin-top: 0.25rem;
+}
+.register-form .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.register-form .form-row .form-group {
+  margin-bottom: 0;
+}
+.register-form .password-container {
+  position: relative;
+}
+.register-form .password-container input {
+  padding-right: 3rem;
+}
+.register-form .password-container .toggle-password {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 0.25rem;
+  transition: color 0.2s ease;
+}
+.register-form .password-container .toggle-password:hover {
+  color: var(--brand-primary);
+}
+.register-form .password-container .toggle-password i {
+  font-size: 1.2rem;
+}
+.register-form .password-strength {
+  margin-top: 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+.register-form .password-strength.very-weak {
+  color: #dc2626;
+}
+.register-form .password-strength.weak {
+  color: #ea580c;
+}
+.register-form .password-strength.fair {
+  color: #eab308;
+}
+.register-form .password-strength.good {
+  color: #65a30d;
+}
+.register-form .password-strength.strong {
+  color: #16a34a;
+}
+.register-form .btn-primary {
+  width: 100%;
+  padding: 1rem 2rem;
+  background: var(--brand-primary);
+  color: var(--text-inverse);
+  border: none;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  margin-top: 1.5rem;
+}
+.register-form .btn-primary:hover:not(:disabled) {
+  background: var(--brand-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+.register-form .btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+.register-form .btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.register-form .btn-primary i {
+  margin-right: 0.5rem;
+}
+.register-form .form-footer {
+  margin-top: 2rem;
+  text-align: center;
+}
+.register-form .form-footer p {
+  color: var(--text-secondary);
+  margin: 0;
+  font-size: 0.8rem;
+}
+.register-form .form-footer .link-primary {
+  color: var(--brand-primary);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.register-form .form-footer .link-primary:hover {
+  color: var(--brand-primary-dark);
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .register-container {
+    padding: 1.5rem 0.5rem;
+  }
+  .register-form {
+    padding: 2.5rem 1.5rem;
+    max-width: 100%;
+  }
+  .register-form h2 {
+    font-size: 2rem;
+  }
+  .register-form .avatar-upload-container .avatar-preview {
+    width: 120px;
+    height: 120px;
+  }
+  .register-form .avatar-upload-container .avatar-preview i {
+    font-size: 3rem;
+  }
+  .register-form .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .register-form .form-row .form-group {
+    margin-bottom: 1.5rem;
+  }
+}
 .profile-avatar-section p,
 .profile-avatar-section small,
 .profile-avatar-section .text-muted {
@@ -3246,6 +3657,401 @@ main {
   border: 2px solid rgba(39, 174, 96, 0.3) !important;
 }
 
+.change-password-section {
+  margin-top: 3rem;
+}
+.change-password-section h3 {
+  color: var(--text-primary);
+  font-weight: 700;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.change-password-section h3 i {
+  color: var(--brand-primary);
+  font-size: 1.5rem;
+}
+.change-password-section #changePasswordForm .form-label {
+  color: var(--text-primary) !important;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+.change-password-section #changePasswordForm .form-label .text-danger {
+  color: #e74c3c !important;
+}
+.change-password-section #changePasswordForm .form-control {
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--input-border);
+  transition: border-color 0.15s ease-in-out, background-color 0.3s ease;
+}
+.change-password-section #changePasswordForm .form-control:focus {
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  border-color: var(--input-border-focus);
+  box-shadow: 0 0 0 0.2rem rgba(98, 0, 238, 0.25);
+}
+.change-password-section #changePasswordForm .form-control::placeholder {
+  color: var(--input-placeholder);
+  opacity: 0.7;
+}
+.change-password-section #changePasswordForm .input-group .btn-outline-secondary {
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--text-primary);
+}
+.change-password-section #changePasswordForm .input-group .btn-outline-secondary:hover {
+  background-color: var(--bg-info);
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+}
+.change-password-section #changePasswordForm .input-group .btn-outline-secondary i {
+  color: var(--text-primary);
+}
+.change-password-section #changePasswordForm .form-text {
+  color: var(--text-secondary) !important;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+.change-password-section #changePasswordForm small.form-text {
+  color: var(--text-secondary) !important;
+  opacity: 1 !important;
+}
+.change-password-section #changePasswordForm .invalid-feedback {
+  color: #e74c3c;
+  font-weight: 500;
+}
+.change-password-section #changePasswordForm .btn-primary {
+  margin-top: 1rem;
+}
+
+.delete-account-section {
+  margin-top: 3rem;
+}
+.delete-account-section h3 {
+  color: var(--danger);
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.delete-account-section h3 i {
+  font-size: 1.5rem;
+}
+.delete-account-section p {
+  color: var(--text-primary) !important;
+  opacity: 0.9;
+}
+.delete-account-section .text-muted {
+  color: var(--text-secondary) !important;
+  opacity: 1 !important;
+}
+.delete-account-section .btn-outline-danger {
+  background-color: transparent;
+  border-color: var(--danger);
+  color: var(--danger);
+  transition: all 0.15s ease-in-out;
+}
+.delete-account-section .btn-outline-danger:hover:not(:disabled) {
+  background-color: var(--danger);
+  border-color: var(--danger);
+  color: var(--text-inverse);
+}
+
+.shipping-addresses-section {
+  margin-top: 3rem;
+}
+.shipping-addresses-section h3 {
+  color: var(--text-primary);
+  font-weight: 700;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.shipping-addresses-section h3 i {
+  color: var(--brand-primary);
+  font-size: 1.5rem;
+}
+.shipping-addresses-section .text-center .text-muted {
+  color: var(--text-secondary) !important;
+}
+.shipping-addresses-section #addressesList .text-muted {
+  color: var(--text-secondary) !important;
+}
+.shipping-addresses-section #addressesList .card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  color: var(--text-primary);
+}
+.shipping-addresses-section #addressesList .card.border-primary {
+  border-color: var(--brand-primary) !important;
+  border-width: 2px;
+}
+.shipping-addresses-section #addressesList .card .card-body {
+  background-color: var(--card-bg);
+}
+.shipping-addresses-section #addressesList .card .card-body h6 {
+  color: var(--text-secondary) !important;
+  font-size: 0.875rem !important;
+}
+.shipping-addresses-section #addressesList .card .card-body p {
+  color: var(--text-secondary) !important;
+}
+.shipping-addresses-section #addressesList .card .card-body p.text-muted {
+  color: var(--text-secondary) !important;
+  opacity: 1 !important;
+}
+.shipping-addresses-section #addressesList .card .card-body p.small {
+  font-size: 0.875rem !important;
+}
+.shipping-addresses-section #addressesList .card .card-body .badge.bg-primary {
+  background-color: var(--brand-primary) !important;
+  color: var(--text-inverse) !important;
+}
+.shipping-addresses-section #addressesList .card .card-body .btn-group .btn {
+  border-color: var(--card-border);
+  color: var(--text-primary);
+}
+.shipping-addresses-section #addressesList .card .card-body .btn-group .btn.btn-outline-primary {
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+}
+.shipping-addresses-section #addressesList .card .card-body .btn-group .btn.btn-outline-primary:hover {
+  background-color: var(--brand-primary);
+  color: var(--text-inverse);
+}
+.shipping-addresses-section #addressesList .card .card-body .btn-group .btn.btn-outline-secondary {
+  border-color: var(--card-border);
+  color: var(--text-primary);
+}
+.shipping-addresses-section #addressesList .card .card-body .btn-group .btn.btn-outline-secondary:hover {
+  background-color: var(--bg-info);
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+}
+.shipping-addresses-section #addressesList .card .card-body .btn-group .btn.btn-outline-danger {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+.shipping-addresses-section #addressesList .card .card-body .btn-group .btn.btn-outline-danger:hover {
+  background-color: var(--danger);
+  color: var(--text-inverse);
+}
+.shipping-addresses-section #addressesList .card .card-body .btn-group .btn i {
+  color: inherit;
+}
+.shipping-addresses-section .btn-outline-primary {
+  background-color: transparent;
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+  transition: all 0.15s ease-in-out;
+}
+.shipping-addresses-section .btn-outline-primary:hover:not(:disabled) {
+  background-color: var(--brand-primary);
+  border-color: var(--brand-primary);
+  color: var(--text-inverse);
+}
+.shipping-addresses-section .addresses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+.shipping-addresses-section .address-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+}
+.shipping-addresses-section .address-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+.shipping-addresses-section .address-card.default-address {
+  border-color: var(--brand-primary);
+  border-width: 2px;
+}
+.shipping-addresses-section .address-card.default-address::before {
+  content: "✓ Predeterminada";
+  position: absolute;
+  top: -12px;
+  right: 1rem;
+  background: var(--brand-primary);
+  color: var(--text-inverse);
+  padding: 0.25rem 1rem;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+.shipping-addresses-section .address-card .address-info {
+  margin-bottom: 1rem;
+}
+.shipping-addresses-section .address-card .address-info p {
+  color: var(--text-primary);
+  margin: 0.25rem 0;
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+.shipping-addresses-section .address-card .address-info p.text-muted {
+  color: var(--text-secondary) !important;
+  font-size: 0.7rem;
+}
+.shipping-addresses-section .address-card .address-info p strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+.shipping-addresses-section .address-card .address-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--card-border);
+}
+.shipping-addresses-section .address-card .address-actions button {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--card-border);
+  background: transparent;
+  color: var(--text-primary);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.shipping-addresses-section .address-card .address-actions button i {
+  margin-right: 0.25rem;
+}
+.shipping-addresses-section .address-card .address-actions button:hover {
+  background: var(--bg-info);
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+}
+.shipping-addresses-section .address-card .address-actions button.btn-danger:hover {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: var(--text-inverse);
+}
+.shipping-addresses-section .address-card .address-actions button.btn-success:hover {
+  background: var(--success);
+  border-color: var(--success);
+  color: var(--text-inverse);
+}
+.shipping-addresses-section .btn-add-address {
+  width: 100%;
+  padding: 1.5rem;
+  background: var(--card-bg);
+  border: 2px dashed var(--card-border);
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.shipping-addresses-section .btn-add-address i {
+  font-size: 1.5rem;
+  color: var(--brand-primary);
+}
+.shipping-addresses-section .btn-add-address:hover {
+  background: var(--bg-info);
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+  transform: translateY(-2px);
+}
+.shipping-addresses-section .empty-addresses {
+  text-align: center;
+  padding: 3rem;
+  background: var(--bg-info);
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+}
+.shipping-addresses-section .empty-addresses i {
+  font-size: 4rem;
+  color: var(--text-tertiary);
+  margin-bottom: 1.5rem;
+}
+.shipping-addresses-section .empty-addresses p {
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.modal .modal-content {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+}
+.modal .modal-content .modal-header {
+  border-bottom-color: var(--card-border);
+}
+.modal .modal-content .modal-header .modal-title {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+.modal .modal-content .modal-header .modal-title i {
+  color: var(--brand-primary);
+}
+.modal .modal-content .modal-header .btn-close {
+  filter: var(--bs-btn-close-filter, invert(1));
+}
+.modal .modal-content .modal-body .form-label {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+.modal .modal-content .modal-body .form-label i {
+  color: var(--brand-primary);
+}
+.modal .modal-content .modal-body .form-control,
+.modal .modal-content .modal-body .form-select {
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--input-border);
+}
+.modal .modal-content .modal-body .form-control:focus,
+.modal .modal-content .modal-body .form-select:focus {
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  border-color: var(--input-border-focus);
+  box-shadow: 0 0 0 0.2rem rgba(230, 126, 34, 0.25);
+}
+.modal .modal-content .modal-body .form-control::placeholder,
+.modal .modal-content .modal-body .form-select::placeholder {
+  color: var(--input-placeholder);
+}
+.modal .modal-content .modal-body .form-check-input {
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+}
+.modal .modal-content .modal-body .form-check-input:checked {
+  background-color: var(--brand-primary);
+  border-color: var(--brand-primary);
+}
+.modal .modal-content .modal-body .form-check-input:focus {
+  border-color: var(--input-border-focus);
+  box-shadow: 0 0 0 0.2rem rgba(230, 126, 34, 0.25);
+}
+.modal .modal-content .modal-body .form-check-label {
+  color: var(--text-primary);
+}
+.modal .modal-content .modal-body .text-muted {
+  color: var(--text-tertiary) !important;
+}
+.modal .modal-content .modal-footer {
+  border-top-color: var(--card-border);
+}
+.modal .modal-content .modal-footer .btn {
+  font-weight: 600;
+}
+
 @media (max-width: 768px) {
   .avatar-preview-wrapper {
     width: 120px !important;
@@ -3253,6 +4059,9 @@ main {
   }
   .avatar-preview.avatar-placeholder {
     font-size: 2.5rem;
+  }
+  .shipping-addresses-section .addresses-grid {
+    grid-template-columns: 1fr;
   }
 }
 .orders-page {
@@ -3431,6 +4240,20 @@ main {
   height: 60px;
   object-fit: cover;
   border-radius: 5px;
+}
+.order-item .no-image {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-info);
+  border-radius: 5px;
+  border: 2px dashed var(--border-primary);
+}
+.order-item .no-image i {
+  font-size: 2rem;
+  color: var(--text-tertiary);
 }
 .order-item .item-info {
   flex: 1;

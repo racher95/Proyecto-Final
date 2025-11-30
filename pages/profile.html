@@ -74,20 +74,18 @@
                     <input
                       type="file"
                       id="avatarFile"
-                      accept="image/jpeg,image/png,image/jpg"
+                      accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
                       hidden
                     />
                     <button
                       type="button"
                       id="changeAvatarBtn"
-                      class="btn btn-outline-secondary btn-sm"
-                      disabled
+                      class="btn btn-outline-primary btn-sm"
                     >
                       <i class="fas fa-camera"></i> Cambiar Foto
                     </button>
                     <p class="text-muted small mt-2 mb-0">
-                      JPG, PNG o JPEG. Máximo 2MB.
-                      <span class="text-danger">Requerido*</span>
+                      JPG, PNG, GIF o WebP. Máximo 5MB.
                     </p>
                   </div>
 
@@ -110,23 +108,47 @@
                       >
                     </div>
 
-                    <!-- Display Name -->
-                    <div class="mb-3">
-                      <label for="pfDisplayName" class="form-label fw-semibold">
-                        <i class="fas fa-id-card text-primary"></i> Nombre para
-                        mostrar
-                      </label>
-                      <input
-                        type="text"
-                        id="pfDisplayName"
-                        class="form-control"
-                        placeholder="Ej: Kevin García"
-                        maxlength="50"
-                        disabled
-                      />
-                      <small class="form-text text-muted"
-                        >Cómo quieres que te llamen (opcional)</small
-                      >
+                    <!-- Nombres -->
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <label for="pfFirstName" class="form-label fw-semibold">
+                          <i class="fas fa-user text-primary"></i> Nombre
+                          <span class="text-danger">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          id="pfFirstName"
+                          class="form-control"
+                          placeholder="Ej: Kevin"
+                          maxlength="50"
+                          required
+                          disabled
+                        />
+                        <div
+                          id="firstNameError"
+                          class="invalid-feedback d-none"
+                        ></div>
+                      </div>
+
+                      <div class="col-md-6 mb-3">
+                        <label for="pfLastName" class="form-label fw-semibold">
+                          <i class="fas fa-user text-primary"></i> Apellido
+                          <span class="text-danger">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          id="pfLastName"
+                          class="form-control"
+                          placeholder="Ej: García"
+                          maxlength="50"
+                          required
+                          disabled
+                        />
+                        <div
+                          id="lastNameError"
+                          class="invalid-feedback d-none"
+                        ></div>
+                      </div>
                     </div>
 
                     <!-- Email (required) -->
@@ -188,6 +210,149 @@
                     >
                   </div>
                 </div>
+
+                <!-- Sección de Direcciones de Envío -->
+                <hr class="my-4" />
+                <div class="shipping-addresses-section">
+                  <h3 class="h5 fw-bold text-primary mb-3">
+                    <i class="fas fa-map-marker-alt"></i> Direcciones de Envío
+                  </h3>
+
+                  <div id="addressesList" class="mb-3">
+                    <!-- Las direcciones se cargarán dinámicamente aquí -->
+                    <div class="text-center text-muted py-3">
+                      <i class="fas fa-spinner fa-spin"></i> Cargando
+                      direcciones...
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    id="addAddressBtn"
+                    class="btn btn-outline-primary"
+                  >
+                    <i class="fas fa-plus"></i> Nueva Dirección
+                  </button>
+                </div>
+
+                <!-- Sección de Cambiar Contraseña -->
+                <hr class="my-4" />
+                <div class="change-password-section">
+                  <h3 class="h5 fw-bold text-primary mb-3">
+                    <i class="fas fa-key"></i> Cambiar Contraseña
+                  </h3>
+
+                  <form id="changePasswordForm">
+                    <!-- Campo username oculto para gestores de contraseñas -->
+                    <input
+                      type="text"
+                      name="username"
+                      autocomplete="username"
+                      style="display: none"
+                    />
+                    <div class="mb-3">
+                      <label for="currentPassword" class="form-label">
+                        Contraseña Actual <span class="text-danger">*</span>
+                      </label>
+                      <div class="input-group">
+                        <input
+                          type="password"
+                          id="currentPassword"
+                          class="form-control"
+                          autocomplete="current-password"
+                          required
+                        />
+                        <button
+                          type="button"
+                          class="btn btn-outline-secondary toggle-password"
+                          data-target="currentPassword"
+                        >
+                          <i class="fas fa-eye"></i>
+                        </button>
+                      </div>
+                      <div
+                        id="currentPasswordError"
+                        class="invalid-feedback"
+                      ></div>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="newPassword" class="form-label">
+                        Nueva Contraseña <span class="text-danger">*</span>
+                      </label>
+                      <div class="input-group">
+                        <input
+                          type="password"
+                          id="newPassword"
+                          class="form-control"
+                          autocomplete="new-password"
+                          required
+                        />
+                        <button
+                          type="button"
+                          class="btn btn-outline-secondary toggle-password"
+                          data-target="newPassword"
+                        >
+                          <i class="fas fa-eye"></i>
+                        </button>
+                      </div>
+                      <small class="form-text text-muted"
+                        >Mínimo 6 caracteres</small
+                      >
+                      <div id="newPasswordError" class="invalid-feedback"></div>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="confirmNewPassword" class="form-label">
+                        Confirmar Nueva Contraseña
+                        <span class="text-danger">*</span>
+                      </label>
+                      <div class="input-group">
+                        <input
+                          type="password"
+                          id="confirmNewPassword"
+                          class="form-control"
+                          autocomplete="new-password"
+                          required
+                        />
+                        <button
+                          type="button"
+                          class="btn btn-outline-secondary toggle-password"
+                          data-target="confirmNewPassword"
+                        >
+                          <i class="fas fa-eye"></i>
+                        </button>
+                      </div>
+                      <div
+                        id="confirmNewPasswordError"
+                        class="invalid-feedback"
+                      ></div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                      <i class="fas fa-save"></i> Cambiar Contraseña
+                    </button>
+                  </form>
+                </div>
+
+                <!-- Sección de Eliminar Cuenta -->
+                <hr class="my-4" />
+                <div class="delete-account-section">
+                  <h3 class="h5 fw-bold text-danger mb-3">
+                    <i class="fas fa-exclamation-triangle"></i> Zona de Peligro
+                  </h3>
+                  <p class="text-muted mb-3">
+                    Una vez que elimines tu cuenta, no hay vuelta atrás. Por
+                    favor, está seguro.
+                  </p>
+                  <button
+                    type="button"
+                    id="deleteAccountBtn"
+                    class="btn btn-outline-danger"
+                  >
+                    <i class="fas fa-trash-alt"></i> Eliminar Mi Cuenta
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -226,6 +391,246 @@
               alt="Avatar ampliado"
               class="img-fluid w-100"
             />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal para Crear/Editar Dirección -->
+    <div
+      class="modal fade"
+      id="addressModal"
+      tabindex="-1"
+      aria-labelledby="addressModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addressModalLabel">
+              <i class="fas fa-map-marker-alt"></i>
+              <span id="addressModalTitle">Nueva Dirección</span>
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="addressForm">
+              <input type="hidden" id="addressId" value="" />
+
+              <div class="row">
+                <div class="col-md-8 mb-3">
+                  <label for="street" class="form-label">
+                    Calle <span class="text-danger">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="street"
+                    class="form-control"
+                    placeholder="Ej: 18 de Julio"
+                    required
+                  />
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="number" class="form-label">
+                    Número <span class="text-danger">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="number"
+                    class="form-control"
+                    placeholder="Ej: 1234"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="corner" class="form-label">Esquina</label>
+                  <input
+                    type="text"
+                    id="corner"
+                    class="form-control"
+                    placeholder="Ej: Yaguarón"
+                  />
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="department" class="form-label"
+                    >Apartamento/Depto</label
+                  >
+                  <input
+                    type="text"
+                    id="department"
+                    class="form-control"
+                    placeholder="Ej: Apto 301"
+                  />
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="city" class="form-label">
+                    Ciudad <span class="text-danger">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="city"
+                    class="form-control"
+                    placeholder="Ej: Montevideo"
+                    required
+                  />
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="state" class="form-label">
+                    Departamento <span class="text-danger">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="state"
+                    class="form-control"
+                    placeholder="Ej: Montevideo"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="country" class="form-label">País</label>
+                  <input
+                    type="text"
+                    id="country"
+                    class="form-control"
+                    value="Uruguay"
+                  />
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="postalCode" class="form-label"
+                    >Código Postal</label
+                  >
+                  <input
+                    type="text"
+                    id="postalCode"
+                    class="form-control"
+                    placeholder="Ej: 11000"
+                  />
+                </div>
+              </div>
+
+              <div class="form-check mb-3">
+                <input
+                  type="checkbox"
+                  id="isDefault"
+                  class="form-check-input"
+                />
+                <label for="isDefault" class="form-check-label">
+                  Establecer como dirección predeterminada
+                </label>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancelar
+            </button>
+            <button type="button" id="saveAddressBtn" class="btn btn-primary">
+              <i class="fas fa-save"></i> Guardar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal para Confirmar Eliminación de Cuenta -->
+    <div
+      class="modal fade"
+      id="deleteAccountModal"
+      tabindex="-1"
+      aria-labelledby="deleteAccountModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title" id="deleteAccountModalLabel">
+              <i class="fas fa-exclamation-triangle"></i> Confirmar Eliminación
+            </h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="alert alert-danger">
+              <strong>⚠️ Advertencia:</strong> Esta acción es permanente y no se
+              puede deshacer.
+            </div>
+            <p>Se eliminarán todos tus datos, incluyendo:</p>
+            <ul>
+              <li>Información personal</li>
+              <li>Direcciones de envío</li>
+              <li>Historial de pedidos</li>
+              <li>Carrito de compras</li>
+              <li>Comentarios y valoraciones</li>
+            </ul>
+            <p class="mb-3">Para confirmar, ingresa tu contraseña:</p>
+            <form id="deleteAccountForm">
+              <!-- Campo username oculto para gestores de contraseñas -->
+              <input
+                type="text"
+                name="username"
+                autocomplete="username"
+                style="display: none"
+              />
+              <div class="input-group">
+                <input
+                  type="password"
+                  id="deleteAccountPassword"
+                  class="form-control"
+                  placeholder="Contraseña"
+                  autocomplete="current-password"
+                  required
+                />
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary toggle-password"
+                  data-target="deleteAccountPassword"
+                >
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+              <div
+                id="deleteAccountPasswordError"
+                class="invalid-feedback"
+              ></div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              id="confirmDeleteAccountBtn"
+              class="btn btn-danger"
+            >
+              <i class="fas fa-trash-alt"></i> Eliminar Mi Cuenta
+            </button>
           </div>
         </div>
       </div>

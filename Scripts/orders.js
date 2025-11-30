@@ -1,44 +1,66 @@
 /**
  * Gestión de historial de pedidos
- * Muestra los pedidos del usuario logueado desde localStorage
- * Autor: Grupo 7 - Proyecto Final JAP 2025
+ * Muestra los pedidos del usuario desde el backend
  */
 
 document.addEventListener("DOMContentLoaded", function () {
   loadOrders();
 });
 
-// Cargar y mostrar pedidos del usuario
-function loadOrders() {
-  const session = checkSession();
-
-  if (!session || !session.isLoggedIn) {
+// Cargar y mostrar pedidos del usuario desde el backend
+async function loadOrders() {
+  if (!AUTH_UTILS.isAuthenticated()) {
     window.location.href = "login.html";
     return;
   }
 
-  const orders = getOrders(session.usuario);
   const container = document.getElementById("ordersContainer");
   const emptyMessage = document.getElementById("emptyOrders");
 
-  if (orders.length === 0) {
-    emptyMessage.style.display = "block";
-    container.style.display = "none";
-    return;
-  }
-
-  emptyMessage.style.display = "none";
+  // Mostrar loading
+  container.innerHTML = '<div class="loading">Cargando pedidos...</div>';
   container.style.display = "block";
+  emptyMessage.style.display = "none";
 
-  container.innerHTML = orders.map((order) => createOrderCard(order)).join("");
+  try {
+    const response = await fetch(API_CONFIG.ORDERS, {
+      method: "GET",
+      headers: AUTH_UTILS.getAuthHeaders(),
+    });
 
-  // Agregar listeners para expandir detalles
-  setupOrderListeners();
+    if (!response.ok) {
+      throw new Error("Error al cargar pedidos");
+    }
+
+    const result = await response.json();
+    const orders = result.data || [];
+
+    if (orders.length === 0) {
+      emptyMessage.style.display = "block";
+      container.style.display = "none";
+      return;
+    }
+
+    emptyMessage.style.display = "none";
+    container.style.display = "block";
+
+    container.innerHTML = orders
+      .map((order) => createOrderCard(order))
+      .join("");
+
+    // Agregar listeners para expandir detalles
+    setupOrderListeners();
+  } catch (error) {
+    console.error("Error al cargar pedidos:", error);
+    container.innerHTML =
+      '<div class="error-message">Error al cargar los pedidos. Intenta nuevamente.</div>';
+    showNotification("Error al cargar pedidos", "error");
+  }
 }
 
 // Crear HTML de una tarjeta de pedido
 function createOrderCard(order) {
-  const date = new Date(order.date);
+  const date = new Date(order.created_at || order.date);
   const formattedDate = date.toLocaleDateString("es-UY", {
     year: "numeric",
     month: "long",
@@ -50,11 +72,14 @@ function createOrderCard(order) {
   const statusClass = getStatusClass(order.status);
   const statusText = getStatusText(order.status);
 
+  // Adaptar estructura del backend (order.items es array de productos)
+  const items = order.items || [];
+
   return `
     <div class="order-card" data-order-id="${order.id}">
       <div class="order-header">
         <div class="order-info">
-          <h3>Pedido ${order.id}</h3>
+          <h3>Pedido #${order.id}</h3>
           <p class="order-date">${formattedDate}</p>
         </div>
         <div class="order-status ${statusClass}">
@@ -64,10 +89,10 @@ function createOrderCard(order) {
 
       <div class="order-summary">
         <div class="order-items-preview">
-          <p><strong>${order.items.length}</strong> producto${
-    order.items.length > 1 ? "s" : ""
+          <p><strong>${items.length}</strong> producto${
+    items.length !== 1 ? "s" : ""
   }</p>
-          <p>Envío: <strong>${order.shipping.type_name}</strong></p>
+          <p>Envío: <strong>${order.shipping_type || "Estándar"}</strong></p>
         </div>
         <div class="order-total">
           <p class="total-label">Total</p>
@@ -85,47 +110,64 @@ function createOrderCard(order) {
         <div class="details-section">
           <h4>Productos</h4>
           <div class="order-items">
-            ${order.items
-              .map(
-                (item) => `
+            ${items
+              .map((item) => {
+                // Obtener la primera imagen del array o mostrar ícono
+                const hasImage = item.images && item.images.length > 0;
+                const imageUrl = hasImage ? item.images[0] : null;
+
+                return `
               <div class="order-item">
-                <img src="${item.image}" alt="${
-                  item.name
-                }" onerror="this.src='../img/placeholder.jpg'">
+                ${
+                  hasImage
+                    ? `<img src="${imageUrl}" alt="${item.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                     <div class="no-image" style="display:none;"><i class="fas fa-box"></i></div>`
+                    : `<div class="no-image"><i class="fas fa-box"></i></div>`
+                }
                 <div class="item-info">
                   <p class="item-name">${item.name}</p>
                   <p class="item-quantity">Cantidad: ${item.quantity}</p>
+                  <p class="item-price-unit">${formatCurrency(
+                    item.price,
+                    "UYU"
+                  )} c/u</p>
                 </div>
                 <p class="item-price">${formatCurrency(
-                  item.subtotal,
+                  item.price * item.quantity,
                   "UYU"
                 )}</p>
               </div>
-            `
-              )
+            `;
+              })
               .join("")}
           </div>
         </div>
 
         <div class="details-section">
           <h4>Dirección de Envío</h4>
-          <p>${order.shipping.street} ${order.shipping.number}</p>
-          <p>Esquina: ${order.shipping.corner}</p>
-          <p>${order.shipping.city}, ${order.shipping.department}</p>
+          <p>${
+            order.shipping_address?.street || order.shipping?.street || "N/A"
+          } ${
+    order.shipping_address?.number || order.shipping?.number || ""
+  }</p>
+          <p>Esquina: ${
+            order.shipping_address?.corner || order.shipping?.corner || "N/A"
+          }</p>
+          <p>${
+            order.shipping_address?.locality || order.shipping?.city || "N/A"
+          }, ${
+    order.shipping_address?.department || order.shipping?.department || "N/A"
+  }</p>
         </div>
 
         <div class="details-section">
           <h4>Forma de Pago</h4>
           <p>${
-            order.payment.method === "credit"
+            order.payment_method === "credit_card" ||
+            order.payment?.method === "credit"
               ? "Tarjeta de Crédito"
               : "Transferencia Bancaria"
           }</p>
-          ${
-            order.payment.card_last4
-              ? `<p>Terminada en: **** ${order.payment.card_last4}</p>`
-              : ""
-          }
         </div>
 
         <div class="details-section">
@@ -133,15 +175,10 @@ function createOrderCard(order) {
           <div class="cost-breakdown">
             <div class="cost-line">
               <span>Subtotal:</span>
-              <span>${formatCurrency(order.subtotal, "UYU")}</span>
-            </div>
-            <div class="cost-line">
-              <span>IVA (22%):</span>
-              <span>${formatCurrency(order.tax, "UYU")}</span>
-            </div>
-            <div class="cost-line">
-              <span>Envío:</span>
-              <span>${formatCurrency(order.shipping_cost, "UYU")}</span>
+              <span>${formatCurrency(
+                order.subtotal || order.total,
+                "UYU"
+              )}</span>
             </div>
             <div class="cost-line total">
               <span><strong>Total:</strong></span>

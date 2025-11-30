@@ -1,7 +1,6 @@
 /**
  * Archivo de Inicialización y configuración global
  * URLs centralizadas de la API y funcionalidades globales
- * Autor: Grupo 7 - Proyecto Final JAP 2025
  */
 
 // URLs de la API (desde configuración centralizada)

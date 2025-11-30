@@ -1,7 +1,6 @@
 /**
  * Gestión del catálogo de productos de Craftivity
  * Maneja la carga desde API, filtrado, búsqueda y carrito
- * Autor: Grupo 7 - Proyecto Final JAP 2025
  *
  * Nota: Las funciones showNotification() y updateCartCounter() están
  * centralizadas en main.js para evitar duplicación de código.
@@ -17,19 +16,13 @@ let currentCategory = null; // Categoría actualmente seleccionada
  * Carga las categorías desde la API y llena el selector
  */
 async function loadCategories() {
-  console.log("Iniciando carga de categorías...");
-
-  // Fallback en caso de que las variables no estén definidas
   const categoriesUrl =
     typeof CATEGORIES_URL !== "undefined"
       ? CATEGORIES_URL
       : API_CONFIG.CATEGORIES;
 
-  console.log("URL de categorías:", categoriesUrl);
-
   try {
     const response = await fetch(categoriesUrl);
-    console.log("Respuesta de la API:", response.status, response.statusText);
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -58,54 +51,24 @@ async function loadCategories() {
  * Carga todos los productos de todas las categorías para búsqueda universal
  */
 async function loadAllProductsUniversal() {
-  console.log("Cargando todos los productos para búsqueda universal...");
-
-  if (allCategories.length === 0) {
-    console.warn(
-      "No hay categorías disponibles para cargar productos universales"
-    );
-    return;
-  }
-
   try {
-    const productsBaseUrl =
-      typeof PRODUCTS_BASE_URL !== "undefined"
-        ? PRODUCTS_BASE_URL
-        : API_CONFIG.PRODUCTS_BASE;
+    const response = await fetch(API_CONFIG.PRODUCTS);
 
-    // Crear promesas para todas las categorías
-    const categoryPromises = allCategories.map(async (category) => {
-      try {
-        const response = await fetch(`${productsBaseUrl}${category.id}.json`);
-        if (response.ok) {
-          const data = await response.json();
-          const products = data.products || [];
-          // Agregar información de categoría a cada producto
-          return products.map((product) => ({
-            ...product,
-            categoryId: category.id,
-            categoryName: category.name,
-          }));
-        }
-      } catch (error) {
-        console.log(
-          `No se pudieron cargar productos de categoría ${category.id}`
-        );
-      }
-      return [];
-    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-    // Obtener todos los productos
-    const categoryProducts = await Promise.all(categoryPromises);
+    const products = await response.json();
 
-    // Combinar todos los productos en un solo array
-    allProductsUniversal = categoryProducts.flat();
+    // El backend devuelve directamente el array de productos
+    allProductsUniversal = Array.isArray(products) ? products : [];
 
-    console.log(
-      `Cargados ${allProductsUniversal.length} productos universales de ${allCategories.length} categorías`
-    );
+    allProductsUniversal = allProductsUniversal.map((product) => ({
+      ...product,
+      categoryId: product.category || product.categoryId,
+      categoryName: product.categoryName || "",
+    }));
 
-    // Re-ejecutar búsqueda desde URL si existe y no se había ejecutado correctamente
     await retrySearchFromURL();
   } catch (error) {
     console.error("Error cargando productos universales:", error);
@@ -121,10 +84,6 @@ async function retrySearchFromURL() {
   const searchTerm = urlParams.get("search");
 
   if (searchTerm && allProductsUniversal.length > 0) {
-    console.log(
-      "🔄 Re-ejecutando búsqueda universal para término de URL:",
-      searchTerm
-    );
     await filterProducts(searchTerm);
   }
 }
@@ -166,7 +125,8 @@ async function displayAllProducts() {
     // Usar imagen por defecto en el hero
     const heroSection = document.querySelector(".catalog-hero");
     if (heroSection) {
-      heroSection.style.backgroundImage = "url('../img/cars_index.jpg')";
+      heroSection.style.backgroundImage =
+        "url('https://res.cloudinary.com/dcdfqlivp/image/upload/v1764126557/ui/cars_index.jpg')";
       heroSection.style.backgroundSize = "cover";
       heroSection.style.backgroundPosition = "center";
     }
@@ -177,10 +137,6 @@ async function displayAllProducts() {
 
     // Aplicar filtros y mostrar productos
     await applyAllFilters();
-
-    console.log(
-      `Mostrando ${allProductsUniversal.length} productos de todas las categorías`
-    );
   } catch (error) {
     console.error("Error mostrando todos los productos:", error);
     if (loadingMessage) loadingMessage.style.display = "none";
@@ -252,7 +208,8 @@ function updateCategoryHeroImage(categoryId) {
       heroSection.style.backgroundPosition = "center";
     } else {
       // Si no tiene imagen, usar la imagen por defecto
-      heroSection.style.backgroundImage = "url('../img/cars_index.jpg')";
+      heroSection.style.backgroundImage =
+        "url('https://res.cloudinary.com/dcdfqlivp/image/upload/v1764126557/ui/cars_index.jpg')";
       heroSection.style.backgroundSize = "cover";
       heroSection.style.backgroundPosition = "center";
     }
@@ -269,7 +226,8 @@ function updateCategoryHeroImage(categoryId) {
         "Descubre nuestra increíble selección de productos DIY";
     }
 
-    heroSection.style.backgroundImage = "url('../img/cars_index.jpg')";
+    heroSection.style.backgroundImage =
+      "url('https://res.cloudinary.com/dcdfqlivp/image/upload/v1764126557/ui/cars_index.jpg')";
     heroSection.style.backgroundSize = "cover";
     heroSection.style.backgroundPosition = "center";
   }
@@ -303,47 +261,54 @@ async function loadProducts(categoryId = null) {
       }
     }
 
-    // Construir URL dinámica según la categoría
-    const productsBaseUrl =
-      typeof PRODUCTS_BASE_URL !== "undefined"
-        ? PRODUCTS_BASE_URL
-        : API_CONFIG.PRODUCTS_BASE;
+    // Construir URL con query params para el backend
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchTerm = urlParams.get("search");
 
-    const PRODUCTS_API_URL = `${productsBaseUrl}${currentCategory}.json`;
+    // Backend REST endpoint
+    let apiUrl = API_CONFIG.PRODUCTS;
+    const queryParams = new URLSearchParams();
+
+    if (currentCategory) {
+      queryParams.append("category", currentCategory);
+    }
+
+    if (searchTerm) {
+      queryParams.append("search", searchTerm);
+    }
+
+    const PRODUCTS_API_URL = queryParams.toString()
+      ? `${apiUrl}?${queryParams.toString()}`
+      : apiUrl;
 
     // Muestro el loading
     if (loadingMessage) loadingMessage.classList.add("show");
     if (errorMessage) errorMessage.classList.remove("show");
     if (productsContainer) productsContainer.innerHTML = "";
 
-    // Fetch de la API
+    // Fetch del backend REST
     const response = await fetch(PRODUCTS_API_URL);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
-    allProducts = data.products || [];
+    // El backend devuelve directamente el array de productos
+    allProducts = Array.isArray(data) ? data : [];
 
-    // Agregar categoryId a todos los productos
+    // Agregar categoryId a todos los productos si no lo tienen
     allProducts = allProducts.map((product) => ({
       ...product,
-      categoryId: currentCategory,
+      categoryId: product.category || currentCategory,
     }));
-
-    // Aplicar filtro de búsqueda si existe
-    const urlParams = new URLSearchParams(window.location.search);
-    const searchTerm = urlParams.get("search");
 
     let productsToShow = allProducts;
     if (searchTerm) {
-      console.log("Búsqueda desde URL detectada:", searchTerm);
       const searchInput = document.getElementById("searchInput");
       if (searchInput) searchInput.value = searchTerm;
 
       // Usar búsqueda universal si está disponible, sino buscar solo en categoría actual
       if (allProductsUniversal.length > 0) {
-        console.log("Usando búsqueda universal desde URL");
         productsToShow = allProductsUniversal.filter(
           (product) =>
             product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -352,9 +317,6 @@ async function loadProducts(categoryId = null) {
         // Actualizar selector para mostrar búsqueda
         updateCategorySelectorForSearch(searchTerm, productsToShow.length);
       } else {
-        console.log(
-          "Búsqueda universal no disponible, buscando en categoría actual"
-        );
         productsToShow = allProducts.filter(
           (product) =>
             product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -412,66 +374,22 @@ async function displayProducts(products) {
 
   if (noResults) noResults.classList.remove("show");
 
-  // Crear array de promesas para verificar imágenes múltiples Y datos de promoción
-  const productsWithImages = await Promise.all(
-    products.map(async (product) => {
-      try {
-        // Intentar obtener múltiples imágenes del producto individual
-        const response = await fetch(
-          `${API_CONFIG.PRODUCTS_DETAIL}${product.id}.json`
-        );
-        if (response.ok) {
-          const detailData = await response.json();
-          if (
-            detailData.images &&
-            Array.isArray(detailData.images) &&
-            detailData.images.length > 1
-          ) {
-            return { ...product, images: detailData.images };
-          }
-        }
-      } catch (error) {
-        console.log(
-          `No se pudieron cargar imágenes adicionales para producto ${product.id}`
-        );
-      }
-      // Fallback a imagen singular
-      return { ...product, images: [product.image] };
-    })
-  );
-
-  // NUEVA FUNCIONALIDAD: Agregar datos de promoción a cada producto
-  const productsWithPromotions = await Promise.all(
-    productsWithImages.map(async (product) => {
-      try {
-        const promotionData = await getProductPromotionData(product.id);
-        return {
-          ...product,
-          flashSale: promotionData.flashSale,
-          featured: promotionData.featured,
-          flashPrice: promotionData.flashPrice,
-          originalPrice: promotionData.originalPrice || product.cost,
-        };
-      } catch (error) {
-        console.log(
-          `No se pudieron cargar datos de promoción para producto ${product.id}`
-        );
-        return {
-          ...product,
-          flashSale: { active: false },
-          featured: false,
-          flashPrice: null,
-          originalPrice: product.cost,
-        };
-      }
-    })
-  );
+  // El backend ya devuelve toda la información necesaria (images, flashSale, featured)
+  // No necesitamos hacer llamadas adicionales
+  const productsWithData = products.map((product) => ({
+    ...product,
+    images: product.images || [product.image],
+    flashSale: product.flashSale || product.flash_sale || { active: false },
+    featured: product.featured || false,
+    flashPrice: product.flash_price,
+    originalPrice: product.cost,
+  }));
 
   // Genero el HTML para cada producto
   const isListView =
     productsContainer && productsContainer.classList.contains("products-list");
 
-  const productsHTML = productsWithPromotions
+  const productsHTML = productsWithData
     .map((product) => {
       // Usar la función modular para crear tarjetas
       return createUniversalProductCard(product, "catalog").outerHTML;
@@ -547,8 +465,6 @@ function initializeImageCarousels() {
  * Navega a la página de detalles del producto
  */
 function viewProductDetails(id) {
-  console.log("Navegando a detalles del producto:", id);
-
   let product = null;
   let productCategory = currentCategory;
 
@@ -572,19 +488,6 @@ function viewProductDetails(id) {
     window.location.href = `product-details.html?id=${id}&category=${productCategory}`;
   } else {
     alert("Producto no encontrado");
-    console.log("ID buscado:", id, "Tipo:", typeof id);
-    console.log(
-      "IDs en allProducts:",
-      allProducts.map((p) => ({ id: p.id, tipo: typeof p.id }))
-    );
-    console.log(
-      "IDs en allProductsUniversal:",
-      allProductsUniversal.map((p) => ({
-        id: p.id,
-        tipo: typeof p.id,
-        categoria: p.categoryId,
-      }))
-    );
   }
 }
 
@@ -599,21 +502,11 @@ async function filterProducts(searchTerm) {
     return;
   }
 
-  console.log(
-    "🔍 Realizando búsqueda universal en",
-    allProductsUniversal.length,
-    "productos"
-  );
-
   // Buscar en todos los productos de todas las categorías
   const filtered = allProductsUniversal.filter(
     (product) =>
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  console.log(
-    `📊 Encontrados ${filtered.length} resultados para "${searchTerm}"`
   );
 
   // Actualizar el selector de categorías para mostrar "Resultados de búsqueda"
@@ -735,41 +628,17 @@ async function sortProducts(criteria) {
 
 // Event listeners
 document.addEventListener("DOMContentLoaded", async function () {
-  console.log("DOM cargado, iniciando products.js");
-
-  // Verificar que las variables de configuración estén disponibles
-  console.log(
-    "CATEGORIES_URL:",
-    typeof CATEGORIES_URL !== "undefined" ? CATEGORIES_URL : "NO DEFINIDA"
-  );
-  console.log(
-    "PRODUCTS_BASE_URL:",
-    typeof PRODUCTS_BASE_URL !== "undefined" ? PRODUCTS_BASE_URL : "NO DEFINIDA"
-  );
-
-  if (
-    typeof CATEGORIES_URL === "undefined" ||
-    typeof PRODUCTS_BASE_URL === "undefined"
-  ) {
-    console.error("Variables de configuración no definidas. Verificar init.js");
+  if (!API_CONFIG || !API_CONFIG.CATEGORIES || !API_CONFIG.PRODUCTS) {
     return;
   }
 
-  // Cargar categorías primero
-  console.log("Cargando categorías...");
   const categoriesLoaded = await loadCategories();
-  console.log("Resultado carga categorías:", categoriesLoaded);
 
-  // Cargar todos los productos para búsqueda universal
   if (categoriesLoaded) {
-    console.log("Cargando productos universales...");
     await loadAllProductsUniversal();
   }
 
-  // Luego cargar productos de la categoría actual
-  console.log("Cargando productos...");
   await loadProducts();
-  console.log("Productos cargados");
 
   // Event listener para el ordenamiento
   const sortSelect = document.getElementById("sortSelect");
@@ -785,7 +654,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     categorySelect.addEventListener("change", function () {
       const selectedCategory = this.value;
 
-      // Limpiar campo de búsqueda si se cambia de categoría
       const searchInput = document.getElementById("searchInput");
       if (searchInput) {
         searchInput.value = "";
