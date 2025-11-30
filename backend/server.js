@@ -86,6 +86,7 @@ async function startServer() {
     app.listen(PORT, () => {
       console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
       console.log(`📦 Entorno: ${process.env.NODE_ENV || "development"}`);
+      console.log("✅ Conectado a la DB");
     });
   } catch (err) {
     console.error("❌ Error al iniciar el servidor:", err);

@@ -123,7 +123,7 @@ Deberías ver:
 ```
 🚀 Servidor corriendo en http://localhost:3000
 📦 Entorno: development
-✅ Conectado a MariaDB
+✅ Conectado a la DB
 ```
 
 **El backend está listo en:** `http://localhost:3000`
