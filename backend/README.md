@@ -445,9 +445,9 @@ net start MariaDB
 
 Deberías ver las 15 tablas:
 ```
-cart_items, carts, categories, comments, order_items, orders, 
-product_categories, product_images, product_related, products, 
-shipping_addresses, users, view_active_flash_sales, 
+cart_items, carts, categories, comments, order_items, orders,
+product_categories, product_images, product_related, products,
+shipping_addresses, users, view_active_flash_sales,
 view_featured_products, view_products_with_categories
 ```
 
