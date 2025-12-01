@@ -396,6 +396,76 @@ PORT=3001
 
 Verifica que `Scripts/config.js` apunte a `http://localhost:3000`
 
+### Error: "Access denied for user 'root'@'localhost'" (MariaDB Windows)
+
+MariaDB en Windows usa autenticación por socket. Solución: crear un usuario específico para la aplicación:
+
+```bash
+# Windows (CMD o PowerShell) - Ejecutar como administrador
+"C:\Program Files\MariaDB 12.1\bin\mysql" -u root -e "CREATE USER 'craftivity'@'localhost' IDENTIFIED BY 'craftivity123'; CREATE USER 'craftivity'@'127.0.0.1' IDENTIFIED BY 'craftivity123'; GRANT ALL PRIVILEGES ON craftivity.* TO 'craftivity'@'localhost'; GRANT ALL PRIVILEGES ON craftivity.* TO 'craftivity'@'127.0.0.1'; FLUSH PRIVILEGES;"
+```
+
+Luego actualiza tu archivo `.env`:
+```env
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_USER=craftivity
+DB_PASSWORD=craftivity123
+DB_NAME=craftivity
+```
+
+### Error: "mysql command not found" (Windows)
+
+Si MySQL/MariaDB no está en el PATH, usa la ruta completa:
+
+```bash
+# MariaDB instalado en Program Files
+"C:\Program Files\MariaDB 12.1\bin\mysql" -u root -p < sql\ecommerce.sql
+
+# XAMPP
+"C:\xampp\mysql\bin\mysql" -u root -p < sql\ecommerce.sql
+```
+
+### Verificar que MariaDB está corriendo
+
+```bash
+# Windows (CMD como administrador)
+net start MySQL
+
+# O verificar el servicio MariaDB
+net start MariaDB
+```
+
+### Verificar conexión a la base de datos
+
+```bash
+# Probar conexión con el usuario craftivity
+"C:\Program Files\MariaDB 12.1\bin\mysql" -h 127.0.0.1 -u craftivity -pcraftivity123 craftivity -e "SHOW TABLES;"
+```
+
+Deberías ver las 15 tablas:
+```
+cart_items, carts, categories, comments, order_items, orders, 
+product_categories, product_images, product_related, products, 
+shipping_addresses, users, view_active_flash_sales, 
+view_featured_products, view_products_with_categories
+```
+
+### Reimportar la base de datos desde cero
+
+Si necesitas empezar de nuevo:
+
+```bash
+# Windows
+"C:\Program Files\MariaDB 12.1\bin\mysql" -u root -p < sql\ecommerce.sql
+```
+
+### El servidor inicia pero no conecta a la DB
+
+1. Verifica que el puerto en `.env` coincida con MariaDB (por defecto 3306, algunos usan 3307)
+2. Verifica que `DB_HOST` sea `127.0.0.1` (no `localhost`)
+3. Asegúrate de que el servicio MariaDB esté corriendo
+
 ---
 
 ## 🧪 Testing de Endpoints
